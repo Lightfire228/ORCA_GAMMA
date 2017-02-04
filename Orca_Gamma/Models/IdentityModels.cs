@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System;
+using Orca_Gamma.Models.DatabaseModels;
 
 namespace Orca_Gamma.Models
 {
@@ -16,6 +18,11 @@ namespace Orca_Gamma.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+		// Added for database
+		public Boolean IsDisabled {
+			get; set;
+		}
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -29,5 +36,70 @@ namespace Orca_Gamma.Models
         {
             return new ApplicationDbContext();
         }
-    }
+
+		// Link the DB models to the actual database
+		public DbSet<Catagory> Catagories {
+			get; set;
+		}
+
+		public DbSet<Collaborator> Collaborators {
+			get; set;
+		}
+
+		public DbSet<Expert> Experts {
+			get; set;
+		}
+
+		public DbSet<ForumThread> ForumThreads {
+			get; set;
+		}
+
+		public DbSet<Keyword> Keywords {
+			get; set;
+		}
+
+		public DbSet<KeywordRelation> KeywordRelations {
+			get; set;
+		}
+
+		public DbSet<PrivateMessage> PrivateMessages {
+			get; set;
+		}
+
+		public DbSet<PrivateMessageBetween> PrivateMessagesBetween {
+			get; set;
+		}
+
+		public DbSet<PrivateMessagePost> PrivateMessagePosts {
+			get; set;
+		}
+
+		public DbSet<Project> Projects {
+			get; set;
+		}
+
+		public DbSet<ThreadMessagePost> ThreadMessagePosts {
+			get; set;
+		}
+
+
+		protected override void OnModelCreating(DbModelBuilder modelBuilder) {
+			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<Project>()
+			.HasRequired(c => c.User)
+			.WithMany()
+			.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<PrivateMessage>()
+			.HasRequired(c => c.User)
+			.WithMany()
+			.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<ThreadMessagePost>()
+			.HasRequired(c => c.User)
+			.WithMany()
+			.WillCascadeOnDelete(false);
+		}
+	}
 }
