@@ -23,6 +23,7 @@ namespace Orca_Gamma.Models
 		public Boolean IsDisabled {
 			get; set;
 		}
+
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -82,7 +83,12 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
-
+		/*
+		 * Required, these three tables have cyclic references that are non null
+		 * So if a single user is deleted, it may cause another user to be deleted
+		 * and the database does not like a single delete to cascade onto the same
+		 * table twice
+		 */ 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder) {
 			base.OnModelCreating(modelBuilder);
 
