@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
-using Orca_Gamma;
 
 namespace Orca_Gamma.Controllers
 {
