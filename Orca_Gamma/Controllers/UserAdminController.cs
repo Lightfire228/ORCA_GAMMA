@@ -1,5 +1,4 @@
-﻿using IdentitySample;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
@@ -13,7 +12,7 @@ using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma;
 
-namespace IdentitySample.Controllers
+namespace Orca_Gamma.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class UsersAdminController : Controller
