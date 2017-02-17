@@ -90,7 +90,7 @@ namespace Orca_Gamma.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = userViewModel.Email, Email = userViewModel.Email };
+                var user = new ApplicationUser { UserName = userViewModel.UserName, Email = userViewModel.Email };
                 var adminresult = await UserManager.CreateAsync(user, userViewModel.Password);
 
                 //Add User to the selected Roles 
@@ -140,6 +140,7 @@ namespace Orca_Gamma.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
+                UserName = user.UserName,
                 RolesList = RoleManager.Roles.ToList().Select(x => new SelectListItem()
                 {
                     Selected = userRoles.Contains(x.Name),
@@ -153,7 +154,7 @@ namespace Orca_Gamma.Controllers
         // POST: /Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Email,Id")] EditUserViewModel editUser, params string[] selectedRole)
+        public async Task<ActionResult> Edit([Bind(Include = "Email, UserName,Id")] EditUserViewModel editUser, params string[] selectedRole)
         {
             if (ModelState.IsValid)
             {
@@ -163,7 +164,7 @@ namespace Orca_Gamma.Controllers
                     return HttpNotFound();
                 }
 
-                user.UserName = editUser.Email;
+                user.UserName = editUser.UserName;
                 user.Email = editUser.Email;
 
                 var userRoles = await UserManager.GetRolesAsync(user.Id);
