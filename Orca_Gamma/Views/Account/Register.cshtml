@@ -1,4 +1,7 @@
-﻿@model Orca_Gamma.Models.RegisterViewModel
+﻿@using CaptchaMvc.HtmlHelpers
+@using CaptchaMvc;
+
+@model Orca_Gamma.Models.RegisterViewModel
 @{
     ViewBag.Title = "Register";
 }
@@ -34,6 +37,15 @@
             <input type="submit" class="btn btn-default" value="Register" />
         </div>
     </div>
+
+    @*displays captcha and text box -Geoff*@
+    @Html.MathCaptcha()
+    @*@Html.Captcha(3)*@
+    <br />
+    <p class="has-error"> @ViewBag.ErrMessage</p>
+    <p>
+        <input type="submit" value="Send" />
+    </p>
 }
 
 @section Scripts {
