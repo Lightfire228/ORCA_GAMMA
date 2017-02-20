@@ -9,13 +9,11 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Net;
+using CaptchaMvc.HtmlHelpers;
 
 namespace Orca_Gamma.Controllers
 {
+
     [Authorize]
     public class AccountController : Controller
     {
@@ -26,11 +24,10 @@ namespace Orca_Gamma.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ApplicationRoleManager roleManager)
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            RoleManager = roleManager;
         }
 
         public ApplicationSignInManager SignInManager
@@ -54,19 +51,6 @@ namespace Orca_Gamma.Controllers
             private set
             {
                 _userManager = value;
-            }
-        }
-
-        private ApplicationRoleManager _roleManager;
-        public ApplicationRoleManager RoleManager
-        {
-            get
-            {
-                return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
-            }
-            private set
-            {
-                _roleManager = value;
             }
         }
 
@@ -155,9 +139,8 @@ namespace Orca_Gamma.Controllers
         //
         // GET: /Account/Register
         [AllowAnonymous]
-        public async Task<ActionResult> Register()
+        public ActionResult Register()
         {
-            ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
             return View();
         }
 
@@ -166,39 +149,27 @@ namespace Orca_Gamma.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model, params string[] selectedRoles)
+        public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            //second check is to make sure captcha is right
+            if (ModelState.IsValid && this.IsCaptchaValid("Captcha is not valid"))
             {
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-
-                    if (selectedRoles != null)
-                    {
-                        var result2 = await UserManager.AddToRolesAsync(user.Id, selectedRoles);
-                        if (!result2.Succeeded)
-                        {
-                            ModelState.AddModelError("", result.Errors.First());
-                            ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
-                            return View();
-                        }
-                    }
+                    
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-
-
                     return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);
             }
-            ViewBag.RoleId = new SelectList(RoleManager.Roles, "Name", "Name");
 
             // If we got this far, something failed, redisplay form
             return View(model);

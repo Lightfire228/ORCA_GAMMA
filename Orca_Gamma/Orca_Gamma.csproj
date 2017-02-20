@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CaptchaMvc, Version=2.5.0.0, Culture=neutral, PublicKeyToken=fe46ad421dd3b0e6, processorArchitecture=MSIL">
+      <HintPath>..\packages\CaptchaMvc.Mvc4.1.5.0\lib\net40-full\CaptchaMvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -211,6 +215,10 @@
     <Compile Include="Migrations\201702040339103_added-models.Designer.cs">
       <DependentUpon>201702040339103_added-models.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702201829322_adding-fl-names.cs" />
+    <Compile Include="Migrations\201702201829322_adding-fl-names.Designer.cs">
+      <DependentUpon>201702201829322_adding-fl-names.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
@@ -225,6 +233,7 @@
     <Compile Include="Models\DatabaseModels\PrivateMessagePost.cs" />
     <Compile Include="Models\DatabaseModels\Project.cs" />
     <Compile Include="Models\DatabaseModels\ThreadMessagePost.cs" />
+    <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -319,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702040339103_added-models.resx">
       <DependentUpon>201702040339103_added-models.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201829322_adding-fl-names.resx">
+      <DependentUpon>201702201829322_adding-fl-names.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
