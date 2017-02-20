@@ -9,9 +9,11 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
+using CaptchaMvc.HtmlHelpers;
 
 namespace Orca_Gamma.Controllers
 {
+
     [Authorize]
     public class AccountController : Controller
     {
@@ -149,7 +151,8 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            //second check is to make sure captcha is right
+            if (ModelState.IsValid && this.IsCaptchaValid("Captcha is not valid"))
             {
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
