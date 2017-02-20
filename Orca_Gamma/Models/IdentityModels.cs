@@ -24,6 +24,14 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
+		public String FirstName {
+			get; set;
+		}
+
+		public String LastName {
+			get; set;
+		}
+
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

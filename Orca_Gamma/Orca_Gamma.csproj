@@ -215,6 +215,10 @@
     <Compile Include="Migrations\201702040339103_added-models.Designer.cs">
       <DependentUpon>201702040339103_added-models.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702201829322_adding-fl-names.cs" />
+    <Compile Include="Migrations\201702201829322_adding-fl-names.Designer.cs">
+      <DependentUpon>201702201829322_adding-fl-names.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
@@ -324,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702040339103_added-models.resx">
       <DependentUpon>201702040339103_added-models.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201829322_adding-fl-names.resx">
+      <DependentUpon>201702201829322_adding-fl-names.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
