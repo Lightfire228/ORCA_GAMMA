@@ -40,18 +40,24 @@
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
+            @*displays captcha and text box -Geoff*@
+            @Html.MathCaptcha()
+            @*@Html.Captcha(3)*@
+            @*
+            <br />
+            <p class="has-error"> @ViewBag.ErrMessage</p>
+            <p>
+                <input type="submit" value="Send" />
+            </p>
+            *@
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
             <input type="submit" class="btn btn-default" value="Register" />
         </div>
     </div>
 
-    @*displays captcha and text box -Geoff*@
-    @Html.MathCaptcha()
-    @*@Html.Captcha(3)*@
-    <br />
-    <p class="has-error"> @ViewBag.ErrMessage</p>
-    <p>
-        <input type="submit" value="Send" />
-    </p>
 }
 
 @section Scripts {
