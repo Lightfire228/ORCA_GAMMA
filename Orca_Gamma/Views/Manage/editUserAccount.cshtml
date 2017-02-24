@@ -15,7 +15,7 @@
         <h4>ApplicationUser</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(model => model.Id)
         @*passing back the value for what was already in there*@
         @Html.HiddenFor(model => model.IsDisabled)
         @Html.HiddenFor(model => model.EmailConfirmed)
