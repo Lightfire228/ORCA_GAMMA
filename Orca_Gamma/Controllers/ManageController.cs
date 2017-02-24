@@ -15,6 +15,7 @@ namespace Orca_Gamma.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+		private ApplicationDbContext _dbContext = new ApplicationDbContext();
 
         public ManageController()
         {
@@ -337,7 +338,7 @@ namespace Orca_Gamma.Controllers
         //GET: //Manage/editUserAccount
         public ActionResult editUserAccount()
         {
-            return View();
+            return View(getCurrentUser());
         }
         //this is the post method for regular user account info change -Geoff
         //POST: /Manage/editUserAccount
@@ -345,39 +346,27 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult editUserAccount(ApplicationUser model)
         {
-            ApplicationUser user = new Models.ApplicationUser
-            {
-                //there could be a possible issue with returning nulls??
-                //had that problem on old project
+			String id = model.Id;
+			ApplicationUser user = _dbContext.Users.Find(model.Id);
 
-                //this first  group is stuff passed back with the hidden for
-                Id = model.Id,
-                IsDisabled = model.IsDisabled,
-                EmailConfirmed = model.EmailConfirmed,
-                PasswordHash = model.PasswordHash,
-                SecurityStamp = model.SecurityStamp,
-                PhoneNumberConfirmed = model.PhoneNumberConfirmed,
-                TwoFactorEnabled = model.TwoFactorEnabled,
-                LockoutEndDateUtc = model.LockoutEndDateUtc,
-                LockoutEnabled = model.LockoutEnabled,
-                AccessFailedCount = model.AccessFailedCount,
+			user.FirstName   = model.FirstName;
+			user.LastName    = model.LastName;
+			user.Email       = model.Email;
+			user.UserName    = model.UserName;
+			user.PhoneNumber = model.PhoneNumber; 
 
-                //these the user needed to change
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
-                UserName = model.UserName
-
-            };
+			_dbContext.SaveChanges();
 
             if (ModelState.IsValid)
             {
                 return RedirectToAction("Index");
             }
-            return View(user);
+            return View(model);
         }
 
+		public ApplicationUser getCurrentUser() {
+			return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+		}
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -431,4 +420,5 @@ namespace Orca_Gamma.Controllers
 
 #endregion
     }
+
 }

@@ -116,6 +116,6 @@ namespace Orca_Gamma.Models
 			.WillCascadeOnDelete(false);
 		}
 
-        public System.Data.Entity.DbSet<Orca_Gamma.Models.ApplicationUser> ApplicationUsers { get; set; }
+        //public System.Data.Entity.DbSet<Orca_Gamma.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }
