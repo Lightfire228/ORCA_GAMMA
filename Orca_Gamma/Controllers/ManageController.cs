@@ -333,6 +333,51 @@ namespace Orca_Gamma.Controllers
             base.Dispose(disposing);
         }
 
+        //this is just for regular user acount informaiton change -Geoff
+        //GET: //Manage/editUserAccount
+        public ActionResult editUserAccount()
+        {
+            return View();
+        }
+        //this is the post method for regular user account info change -Geoff
+        //POST: /Manage/editUserAccount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult editUserAccount(ApplicationUser model)
+        {
+            ApplicationUser user = new Models.ApplicationUser
+            {
+                //there could be a possible issue with returning nulls??
+                //had that problem on old project
+
+                //this first  group is stuff passed back with the hidden for
+                Id = model.Id,
+                IsDisabled = model.IsDisabled,
+                EmailConfirmed = model.EmailConfirmed,
+                PasswordHash = model.PasswordHash,
+                SecurityStamp = model.SecurityStamp,
+                PhoneNumberConfirmed = model.PhoneNumberConfirmed,
+                TwoFactorEnabled = model.TwoFactorEnabled,
+                LockoutEndDateUtc = model.LockoutEndDateUtc,
+                LockoutEnabled = model.LockoutEnabled,
+                AccessFailedCount = model.AccessFailedCount,
+
+                //these the user needed to change
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                UserName = model.UserName
+
+            };
+
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(user);
+        }
+
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";

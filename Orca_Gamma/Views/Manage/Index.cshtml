@@ -35,6 +35,15 @@
             External Logins: @Model.Logins.Count
             @Html.ActionLink("[Manage]", "ManageLogins")
         </p>
+
+        <p>
+            @*This is where the edit account button will go
+                Controller method it calls: editUserAccount
+                Controller class is comes from: ManageController
+                -Geoff
+                *@
+            @Html.ActionLink("Edit Account Information", "editUserAccount")
+        </p>
         @if (Model.TwoFactor)
         {
             <form method="post" action="/Manage/DisableTFA">
