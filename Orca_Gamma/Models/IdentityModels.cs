@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using Orca_Gamma.Models.DatabaseModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orca_Gamma.Models
 {
@@ -24,11 +25,18 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
+		[Display(Name = "First Name")]
 		public String FirstName {
 			get; set;
 		}
 
+		[Display(Name = "Last Name")]
 		public String LastName {
+			get; set;
+		}
+
+		[Display(Name = "Phone Number")]
+		public new String PhoneNumber {
 			get; set;
 		}
 
