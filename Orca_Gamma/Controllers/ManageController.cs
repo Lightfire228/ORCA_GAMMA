@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
+using System.Web.Security;
 
 namespace Orca_Gamma.Controllers
 {
@@ -361,6 +362,8 @@ namespace Orca_Gamma.Controllers
 
             if (ModelState.IsValid)
             {
+                //FormsAuthentication.SignOut();
+                //Response.Redirect("login.aspx?mode=logout");
                 return RedirectToAction("Index");
             }
             return View(model);
