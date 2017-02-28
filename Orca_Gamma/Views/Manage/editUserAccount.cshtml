@@ -4,7 +4,7 @@
     ViewBag.Title = "editUserAccount";
 }
 
-<h2>editUserAccount</h2>
+<h2>Edit Account</h2>
 
 
 @using (Html.BeginForm())
@@ -12,21 +12,11 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>ApplicationUser</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
-        @*passing back the value for what was already in there*@
-        @Html.HiddenFor(model => model.IsDisabled)
-        @Html.HiddenFor(model => model.EmailConfirmed)
-        @Html.HiddenFor(model => model.PasswordHash)
-        @Html.HiddenFor(model => model.SecurityStamp)
-        @Html.HiddenFor(model => model.PhoneNumberConfirmed)
-        @Html.HiddenFor(model => model.PhoneNumber)
-        @Html.HiddenFor(model => model.TwoFactorEnabled)
-        @Html.HiddenFor(model => model.LockoutEndDateUtc)
-        @Html.HiddenFor(model => model.LockoutEnabled)
-        @Html.HiddenFor(model => model.AccessFailedCount)
+        @*passing back the value for what was already in there -Geoff
+          Removed lines 20-29 on Cass' recommendation. Was causing an overwriting issue on phonenumber storage -DBS*@
 
         <div class="form-group">
             @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -58,7 +48,7 @@
                 @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        <!-- Taking out ability to change UserName because login conflicts -DBS
         <div class="form-group">
             @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -66,7 +56,7 @@
                 @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        -->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

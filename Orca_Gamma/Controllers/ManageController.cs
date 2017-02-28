@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
+using System.Web.Security;
 
 namespace Orca_Gamma.Controllers
 {
@@ -340,6 +341,7 @@ namespace Orca_Gamma.Controllers
         {
             return View(getCurrentUser());
         }
+
         //this is the post method for regular user account info change -Geoff
         //POST: /Manage/editUserAccount
         [HttpPost]
@@ -352,13 +354,16 @@ namespace Orca_Gamma.Controllers
 			user.FirstName   = model.FirstName;
 			user.LastName    = model.LastName;
 			user.Email       = model.Email;
-			user.UserName    = model.UserName;
+            //Don't want them to edit login UserName -DBS
+			//user.UserName    = user.UserName;
 			user.PhoneNumber = model.PhoneNumber; 
 
 			_dbContext.SaveChanges();
 
             if (ModelState.IsValid)
             {
+                //FormsAuthentication.SignOut();
+                //Response.Redirect("login.aspx?mode=logout");
                 return RedirectToAction("Index");
             }
             return View(model);
