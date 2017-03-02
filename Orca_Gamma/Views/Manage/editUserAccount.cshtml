@@ -1,10 +1,10 @@
 ﻿@model Orca_Gamma.Models.ApplicationUser
 
 @{
-    ViewBag.Title = "editUserAccount";
+    ViewBag.Title = "EditAccountInfo";
 }
 
-<h2>editUserAccount</h2>
+<h2>Edit Account Information</h2>
 
 
 @using (Html.BeginForm())
@@ -16,7 +16,7 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
-        @*passing back the value for what was already in there*@
+        @*passing back the value for what was already in there -Geoff*@
         @Html.HiddenFor(model => model.IsDisabled)
         @Html.HiddenFor(model => model.EmailConfirmed)
         @Html.HiddenFor(model => model.PasswordHash)
