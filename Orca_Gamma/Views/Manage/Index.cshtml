@@ -47,6 +47,14 @@
             @Html.ActionLink("Edit Account Information", "editUserAccount")
         </p>
         <!-- Taking out the two factor authentication and whatnot -DBS
+        @if()
+        <p>
+            @*Button for creating/editing expert account info
+                Controller Method: editExpertAccount
+                Controller Class: ManageController
+                 -Geoff*@
+            @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+        </p>
         @if (Model.TwoFactor)
         {
             <form method="post" action="/Manage/DisableTFA">

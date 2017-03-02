@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
 using System.Web.Security;
+using Orca_Gamma.Models.DatabaseModels;
 
 namespace Orca_Gamma.Controllers
 {
@@ -369,7 +370,36 @@ namespace Orca_Gamma.Controllers
             return View(model);
         }
 
-		public ApplicationUser getCurrentUser() {
+        //needs to check if they already have expert information or not
+        //GET: /Manage/editExpertAccount
+        public ActionResult editExpertAccount()
+        {
+            //check goes here
+            //if there is not one create one now and leave it null for the next step
+            // get current user
+            String id = getCurrentUser().Id;
+            Expert expert = _dbContext.Experts.Find(id);
+
+            if (expert == null)
+            {
+                expert = new Expert();
+                expert.User = getCurrentUser();  // sets the relation between expert and user
+            }
+
+            return View();
+        }
+
+        //POST: /Manager/editExpertAcount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult editExpertAccount(Expert model)
+        {
+
+
+            return View(model);
+        }
+
+        public ApplicationUser getCurrentUser() {
 			return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
 		}
 #region Helpers
