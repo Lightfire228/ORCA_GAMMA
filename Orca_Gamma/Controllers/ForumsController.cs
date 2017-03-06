@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
+using Orca_Gamma.Models.DatabaseModels;
 using System.Net;
 using System.Data;
 using System.Data.Entity.Infrastructure;
@@ -12,26 +13,26 @@ using Microsoft.AspNet.Identity;
 
 namespace Orca_Gamma.Controllers
 {
-    public class ForumController : Controller
+    public class ForumsController : Controller
     {
-        //Get: Post
+ 
         private ApplicationDbContext _dbContext;
 
-        public ForumController()
+        public ForumsController()
         {
             _dbContext = new ApplicationDbContext();
         }
 
-        // Get: Message
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
-            if (searchString !=null)
+            if (searchString != null)
             {
                 page = 1;
-            } else
+            }
+            else
             {
                 searchString = currentFilter;
             }
@@ -58,6 +59,36 @@ namespace Orca_Gamma.Controllers
             return View(threads.ToPagedList(pageNumber, pageSize));
         }
 
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(ForumThread model)
+        {
+            var post = new ForumThread
+            {
+                CreatedBy = model.CreatedBy,
+                Subject = model.Subject,
+                FirstPost = model.FirstPost,
+                Date = model.Date
+            };
+
+            if (ModelState.IsValid)
+            {
+                _dbContext.ForumThreads.Add(post);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(post);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _dbContext.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

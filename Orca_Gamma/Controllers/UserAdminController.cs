@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using PagedList;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
@@ -16,8 +17,12 @@ namespace Orca_Gamma.Controllers
     [Authorize(Roles = "Admin")]
     public class UsersAdminController : Controller
     {
+
+        private ApplicationDbContext _dbContext;
+
         public UsersAdminController()
         {
+            _dbContext = new ApplicationDbContext();
         }
 
         public UsersAdminController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
@@ -54,9 +59,60 @@ namespace Orca_Gamma.Controllers
 
         //
         // GET: /Users/
-        public async Task<ActionResult> Index()
+        public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return View(await UserManager.Users.ToListAsync());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "UserName" : "";
+            ViewBag.NameSortParm2 = sortOrder == "FirstName" ? "Firstname" : "Firstname";
+            ViewBag.NameSortParm2 = sortOrder == "LastName" ? "Lastname" : "Lastname";
+            ViewBag.NameSortParm3 = sortOrder == "Email" ? "Email" : "Email";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewBag.CurrentFilter = searchString;
+            var users = from t in _dbContext.Users
+                           select t;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                users = users.Where(s => s.LastName.Contains(searchString) || s.FirstName.Contains(searchString)
+                || s.UserName.Contains(searchString) || s.Email.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "UserName":
+                    users = users.OrderByDescending(s => s.UserName);
+                    break;
+                case "FirstName":
+                    users = users.OrderByDescending(s => s.FirstName);
+                    break;
+                case "FirstName2":
+                    users = users.OrderBy(s => s.FirstName);
+                    break;
+                case "LastName":
+                    users = users.OrderByDescending(s => s.LastName);
+                    break;
+                case "LastName2":
+                    users = users.OrderBy(s => s.LastName);
+                    break;
+                case "Email":
+                    users = users.OrderByDescending(s => s.Email);
+                    break;
+                case "Email2":
+                    users = users.OrderBy(s => s.Email);
+                    break;
+                default:
+                    users = users.OrderBy(s => s.UserName);
+                    break;
+            }
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+            return View(users.ToPagedList(pageNumber, pageSize));
         }
 
         //
