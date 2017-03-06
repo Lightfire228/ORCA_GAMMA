@@ -141,6 +141,9 @@ namespace Orca_Gamma.Controllers
                 Id = user.Id,
                 Email = user.Email,
                 UserName = user.UserName,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				PhoneNumber = user.PhoneNumber,
                 RolesList = RoleManager.Roles.ToList().Select(x => new SelectListItem()
                 {
                     Selected = userRoles.Contains(x.Name),
@@ -154,7 +157,7 @@ namespace Orca_Gamma.Controllers
         // POST: /Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Email, UserName,Id")] EditUserViewModel editUser, params string[] selectedRole)
+        public async Task<ActionResult> Edit([Bind(Include = "Email, UserName, Id, FirstName, LastName, PhoneNumber")] EditUserViewModel editUser, params string[] selectedRole)
         {
             if (ModelState.IsValid)
             {
@@ -166,8 +169,11 @@ namespace Orca_Gamma.Controllers
 
                 user.UserName = editUser.UserName;
                 user.Email = editUser.Email;
+				user.FirstName = editUser.FirstName;
+				user.LastName = editUser.LastName;
+				user.PhoneNumber = editUser.PhoneNumber;
 
-                var userRoles = await UserManager.GetRolesAsync(user.Id);
+				var userRoles = await UserManager.GetRolesAsync(user.Id);
 
                 selectedRole = selectedRole ?? new string[] { };
 

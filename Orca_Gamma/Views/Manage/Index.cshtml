@@ -17,6 +17,8 @@
                 @Html.ActionLink("Pick a password", "SetPassword")
             }
         </p>
+
+        <!-- Taking out the phone number verification portion -DBS
         <p>
             Phone Number: @(Model.PhoneNumber ?? "None") [
             @if (Model.PhoneNumber != null)
@@ -35,6 +37,16 @@
             External Logins: @Model.Logins.Count
             @Html.ActionLink("[Manage]", "ManageLogins")
         </p>
+        -->
+        <p>
+            @*This is where the edit account button will go
+                Controller method it calls: editUserAccount
+                Controller class is comes from: ManageController
+                -Geoff
+                *@
+            @Html.ActionLink("Edit Account Information", "editUserAccount")
+        </p>
+        <!-- Taking out the two factor authentication and whatnot -DBS
         @if (Model.TwoFactor)
         {
             <form method="post" action="/Manage/DisableTFA">
@@ -71,5 +83,6 @@
                 </p>
             </form>
         }
+        -->
     </div>
 </div>

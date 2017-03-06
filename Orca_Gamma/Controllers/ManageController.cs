@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
+using System.Web.Security;
 
 namespace Orca_Gamma.Controllers
 {
@@ -15,6 +16,7 @@ namespace Orca_Gamma.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+		private ApplicationDbContext _dbContext = new ApplicationDbContext();
 
         public ManageController()
         {
@@ -333,6 +335,43 @@ namespace Orca_Gamma.Controllers
             base.Dispose(disposing);
         }
 
+        //this is just for regular user acount informaiton change -Geoff
+        //GET: //Manage/editUserAccount
+        public ActionResult editUserAccount()
+        {
+            return View(getCurrentUser());
+        }
+
+        //this is the post method for regular user account info change -Geoff
+        //POST: /Manage/editUserAccount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult editUserAccount(ApplicationUser model)
+        {
+			String id = model.Id;
+			ApplicationUser user = _dbContext.Users.Find(model.Id);
+
+			user.FirstName   = model.FirstName;
+			user.LastName    = model.LastName;
+			user.Email       = model.Email;
+            //Don't want them to edit login UserName -DBS
+			//user.UserName    = user.UserName;
+			user.PhoneNumber = model.PhoneNumber; 
+
+			_dbContext.SaveChanges();
+
+            if (ModelState.IsValid)
+            {
+                //FormsAuthentication.SignOut();
+                //Response.Redirect("login.aspx?mode=logout");
+                return RedirectToAction("Index");
+            }
+            return View(model);
+        }
+
+		public ApplicationUser getCurrentUser() {
+			return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+		}
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -386,4 +425,5 @@ namespace Orca_Gamma.Controllers
 
 #endregion
     }
+
 }

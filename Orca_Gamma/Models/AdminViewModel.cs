@@ -26,6 +26,21 @@ namespace Orca_Gamma.Models
         //[EmailAddress]
         public string UserName { get; set; }
 
-        public IEnumerable<SelectListItem> RolesList { get; set; }
+		[Display(Name = "First Name")]
+		public string FirstName {
+			get; set;
+		}
+
+		[Display(Name = "Last Name")]
+		public string LastName {
+			get; set;
+		}
+
+		[Display(Name = "Phone Number")]
+		public string PhoneNumber {
+			get; set;
+		}
+
+		public IEnumerable<SelectListItem> RolesList { get; set; }
     }
 }
