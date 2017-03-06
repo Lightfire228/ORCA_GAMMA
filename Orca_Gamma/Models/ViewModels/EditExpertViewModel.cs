@@ -23,7 +23,7 @@ namespace Orca_Gamma.Models
         //    get; set;
         //}
 
-        public Catagory SelectedCatagory
+        public int SelectedCatagory
         {
             get; set;
         }

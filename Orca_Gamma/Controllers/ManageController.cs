@@ -381,8 +381,12 @@ namespace Orca_Gamma.Controllers
 
             if (expert == null)
             {
+                //MAY WANT TO CLEAN UP CREATING BOGUS CATEGORY DATA -Geoff
                 expert = new Expert();
                 expert.User = getCurrentUser();  // sets the relation between expert and user
+                expert.Catagory = _dbContext.Catagories.First();
+                _dbContext.Experts.Add(expert);
+                _dbContext.SaveChanges();
             }
 
             return View(new EditExpertViewModel {
@@ -399,7 +403,8 @@ namespace Orca_Gamma.Controllers
         {
             String id = getCurrentUser().Id;
             Expert expert = _dbContext.Experts.Find(id);
-            //expert.CatagoryId = model.SelectedCatagory;
+            expert.Catagory = _dbContext.Catagories.Find(model.SelectedCatagory);
+            _dbContext.SaveChanges();
 
             if (ModelState.IsValid)
             {

@@ -21,7 +21,7 @@
         <div class="form-group">
             @*label here*@
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.SelectedCatagory.Id, new SelectList(Model.Categories, "Name", "ID", Model.SelectedCatagory.Id))
+                @Html.DropDownListFor(model => model.SelectedCatagory, new SelectList(Model.Categories,"Id", "Name"))
             </div>
         </div>
 
