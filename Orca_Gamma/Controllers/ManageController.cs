@@ -9,6 +9,7 @@ using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
 using System.Web.Security;
 using Orca_Gamma.Models.DatabaseModels;
+using System.Collections.Generic;
 
 namespace Orca_Gamma.Controllers
 {
@@ -363,8 +364,6 @@ namespace Orca_Gamma.Controllers
 
             if (ModelState.IsValid)
             {
-                //FormsAuthentication.SignOut();
-                //Response.Redirect("login.aspx?mode=logout");
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -386,15 +385,26 @@ namespace Orca_Gamma.Controllers
                 expert.User = getCurrentUser();  // sets the relation between expert and user
             }
 
-            return View();
+            return View(new EditExpertViewModel {
+                Expert = expert,
+                Categories = _dbContext.Catagories.ToList()
+
+            });
         }
 
         //POST: /Manager/editExpertAcount
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult editExpertAccount(Expert model)
+        public ActionResult editExpertAccount(EditExpertViewModel model)
         {
+            String id = getCurrentUser().Id;
+            Expert expert = _dbContext.Experts.Find(id);
+            //expert.CatagoryId = model.SelectedCatagory;
 
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Index");
+            }
 
             return View(model);
         }
