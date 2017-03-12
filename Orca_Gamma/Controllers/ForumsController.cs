@@ -10,6 +10,8 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using System.Web;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace Orca_Gamma.Controllers
 {
@@ -41,7 +43,7 @@ namespace Orca_Gamma.Controllers
             ViewBag.CurrentFilter = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
-
+                threads = threads.Where(t => t.Subject.Contains(searchString));
             }
             switch (sortOrder)
             {
@@ -59,27 +61,78 @@ namespace Orca_Gamma.Controllers
             return View(threads.ToPagedList(pageNumber, pageSize));
         }
 
+        public ApplicationUser getCurrentUser()
+        {
+            return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+        }
+
+        private ApplicationUserManager _userManager;
+        protected ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? (_userManager =
+           HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>());
+            }
+        }
+
+        //GET: Forums/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(ForumThread model)
         {
+            //ApplicationUser user = getCurrentUser();
+ 
             var post = new ForumThread
             {
-                CreatedBy = model.CreatedBy,
+                CreatedBy = User.Identity.GetUserId().ToString(),
                 Subject = model.Subject,
                 FirstPost = model.FirstPost,
-                Date = model.Date
-            };
+                Date = DateTime.Now
 
-            if (ModelState.IsValid)
+            };
+                    
+            try
             {
-                _dbContext.ForumThreads.Add(post);
-                _dbContext.SaveChanges();
-                return RedirectToAction("Index");
+                if (!ModelState.IsValid)
+                {
+                    _dbContext.ForumThreads.Add(post);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (RetryLimitExceededException /* dex */)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
 
             return View(post);
         }
+
+        public ActionResult Details(int? id)
+        {
+            if(id ==null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            ApplicationUser user = _dbContext.Users.Find(id);
+
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(user);
+        }
+
+
 
         protected override void Dispose(bool disposing)
         {
