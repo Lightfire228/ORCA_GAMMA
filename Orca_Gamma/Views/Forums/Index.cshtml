@@ -1,0 +1,53 @@
+﻿@model PagedList.IPagedList<Orca_Gamma.Models.DatabaseModels.ForumThread>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Forums";
+}
+
+<h2>Expert Forums</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+@using (Html.BeginForm("Index", "Forums", FormMethod.Get))
+{
+    <p>
+        Search Topics: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="search" />
+    </p>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Topic", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            Replies
+        </th>
+        <th>
+            Last Post
+        </th>
+    </tr>
+
+
+@foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Subject, "Details", new { id = item.Id })
+           <br />
+                by @Html.DisplayFor(modelItem => item.User.UserName) on @Html.DisplayFor(modelItem => item.Date)
+            </td>
+        </tr>
+    }
+</table>
+
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+
