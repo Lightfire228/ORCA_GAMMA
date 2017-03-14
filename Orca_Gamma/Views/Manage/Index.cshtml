@@ -44,9 +44,19 @@
                 Controller class is comes from: ManageController
                 -Geoff
                 *@
-            @Html.ActionLink("Edit Account Information", "editUserAccount")
+                @Html.ActionLink("Edit Account Information", "editUserAccount")
         </p>
-        <!-- Taking out the two factor authentication and whatnot -DBS
+        <!-- Taking out the two factor authentication and whatnot -DBS -->
+
+        <p>
+            @*Button for creating/editing expert account info
+                Controller Method: editExpertAccount
+                Controller Class: ManageController
+                 -Geoff*@
+                @if (Model.IsExpert) {
+                    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+                }
+        </p>
         @if (Model.TwoFactor)
         {
             <form method="post" action="/Manage/DisableTFA">
