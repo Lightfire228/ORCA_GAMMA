@@ -8,6 +8,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Orca_Gamma.Models;
 using System.Web.Security;
+using Orca_Gamma.Models.DatabaseModels;
+using System.Collections.Generic;
 
 namespace Orca_Gamma.Controllers
 {
@@ -72,7 +74,8 @@ namespace Orca_Gamma.Controllers
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
+				IsExpert = UserManager.IsInRole(userId, "Expert")
             };
             return View(model);
         }
@@ -362,16 +365,60 @@ namespace Orca_Gamma.Controllers
 
             if (ModelState.IsValid)
             {
-                //FormsAuthentication.SignOut();
-                //Response.Redirect("login.aspx?mode=logout");
                 return RedirectToAction("Index");
             }
             return View(model);
         }
 
-		public ApplicationUser getCurrentUser() {
+        //needs to check if they already have expert information or not
+        //GET: /Manage/editExpertAccount
+        public ActionResult editExpertAccount()
+        {
+            //check goes here
+            //if there is not one create one now and leave it null for the next step
+            // get current user
+            String id = getCurrentUser().Id;
+            Expert expert = _dbContext.Experts.Find(id);
+
+            if (expert == null)
+            {
+                //MAY WANT TO CLEAN UP CREATING BOGUS CATEGORY DATA -Geoff
+                expert = new Expert();
+                expert.User = getCurrentUser();  // sets the relation between expert and user
+                expert.Catagory = _dbContext.Catagories.First();
+                _dbContext.Experts.Add(expert);
+                _dbContext.SaveChanges();
+            }
+
+            return View(new EditExpertViewModel {
+                Expert = expert,
+                Categories = _dbContext.Catagories.ToList()
+
+            });
+        }
+
+        //POST: /Manager/editExpertAcount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult editExpertAccount(EditExpertViewModel model)
+        {
+            String id = getCurrentUser().Id;
+            Expert expert = _dbContext.Experts.Find(id);
+            expert.Catagory = _dbContext.Catagories.Find(model.SelectedCatagory);
+            _dbContext.SaveChanges();
+
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+        public ApplicationUser getCurrentUser() {
 			return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
 		}
+
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";

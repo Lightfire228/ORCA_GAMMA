@@ -245,6 +245,7 @@
     <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\EditExpertViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -322,6 +323,7 @@
     <Content Include="Views\Account\DisplayEmail.cshtml" />
     <Content Include="Views\Manage\editUserAccount.cshtml" />
     <Content Include="Views\Links\Index.cshtml" />
+    <Content Include="Views\Manage\editExpertAccount.cshtml" />
     <Content Include="Views\Forums\Index.cshtml" />
     <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Forums\Create.cshtml" />

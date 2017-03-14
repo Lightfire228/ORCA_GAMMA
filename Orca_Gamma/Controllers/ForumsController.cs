@@ -87,11 +87,11 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ForumThread model)
         {
-            //ApplicationUser user = getCurrentUser();
- 
-            var thread = new ForumThread
+			ApplicationUser user = getCurrentUser();
+
+			var post = new ForumThread
             {
-                CreatedBy = User.Identity.GetUserId().ToString(),
+				User = user, // This is how you do foreign keys - Cass
                 Subject = model.Subject,
                 FirstPost = model.FirstPost,
                 Date = DateTime.Now
@@ -102,41 +102,7 @@ namespace Orca_Gamma.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    _dbContext.ForumThreads.Add(thread);
-                    _dbContext.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
-            catch (RetryLimitExceededException /* dex */)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            }
-
-            return View(thread);
-        }
-
-
-        public ActionResult Details()
-        {
-            return View();
-        }
-
-        public ActionResult Reply(ThreadMessagePost model)
-        {
-            var post = new ThreadMessagePost
-            {
-                CreatedBy = User.Identity.GetUserId(),
-                PartOf = model.Thread.Id,
-                Body = model.Body,
-                Date = DateTime.Now
-            };
-
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    _dbContext.ThreadMessagePosts.Add(post);
+                    _dbContext.ForumThreads.Add(post);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
@@ -148,6 +114,26 @@ namespace Orca_Gamma.Controllers
             }
 
             return View(post);
+        }
+
+        public ActionResult Details(int? id)
+        {
+            if(id ==null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+			// You don't want the user, you want the post they have clicked on - Cass
+			var post = _dbContext.ForumThreads.Find(id);
+
+            if (post == null)
+            {
+                return HttpNotFound();
+            }
+
+			// You may want to change the model to a custom view model
+			// if you want the "Details" view to take user input - Cass
+			return View(post);
         }
 
 
