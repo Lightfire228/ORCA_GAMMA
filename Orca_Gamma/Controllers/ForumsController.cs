@@ -87,11 +87,11 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ForumThread model)
         {
-            //ApplicationUser user = getCurrentUser();
- 
-            var post = new ForumThread
+			ApplicationUser user = getCurrentUser();
+
+			var post = new ForumThread
             {
-                CreatedBy = User.Identity.GetUserId().ToString(),
+				User = user, // This is how you do foreign keys - Cass
                 Subject = model.Subject,
                 FirstPost = model.FirstPost,
                 Date = DateTime.Now
@@ -122,14 +122,18 @@ namespace Orca_Gamma.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ApplicationUser user = _dbContext.Users.Find(id);
 
-            if (user == null)
+			// You don't want the user, you want the post they have clicked on - Cass
+			var post = _dbContext.ForumThreads.Find(id);
+
+            if (post == null)
             {
                 return HttpNotFound();
             }
 
-            return View(user);
+			// You may want to change the model to a custom view model
+			// if you want the "Details" view to take user input - Cass
+			return View(post);
         }
 
 
