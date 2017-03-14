@@ -89,7 +89,7 @@ namespace Orca_Gamma.Controllers
         {
             //ApplicationUser user = getCurrentUser();
  
-            var post = new ForumThread
+            var thread = new ForumThread
             {
                 CreatedBy = User.Identity.GetUserId().ToString(),
                 Subject = model.Subject,
@@ -102,7 +102,41 @@ namespace Orca_Gamma.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    _dbContext.ForumThreads.Add(post);
+                    _dbContext.ForumThreads.Add(thread);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (RetryLimitExceededException /* dex */)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            }
+
+            return View(thread);
+        }
+
+
+        public ActionResult Details()
+        {
+            return View();
+        }
+
+        public ActionResult Reply(ThreadMessagePost model)
+        {
+            var post = new ThreadMessagePost
+            {
+                CreatedBy = User.Identity.GetUserId(),
+                PartOf = model.Thread.Id,
+                Body = model.Body,
+                Date = DateTime.Now
+            };
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _dbContext.ThreadMessagePosts.Add(post);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
@@ -114,22 +148,6 @@ namespace Orca_Gamma.Controllers
             }
 
             return View(post);
-        }
-
-        public ActionResult Details(int? id)
-        {
-            if(id ==null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ApplicationUser user = _dbContext.Users.Find(id);
-
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-
-            return View(user);
         }
 
 

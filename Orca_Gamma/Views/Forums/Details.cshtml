@@ -1,8 +1,35 @@
-﻿
+﻿@model PagedList.IPagedList<Orca_Gamma.Models.DatabaseModels.ThreadMessagePost>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 @{
     ViewBag.Title = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Details</h2>
+<p>
+    @Html.ActionLink("Reply", "Create")
+</p>
+<table class="table">
+    @foreach (var item in Model)
+    {
+    @Html.DisplayFor(modelItem => item.Thread.FirstPost)
+    }
+</table>
+<table class="table">
+@foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Body)
+           <br />
+                by @Html.DisplayFor(modelItem => item.User.UserName) on @Html.DisplayFor(modelItem => item.Date)
+            </td>
+        </tr>
+    }
+</table>
 
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
