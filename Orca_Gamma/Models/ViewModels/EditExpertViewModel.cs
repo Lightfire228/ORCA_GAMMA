@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Orca_Gamma.Models.DatabaseModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orca_Gamma.Models
 {
@@ -18,11 +19,7 @@ namespace Orca_Gamma.Models
             get; set;
         }
 
-        //public Dictionary<string, string> Categories
-        //{
-        //    get; set;
-        //}
-
+		[Display(Name = "Select your Catagory")]
         public int SelectedCatagory
         {
             get; set;

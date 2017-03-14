@@ -44,7 +44,7 @@
                 Controller class is comes from: ManageController
                 -Geoff
                 *@
-            @Html.ActionLink("Edit Account Information", "editUserAccount")
+                @Html.ActionLink("Edit Account Information", "editUserAccount")
         </p>
         <!-- Taking out the two factor authentication and whatnot -DBS -->
 
@@ -53,7 +53,9 @@
                 Controller Method: editExpertAccount
                 Controller Class: ManageController
                  -Geoff*@
-            @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+                @if (Model.IsExpert) {
+                    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+                }
         </p>
         @if (Model.TwoFactor)
         {

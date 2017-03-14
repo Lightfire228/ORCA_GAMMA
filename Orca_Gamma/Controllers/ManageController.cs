@@ -74,7 +74,8 @@ namespace Orca_Gamma.Controllers
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
+				IsExpert = UserManager.IsInRole(userId, "Expert")
             };
             return View(model);
         }
@@ -417,6 +418,7 @@ namespace Orca_Gamma.Controllers
         public ApplicationUser getCurrentUser() {
 			return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
 		}
+
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
