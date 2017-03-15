@@ -13,6 +13,7 @@ namespace Orca_Gamma.Models.DatabaseModels {
 		}
 
 		[Required]
+		[Display(Name = "Category")]
 		public String Name {
 			get; set;
 		}
