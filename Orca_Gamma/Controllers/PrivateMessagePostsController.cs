@@ -59,12 +59,27 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(PrivateMessagePost model)
         {
+
+			// For David - Example adding PM user list
+			//IEnumerable<ApplicationUser> test = db.Users.ToList();
+			//var tempPM = db.PrivateMessages.First();
+
+			//foreach (var testUser in test) {
+			//	var temp = new PrivateMessageBetween {
+			//		User = testUser,
+			//		PrivateMessage = tempPM
+			//	};
+
+			//	db.PrivateMessagesBetween.Add(temp);
+			//}
+
+			//db.SaveChanges();
+
             ApplicationUser user = getCurrentUser();
             String currentUserId = User.Identity.GetUserId();
 
             var initial = new PrivateMessage
             {
-                UserId = currentUserId,
                 Date = DateTime.Now,
                 Subject = model.PrivateMessage.Subject,
                 IsDeleted = false,
@@ -73,8 +88,6 @@ namespace Orca_Gamma.Controllers
 
             var post = new PrivateMessagePost
             {
-                CreatedBy = user.FirstName,
-                PartOf = initial.Id,
                 Body = model.Body,
                 User = user,
                 PrivateMessage = initial
@@ -82,21 +95,19 @@ namespace Orca_Gamma.Controllers
 
             var between = new PrivateMessageBetween
             {
-                PrivateMessageId = post.Id,
-                UserId = currentUserId,
                 User = user,
                 PrivateMessage = initial
             };
 
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 db.PrivateMessages.Add(initial);
                 db.PrivateMessagePosts.Add(post);
                 db.SaveChanges();
                 return RedirectToAction("Index");
-            }
+            //}
             
-            return View(post);
+            //return View(post);
         }
 
         // GET: PrivateMessagePosts/Edit/5
