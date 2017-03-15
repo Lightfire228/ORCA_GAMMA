@@ -328,6 +328,7 @@
     <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Forums\Create.cshtml" />
     <Content Include="Views\Forums\Details.cshtml" />
+    <Content Include="Views\Forums\Reply.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

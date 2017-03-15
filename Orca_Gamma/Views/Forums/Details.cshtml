@@ -7,7 +7,7 @@
 
 <h2>Details</h2>
 <p>
-    @Html.ActionLink("Reply", "Create")
+    @Html.ActionLink("Reply", "Reply")
 </p>
 <table class="table">
     @foreach (var item in Model)
@@ -27,7 +27,9 @@
         </tr>
     }
 </table>
-
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 

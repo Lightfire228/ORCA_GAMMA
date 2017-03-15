@@ -66,16 +66,6 @@ namespace Orca_Gamma.Controllers
             return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
-        private ApplicationUserManager _userManager;
-        protected ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? (_userManager =
-           HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>());
-            }
-        }
-
         //GET: Forums/Create
         public ActionResult Create()
         {
@@ -116,24 +106,56 @@ namespace Orca_Gamma.Controllers
             return View(post);
         }
 
-        public ActionResult Details(int? id)
+        public ViewResult Details(int? page)
         {
-            if(id ==null)
+            var threads = from s in _dbContext.ThreadMessagePosts
+                          select s;
+            int pageSize = 20;
+            int pageNumber = (page ?? 1);
+
+            return View(threads.ToPagedList(pageNumber, pageSize));
+        }
+
+        //GET: Forums/Reply
+        public ActionResult Reply()
+        {
+            return View();
+        }
+
+        //POST: Forums/Reply
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reply(ThreadMessagePost model)
+        {
+
+            ApplicationUser user = getCurrentUser();
+            ForumThread thread = new ForumThread();
+            var post = new ThreadMessagePost
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                CreatedBy = User.Identity.GetUserId(),
+                Thread = thread,
+                Body = model.Body,
+                Date = DateTime.Now
+            };
+
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    _dbContext.ThreadMessagePosts.Add(post);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (RetryLimitExceededException /* dex */)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
 
-			// You don't want the user, you want the post they have clicked on - Cass
-			var post = _dbContext.ForumThreads.Find(id);
 
-            if (post == null)
-            {
-                return HttpNotFound();
-            }
 
-			// You may want to change the model to a custom view model
-			// if you want the "Details" view to take user input - Cass
-			return View(post);
+            return View(post);
         }
 
 
