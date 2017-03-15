@@ -6,6 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using Orca_Gamma.Models.DatabaseModels;
 using System.ComponentModel.DataAnnotations;
+using System.Collections;
 
 namespace Orca_Gamma.Models
 {
@@ -91,21 +92,22 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
-		public DbSet<Project> Projects {
+		public DbSet<Project> Project {
 			get; set;
 		}
 
 		public DbSet<ThreadMessagePost> ThreadMessagePosts {
 			get; set;
 		}
+        public IEnumerable ApplicationUsers { get; internal set; }
 
-		/*
+        /*
 		 * Required, these three tables have cyclic references that are non null
 		 * So if a single user is deleted, it may cause another user to be deleted
 		 * and the database does not like a single delete to cascade onto the same
 		 * table twice
-		 */ 
-		protected override void OnModelCreating(DbModelBuilder modelBuilder) {
+		 */
+        protected override void OnModelCreating(DbModelBuilder modelBuilder) {
 			base.OnModelCreating(modelBuilder);
 
 			modelBuilder.Entity<Project>()
