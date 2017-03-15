@@ -31,6 +31,8 @@ namespace Orca_Gamma.Models.DatabaseModels {
 		public virtual ApplicationUser User {
 			get; set;
 		}
-
+       
 	}
+   
+    
 }
