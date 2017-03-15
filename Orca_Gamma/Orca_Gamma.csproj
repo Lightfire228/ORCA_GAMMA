@@ -231,7 +231,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\AdminViewModel.cs" />
+    <Compile Include="Models\ViewModels\AdminViewModel.cs" />
     <Compile Include="Models\DatabaseModels\Catagory.cs" />
     <Compile Include="Models\DatabaseModels\Collaborator.cs" />
     <Compile Include="Models\DatabaseModels\Expert.cs" />
@@ -243,11 +243,11 @@
     <Compile Include="Models\DatabaseModels\PrivateMessagePost.cs" />
     <Compile Include="Models\DatabaseModels\Project.cs" />
     <Compile Include="Models\DatabaseModels\ThreadMessagePost.cs" />
-    <Compile Include="Models\Feedback.cs" />
+    <Compile Include="Models\ViewModels\Feedback.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\EditExpertViewModel.cs" />
-    <Compile Include="Models\ProjectViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
