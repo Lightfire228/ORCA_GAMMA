@@ -15,6 +15,8 @@ namespace Orca_Gamma.Controllers
 {
     public class PrivateMessagePostsController : Controller
     {
+
+		
         private ApplicationDbContext db = new ApplicationDbContext();
 
         public ApplicationUser getCurrentUser()
@@ -22,15 +24,17 @@ namespace Orca_Gamma.Controllers
             return db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
-        // GET: PrivateMessagePosts
+		// GET: PrivateMessagePosts
+		[Authorize]
         public ActionResult Index()
         {
             var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
             return View(privateMessagePosts.ToList());
         }
 
-        // GET: PrivateMessagePosts/Details/5
-        public ActionResult Details(int? id)
+		// GET: PrivateMessagePosts/Details/5
+		[Authorize]
+		public ActionResult Details(int? id)
         {
             if (id == null)
             {
@@ -44,8 +48,9 @@ namespace Orca_Gamma.Controllers
             return View(privateMessagePost);
         }
 
-        // GET: PrivateMessagePosts/Create
-        public ActionResult Create()
+		// GET: PrivateMessagePosts/Create
+		[Authorize]
+		public ActionResult Create()
         {
             //ViewBag.PartOf = new SelectList(db.PrivateMessages, "Id", "UserId");
             //ViewBag.CreatedBy = new SelectList(db.ApplicationUsers, "Id", "FirstName");
@@ -110,8 +115,9 @@ namespace Orca_Gamma.Controllers
             //return View(post);
         }
 
-        // GET: PrivateMessagePosts/Edit/5
-        public ActionResult Edit(int? id)
+		// GET: PrivateMessagePosts/Edit/5
+		[Authorize]
+		public ActionResult Edit(int? id)
         {
             if (id == null)
             {
@@ -145,8 +151,9 @@ namespace Orca_Gamma.Controllers
             return View(privateMessagePost);
         }
 
-        // GET: PrivateMessagePosts/Delete/5
-        public ActionResult Delete(int? id)
+		// GET: PrivateMessagePosts/Delete/5
+		[Authorize]
+		public ActionResult Delete(int? id)
         {
             if (id == null)
             {
@@ -163,7 +170,8 @@ namespace Orca_Gamma.Controllers
         // POST: PrivateMessagePosts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+		[Authorize]
+		public ActionResult DeleteConfirmed(int id)
         {
             PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
             db.PrivateMessagePosts.Remove(privateMessagePost);
