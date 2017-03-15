@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
+using System.Web.Security;
 
 namespace Orca_Gamma.Controllers
 {
@@ -89,7 +90,7 @@ namespace Orca_Gamma.Controllers
         {
 			ApplicationUser user = getCurrentUser();
 
-			var post = new ForumThread
+            var post = new ForumThread
             {
 				User = user, // This is how you do foreign keys - Cass
                 Subject = model.Subject,
