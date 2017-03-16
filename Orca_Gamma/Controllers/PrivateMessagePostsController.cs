@@ -28,24 +28,29 @@ namespace Orca_Gamma.Controllers
 		[Authorize]
         public ActionResult Index()
         {
-            var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
+            var privateMessagePosts = db.PrivateMessages.Include(p => p.User);
+            //var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
             return View(privateMessagePosts.ToList());
         }
 
 		// GET: PrivateMessagePosts/Details/5
 		[Authorize]
-		public ActionResult Details(int? id)
+		public ActionResult Details(int? id) //id of privatemessage
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            if (privateMessagePost == null)
+
+            //PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
+            //IEnumerable<PrivateMessagePost> list = from s in db.PrivateMessagePosts where s.Id == id select s;
+            var list = db.PrivateMessagePosts.Where(r => r.PrivateMessage.Id == id).Include(p => p.User).Include(r => r.PrivateMessage);
+
+            if (list == null)
             {
                 return HttpNotFound();
             }
-            return View(privateMessagePost);
+            return View(list);
         }
 
 		// GET: PrivateMessagePosts/Create
@@ -175,6 +180,42 @@ namespace Orca_Gamma.Controllers
         {
             PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
             db.PrivateMessagePosts.Remove(privateMessagePost);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        // GET: PrivateMessagePosts/Reply
+        [Authorize]
+        public ActionResult Reply(int? id)
+        {
+            if (id != null)
+            {
+                PrivateMessagePost temp = db.PrivateMessagePosts.Find(id);
+                var name = temp.User.FirstName;
+                ViewBag.PostTitle = temp.PrivateMessage.Subject;
+                ViewBag.User = name;
+                ViewBag.Message = temp.Body;
+            }
+            return View();
+        }
+
+        // POST: PrivateMessagePosts/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reply(int? id, PrivateMessagePost model)
+        {
+            ApplicationUser user = getCurrentUser();
+            PrivateMessagePost temp = db.PrivateMessagePosts.Find(id);
+            var post = new PrivateMessagePost
+            {
+                Body = model.Body,
+                User = user,
+                PrivateMessage = temp.PrivateMessage
+            };
+            
+            db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

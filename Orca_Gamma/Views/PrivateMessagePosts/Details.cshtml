@@ -1,42 +1,38 @@
-﻿@model Orca_Gamma.Models.DatabaseModels.PrivateMessagePost
+﻿@model IEnumerable<Orca_Gamma.Models.DatabaseModels.PrivateMessagePost>
 
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>Viewing Message</h2>
 
-<div>
-    <h4>PrivateMessagePost</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.PrivateMessage.UserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.PrivateMessage.UserId)
-        </dd>
-
-        <dt>
+<table class="table">
+    <tr>
+        <th>
             @Html.DisplayNameFor(model => model.User.FirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.FirstName)
-        </dd>
-
-        <dt>
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.Body)
-        </dt>
+        </th>
+    </tr>
 
-        <dd>
-            @Html.DisplayFor(model => model.Body)
-        </dd>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Body)
+            </td>
+            <td>
+                @Html.ActionLink("Reply", "Reply", new { id = item.Id })
+            </td>
+        </tr>
+    }
 
-    </dl>
-</div>
+</table>
+
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
