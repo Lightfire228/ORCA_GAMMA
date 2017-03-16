@@ -66,6 +66,15 @@ namespace Orca_Gamma.Controllers
             return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
+        public int GetThreadId()
+        {
+            ForumThread thread = new ForumThread();
+            return thread.Id;
+        }
+        public ForumThread GetCurrentThread()
+        {
+            return _dbContext.ForumThreads.Find(GetThreadId());
+        }
         //GET: Forums/Create
         public ActionResult Create()
         {
@@ -129,10 +138,10 @@ namespace Orca_Gamma.Controllers
         {
 
             ApplicationUser user = getCurrentUser();
-            ForumThread thread = new ForumThread();
+            ForumThread thread = GetCurrentThread();
             var post = new ThreadMessagePost
             {
-                CreatedBy = User.Identity.GetUserId(),
+                User = user,
                 Thread = thread,
                 Body = model.Body,
                 Date = DateTime.Now
