@@ -116,10 +116,11 @@ namespace Orca_Gamma.Controllers
             return View(post);
         }
 
-        public ViewResult Details(int? page)
+        public ViewResult Details(int? page, int? id)
         {
-            var threads = from s in _dbContext.ThreadMessagePosts
-                          select s;
+            var threads = _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id).Include(t => t.User).Include(t => t.Thread);
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            
             int pageSize = 20;
             int pageNumber = (page ?? 1);
 
