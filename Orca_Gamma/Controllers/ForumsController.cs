@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
+using Orca_Gamma.Models.ViewModels;
 using System.Net;
 using System.Data;
 using System.Data.Entity.Infrastructure;
@@ -13,6 +14,7 @@ using Microsoft.AspNet.Identity;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
 using System.Web.Security;
+using System.Collections.Generic;
 
 namespace Orca_Gamma.Controllers
 {
@@ -82,49 +84,143 @@ namespace Orca_Gamma.Controllers
             return View();
         }
 
+        public ForumThread GetThread(ThreadMessagePost model)
+        {
+            ApplicationUser user = getCurrentUser();
+            var post = new ForumThread
+            {
+                User = user, // This is how you do foreign keys - Cass
+                Subject = model.Thread.Subject,
+                FirstPost = model.Thread.FirstPost,
+                Date = DateTime.Now
+
+            };
+
+            return post;
+        }
+
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ForumThread model)
+        public ActionResult Create(ThreadMessagePost model)
         {
 			ApplicationUser user = getCurrentUser();
 
             var post = new ForumThread
             {
 				User = user, // This is how you do foreign keys - Cass
-                Subject = model.Subject,
-                FirstPost = model.FirstPost,
+                Subject = model.Thread.Subject,
+                FirstPost = model.Thread.FirstPost,
                 Date = DateTime.Now
 
             };
-                    
-            try
+
+            var thread = new ThreadMessagePost
             {
-                if (!ModelState.IsValid)
-                {
+                User = user,
+                Date = DateTime.Now,
+                Body = model.Body,
+                Thread = post
+            };
+                    
+            //try
+            //{
+                //if (!ModelState.IsValid)
+                //{
                     _dbContext.ForumThreads.Add(post);
+                    _dbContext.ThreadMessagePosts.Add(thread);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
-                }
-            }
-            catch (RetryLimitExceededException /* dex */)
-            {
+                //}
+            //}
+            //catch (RetryLimitExceededException /* dex */)
+            //{
                 //Log the error (uncomment dex variable name and add a line here to write a log.
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            }
+                //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            //}
 
-            return View(post);
+            //return View(post);
         }
 
-        public ViewResult Details(int? page, int? id)
-        {
-            var threads = _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id).Include(t => t.User).Include(t => t.Thread);
-            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
-            
-            int pageSize = 20;
-            int pageNumber = (page ?? 1);
+        //Get: Forums/Reply
+        //public ActionResult Reply(int? id)
+        //{
+        //    ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+        //    if (id != null)
+        //    {
 
-            return View(threads.ToPagedList(pageNumber, pageSize));
+        //    }
+        //}
+
+        //POST: Forums/Reply
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reply(ThreadMessagePost model, int? id)
+        {
+            ApplicationUser user = getCurrentUser();
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+
+            var thread = new ThreadMessagePost
+            {
+                User = user,
+                Date = DateTime.Now,
+                Body = model.Body,
+                Thread = post.Thread
+            };
+
+            //try
+            //{
+            //if (!ModelState.IsValid)
+            //{
+           // _dbContext.ForumThreads.Add(post);
+            _dbContext.ThreadMessagePosts.Add(thread);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Index");
+            //}
+            //}
+            //catch (RetryLimitExceededException /* dex */)
+            //{
+            //Log the error (uncomment dex variable name and add a line here to write a log.
+            //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            //}
+
+            //return View(post);
+        }
+
+        // GET: /Forums/Details/
+        public ActionResult Details(int? id)
+        {
+
+            //ApplicationUser user = getCurrentUser();
+            //var threads = from s in _dbContext.ThreadMessagePosts
+             //             select s;
+            //var thread = new ForumsViewModel
+            //{
+            //    User = user,
+            //    Date = DateTime.Now,
+            //    FirstPost = model.FirstPost,
+            //    Body = model.Body
+            // };
+
+
+            //int pageSize = 20;
+            //int pageNumber = (page ?? 1);
+
+            //return View(thread);
+
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            //var threads = new List<ThreadMessagePost>();
+            if (post == null)
+            {
+                return HttpNotFound();
+            }
+            //ViewBag.Threads = post;
+            //ViewBag.Threads = threads;
+            return View(post);
         }
 
         //GET: Forums/Reply
@@ -133,41 +229,41 @@ namespace Orca_Gamma.Controllers
             return View();
         }
 
-        //POST: Forums/Reply
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Reply(ThreadMessagePost model)
-        {
+        ////POST: Forums/Reply
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Reply(ThreadMessagePost model)
+        //{
 
-            ApplicationUser user = getCurrentUser();
-            ForumThread thread = GetCurrentThread();
-            var post = new ThreadMessagePost
-            {
-                User = user,
-                Thread = thread,
-                Body = model.Body,
-                Date = DateTime.Now
-            };
+        //    ApplicationUser user = getCurrentUser();
+        //    ForumThread thread = GetCurrentThread();
+        //    var post = new ThreadMessagePost
+        //    {
+        //        User = user,
+        //        Thread = thread,
+        //        Body = model.Body,
+        //        Date = DateTime.Now
+        //    };
 
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _dbContext.ThreadMessagePosts.Add(post);
-                    _dbContext.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
-            catch (RetryLimitExceededException /* dex */)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            }
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _dbContext.ThreadMessagePosts.Add(post);
+        //            _dbContext.SaveChanges();
+        //            return RedirectToAction("Index");
+        //        }
+        //    }
+        //    catch (RetryLimitExceededException /* dex */)
+        //    {
+        //        //Log the error (uncomment dex variable name and add a line here to write a log.
+        //        ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+        //    }
 
 
 
-            return View(post);
-        }
+        //    return View(post);
+        //}
 
 
 

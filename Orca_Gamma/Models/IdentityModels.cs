@@ -100,6 +100,7 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
         public IEnumerable ApplicationUsers { get; internal set; }
+       
 
         /*
 		 * Required, these three tables have cyclic references that are non null

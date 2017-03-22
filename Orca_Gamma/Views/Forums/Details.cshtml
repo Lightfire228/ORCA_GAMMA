@@ -1,6 +1,7 @@
-﻿@model PagedList.IPagedList<Orca_Gamma.Models.DatabaseModels.ThreadMessagePost>
-@using PagedList.Mvc;
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+﻿@model Orca_Gamma.Models.DatabaseModels.ThreadMessagePost
+
+@*@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />*@
 @{
     ViewBag.Title = "Details";
 }
@@ -9,11 +10,12 @@
 <p>
     @Html.ActionLink("Reply", "Reply")
 </p>
-<table class="table">
-    @foreach (var item in Model)
-    {
-    @Html.DisplayFor(modelItem => item.Thread.FirstPost)
-    }
+@*<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Thread.FirstPost)
+        </th>
+    </tr>
 </table>
 <table class="table">
 @foreach (var item in Model)
@@ -30,8 +32,65 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
-<br />
-Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+<br />*@
+@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))*@
+
+@*<div>
+    <h4></h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Thread.FirstPost)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Thread.FirstPost)
+        </dd>
+    </dl>
+</div>*@
+
+<table class="table">
+
+    
+    
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.User.UserName)
+                <br />
+                Joined on:
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col-md-9">
+                        <h3>
+                        @Html.DisplayFor(model => model.Thread.Subject)
+                        </h3>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-left text-muted">
+                            @Html.DisplayFor(model => model.Thread.Date)
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.DisplayFor(model => model.Thread.FirstPost)
+                    </div>
+                </div>
+            </td>
+        </tr>
+    
+</table>
+
+
+<p>
+   
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
