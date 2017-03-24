@@ -128,7 +128,7 @@ namespace Orca_Gamma.Controllers
                 //if (!ModelState.IsValid)
                 //{
                     _dbContext.ForumThreads.Add(post);
-                    _dbContext.ThreadMessagePosts.Add(thread);
+                    //_dbContext.ThreadMessagePosts.Add(thread);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
                 //}
@@ -142,40 +142,44 @@ namespace Orca_Gamma.Controllers
             //return View(post);
         }
 
-        //Get: Forums/Reply
-        //public ActionResult Reply(int? id)
-        //{
-        //    ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
-        //    if (id != null)
-        //    {
-
-        //    }
-        //}
-
         //POST: Forums/Reply
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Reply(ThreadMessagePost model, int? id)
+        public ActionResult Reply(int? id, ThreadMessagePost model)
         {
             ApplicationUser user = getCurrentUser();
-            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
-
-            var thread = new ThreadMessagePost
-            {
-                User = user,
-                Date = DateTime.Now,
-                Body = model.Body,
-                Thread = post.Thread
-            };
-
-            //try
+            ThreadMessagePost post3 = _dbContext.ThreadMessagePosts.Find(id);
+            ForumThread post2 = _dbContext.ForumThreads.Find(id);
+            ThreadMessagePost post = new ThreadMessagePost();
+            ForumThread post1 = new ForumThread();
+            //var post = new ForumThread
             //{
-            //if (!ModelState.IsValid)
+            //    User = user, // This is how you do foreign keys - Cass
+            //    Subject = model.Thread.Subject,
+            //    FirstPost = model.Thread.FirstPost,
+            //    Date = DateTime.Now
+
+            //};
+            //if (post.PartOf == post1.Id)
             //{
-           // _dbContext.ForumThreads.Add(post);
-            _dbContext.ThreadMessagePosts.Add(thread);
-            _dbContext.SaveChanges();
-            return RedirectToAction("Index");
+                var thread = new ThreadMessagePost
+                {
+                    User = user,
+                    Date = DateTime.Now,
+                    Body = model.Body,
+                    PartOf = post2.Id,
+                    //Thread = post3.Thread
+                };
+
+                //try
+                //{
+                //if (!ModelState.IsValid)
+                //{
+                //_dbContext.ForumThreads.Add(post);
+                _dbContext.ThreadMessagePosts.Add(thread);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            //}
             //}
             //}
             //catch (RetryLimitExceededException /* dex */)
@@ -213,6 +217,7 @@ namespace Orca_Gamma.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            //ForumThread post = _dbContext.ForumThreads.Find(id);
             //var threads = new List<ThreadMessagePost>();
             if (post == null)
             {
@@ -224,8 +229,15 @@ namespace Orca_Gamma.Controllers
         }
 
         //GET: Forums/Reply
-        public ActionResult Reply()
+        public ActionResult Reply(int? id)
         {
+            //ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            //if (id != null)
+            //{
+            //    ViewBag.Subject = post.Thread.Subject;
+            //    ViewBag.FirstPost = post.Thread.FirstPost;
+            //    ViewBag.User = post.User.UserName;
+            //}
             return View();
         }
 
