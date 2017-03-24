@@ -128,7 +128,7 @@ namespace Orca_Gamma.Controllers
                 //if (!ModelState.IsValid)
                 //{
                     _dbContext.ForumThreads.Add(post);
-                    //_dbContext.ThreadMessagePosts.Add(thread);
+                    _dbContext.ThreadMessagePosts.Add(thread);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
                 //}
@@ -165,9 +165,9 @@ namespace Orca_Gamma.Controllers
                 var thread = new ThreadMessagePost
                 {
                     User = user,
-                    Date = DateTime.Now,
+                    Thread = post2,
                     Body = model.Body,
-                    PartOf = post2.Id,
+                    Date = DateTime.Now
                     //Thread = post3.Thread
                 };
 
@@ -216,8 +216,8 @@ namespace Orca_Gamma.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
-            //ForumThread post = _dbContext.ForumThreads.Find(id);
+            //ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            ForumThread post = _dbContext.ForumThreads.Find(id);
             //var threads = new List<ThreadMessagePost>();
             if (post == null)
             {
