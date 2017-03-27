@@ -1,12 +1,10 @@
-﻿@model IEnumerable<Orca_Gamma.Models.DatabaseModels.ThreadMessagePost>
+﻿@model PagedList.IPagedList<Orca_Gamma.Models.DatabaseModels.ThreadMessagePost>
 
-@*@using PagedList.Mvc;
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />*@
-@{
-    ViewBag.Title = "Details";
-}
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
-<h2>ViewBag.Subject</h2>
+
+<h2>@ViewBag.Subject</h2>
 @*<p>
     @Html.ActionLink("Reply", "Reply", new { id = ViewBag.Id})
 </p>*@
@@ -122,6 +120,12 @@
    
     @Html.ActionLink("Back to List", "Index")
 </p>
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+        new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

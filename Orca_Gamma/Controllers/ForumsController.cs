@@ -63,7 +63,7 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            int pageSize = 20;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
 
             return View(threads.ToPagedList(pageNumber, pageSize));
@@ -138,7 +138,7 @@ namespace Orca_Gamma.Controllers
         }
 
         // GET: /Forums/Details/
-        public ViewResult Details(int? id)
+        public ViewResult Details(int? id, int? page)
         {
             var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
                        select s;
@@ -149,7 +149,10 @@ namespace Orca_Gamma.Controllers
             ViewBag.Date = post.Date;
             ViewBag.UserName = post.User.UserName;
 
-            return View(thread.ToList());
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            return View(thread.ToList().ToPagedList(pageNumber, pageSize));
         }
 
 
