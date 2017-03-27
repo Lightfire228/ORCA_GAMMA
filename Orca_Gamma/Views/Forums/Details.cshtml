@@ -1,4 +1,4 @@
-﻿@model Orca_Gamma.Models.DatabaseModels.ForumThread
+﻿@model IEnumerable<Orca_Gamma.Models.DatabaseModels.ThreadMessagePost>
 
 @*@using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />*@
@@ -6,10 +6,10 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
-<p>
-    @Html.ActionLink("Reply", "Reply")
-</p>
+<h2>ViewBag.Subject</h2>
+@*<p>
+    @Html.ActionLink("Reply", "Reply", new { id = ViewBag.Id})
+</p>*@
 @*<table class="table">
     <tr>
         <th>
@@ -57,32 +57,64 @@
     
         <tr>
             <td>
-                @Html.DisplayFor(model => model.User.UserName)
+                
+                     @ViewBag.UserName
+                
                 <br />
                 Joined:
             </td>
             <td>
                 <div class="row">
-                    <div class="col-md-9">
+                    @*<div class="col-md-9">
                         <h3>
-                        @Html.DisplayFor(model => model.Subject)
+                        @ViewBag.Subject
                         </h3>
-                    </div>
+                    </div>*@
                     <div class="col-md-3">
-                        <p class="text-left text-muted">
-                            @Html.DisplayFor(model => model.Date)
+                        <p class="text-right text-muted">
+                            @ViewBag.Date
                         </p>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-md-12">
-                        @Html.DisplayFor(model => model.FirstPost)
+                        @ViewBag.FirstPost
                     </div>
                 </div>
+                
             </td>
         </tr>
-    
+ 
+    @foreach (var item in Model)
+    { 
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.UserName)
+            <br />
+            Joined:
+        </td>
+        <td>
+            <div class="row">
+                <div class="col-md-3">
+                    <p class="text-left text-muted">
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </p>
+                </div>
+            </div>
+         <td>
+            <div class="row">
+                 <div class="col-md-12">
+                     @Html.DisplayFor(modelItem => item.Body)
+                 </div>
+             </div>
+             
+        </td>
+        <td>
+            @Html.ActionLink("Reply", "Reply", new { id = item.Id})
+        </td>
+    </tr>
+    }
 </table>
 
 

@@ -4,7 +4,9 @@
 }
 
 <h2>Create Post</h2>
-
+@ViewBag.Subject
+@ViewBag.FirstPost
+@ViewBag.UserName
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()

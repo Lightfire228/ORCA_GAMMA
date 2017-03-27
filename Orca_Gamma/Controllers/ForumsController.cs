@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
-using Orca_Gamma.Models.ViewModels;
 using System.Net;
 using System.Data;
 using System.Data.Entity.Infrastructure;
@@ -27,6 +26,12 @@ namespace Orca_Gamma.Controllers
         {
             _dbContext = new ApplicationDbContext();
         }
+
+        public ApplicationUser getCurrentUser()
+        {
+            return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+        }
+
 
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
@@ -64,63 +69,25 @@ namespace Orca_Gamma.Controllers
             return View(threads.ToPagedList(pageNumber, pageSize));
         }
 
-        public ApplicationUser getCurrentUser()
-        {
-            return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
-        }
-
-        public int GetThreadId()
-        {
-            ForumThread thread = new ForumThread();
-            return thread.Id;
-        }
-        public ForumThread GetCurrentThread()
-        {
-            return _dbContext.ForumThreads.Find(GetThreadId());
-        }
         //GET: Forums/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        public ForumThread GetThread(ThreadMessagePost model)
-        {
-            ApplicationUser user = getCurrentUser();
-            var post = new ForumThread
-            {
-                User = user, // This is how you do foreign keys - Cass
-                Subject = model.Thread.Subject,
-                FirstPost = model.Thread.FirstPost,
-                Date = DateTime.Now
-
-            };
-
-            return post;
-        }
-
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ThreadMessagePost model)
+        public ActionResult Create(ForumThread model)
         {
 			ApplicationUser user = getCurrentUser();
 
             var post = new ForumThread
             {
 				User = user, // This is how you do foreign keys - Cass
-                Subject = model.Thread.Subject,
-                FirstPost = model.Thread.FirstPost,
+                Subject = model.Subject,
+                FirstPost = model.FirstPost,
                 Date = DateTime.Now
-
-            };
-
-            var thread = new ThreadMessagePost
-            {
-                User = user,
-                Date = DateTime.Now,
-                Body = model.Body,
-                Thread = post
             };
                     
             //try
@@ -128,7 +95,7 @@ namespace Orca_Gamma.Controllers
                 //if (!ModelState.IsValid)
                 //{
                     _dbContext.ForumThreads.Add(post);
-                    _dbContext.ThreadMessagePosts.Add(thread);
+                    //_dbContext.ThreadMessagePosts.Add(thread);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
                 //}
@@ -142,141 +109,48 @@ namespace Orca_Gamma.Controllers
             //return View(post);
         }
 
+        //GET: Forums/Reply
+        public ActionResult Reply(int? id)
+        {
+            return View();
+        }
+
         //POST: Forums/Reply
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Reply(int? id, ThreadMessagePost model)
         {
             ApplicationUser user = getCurrentUser();
-            ThreadMessagePost post3 = _dbContext.ThreadMessagePosts.Find(id);
-            ForumThread post2 = _dbContext.ForumThreads.Find(id);
-            ThreadMessagePost post = new ThreadMessagePost();
-            ForumThread post1 = new ForumThread();
-            //var post = new ForumThread
-            //{
-            //    User = user, // This is how you do foreign keys - Cass
-            //    Subject = model.Thread.Subject,
-            //    FirstPost = model.Thread.FirstPost,
-            //    Date = DateTime.Now
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
 
-            //};
-            //if (post.PartOf == post1.Id)
-            //{
-                var thread = new ThreadMessagePost
-                {
-                    User = user,
-                    Thread = post2,
-                    Body = model.Body,
-                    Date = DateTime.Now
-                    //Thread = post3.Thread
-                };
+            var thread = new ThreadMessagePost
+            {
+                User = user,
+                Thread = post.Thread,
+                Body = model.Body,
+                Date = DateTime.Now
+             };
 
-                //try
-                //{
-                //if (!ModelState.IsValid)
-                //{
-                //_dbContext.ForumThreads.Add(post);
-                _dbContext.ThreadMessagePosts.Add(thread);
-                _dbContext.SaveChanges();
-                return RedirectToAction("Index");
-            //}
-            //}
-            //}
-            //catch (RetryLimitExceededException /* dex */)
-            //{
-            //Log the error (uncomment dex variable name and add a line here to write a log.
-            //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            //}
+             _dbContext.ThreadMessagePosts.Add(thread);
+             _dbContext.SaveChanges();
+             return RedirectToAction("Index");
 
-            //return View(post);
         }
 
         // GET: /Forums/Details/
-        public ActionResult Details(int? id)
+        public ViewResult Details(int? id)
         {
+            var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
+                       select s;
 
-            //ApplicationUser user = getCurrentUser();
-            //var threads = from s in _dbContext.ThreadMessagePosts
-             //             select s;
-            //var thread = new ForumsViewModel
-            //{
-            //    User = user,
-            //    Date = DateTime.Now,
-            //    FirstPost = model.FirstPost,
-            //    Body = model.Body
-            // };
-
-
-            //int pageSize = 20;
-            //int pageNumber = (page ?? 1);
-
-            //return View(thread);
-
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            //ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
             ForumThread post = _dbContext.ForumThreads.Find(id);
-            //var threads = new List<ThreadMessagePost>();
-            if (post == null)
-            {
-                return HttpNotFound();
-            }
-            //ViewBag.Threads = post;
-            //ViewBag.Threads = threads;
-            return View(post);
+            ViewBag.Subject = post.Subject;
+            ViewBag.FirstPost = post.FirstPost;
+            ViewBag.Date = post.Date;
+            ViewBag.UserName = post.User.UserName;
+
+            return View(thread.ToList());
         }
-
-        //GET: Forums/Reply
-        public ActionResult Reply(int? id)
-        {
-            //ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
-            //if (id != null)
-            //{
-            //    ViewBag.Subject = post.Thread.Subject;
-            //    ViewBag.FirstPost = post.Thread.FirstPost;
-            //    ViewBag.User = post.User.UserName;
-            //}
-            return View();
-        }
-
-        ////POST: Forums/Reply
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Reply(ThreadMessagePost model)
-        //{
-
-        //    ApplicationUser user = getCurrentUser();
-        //    ForumThread thread = GetCurrentThread();
-        //    var post = new ThreadMessagePost
-        //    {
-        //        User = user,
-        //        Thread = thread,
-        //        Body = model.Body,
-        //        Date = DateTime.Now
-        //    };
-
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            _dbContext.ThreadMessagePosts.Add(post);
-        //            _dbContext.SaveChanges();
-        //            return RedirectToAction("Index");
-        //        }
-        //    }
-        //    catch (RetryLimitExceededException /* dex */)
-        //    {
-        //        //Log the error (uncomment dex variable name and add a line here to write a log.
-        //        ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-        //    }
-
-
-
-        //    return View(post);
-        //}
-
 
 
         protected override void Dispose(bool disposing)
