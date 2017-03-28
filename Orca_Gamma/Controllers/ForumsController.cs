@@ -73,6 +73,7 @@ namespace Orca_Gamma.Controllers
             return View(threads.ToPagedList(pageNumber, pageSize));
         }
 
+        [Authorize]
         //GET: Forums/Create
         public ActionResult Create()
         {
@@ -112,6 +113,7 @@ namespace Orca_Gamma.Controllers
             //return View(post);
         }
 
+        [Authorize]
         //GET: Forums/Reply
         public ActionResult Reply()
         {
