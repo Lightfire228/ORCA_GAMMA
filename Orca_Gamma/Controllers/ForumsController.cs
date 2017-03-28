@@ -63,6 +63,10 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
+            var countReplies = "SELECT COUNT(*) FROM bdo.ThreadMesagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id" + 1;
+            var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
+            ViewBag.CountReplies = totalReplies;
+
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 

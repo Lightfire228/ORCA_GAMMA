@@ -39,6 +39,10 @@
            <br />
                 by @Html.DisplayFor(modelItem => item.User.UserName) on @Html.DisplayFor(modelItem => item.Date)
             </td>
+
+            <td>
+                @ViewBag.CountReplies
+            </td>
         </tr>
     }
 </table>
