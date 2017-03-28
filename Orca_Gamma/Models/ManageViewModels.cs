@@ -66,6 +66,7 @@ namespace Orca_Gamma.Models
         [Required]
         [Phone]
         [Display(Name = "Phone Number")]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid Phone number")]
         public string Number { get; set; }
     }
 

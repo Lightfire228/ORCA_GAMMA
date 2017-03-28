@@ -95,7 +95,6 @@ namespace Orca_Gamma.Controllers
                 //if (!ModelState.IsValid)
                 //{
                     _dbContext.ForumThreads.Add(post);
-                    //_dbContext.ThreadMessagePosts.Add(thread);
                     _dbContext.SaveChanges();
                     return RedirectToAction("Index");
                 //}
@@ -110,7 +109,7 @@ namespace Orca_Gamma.Controllers
         }
 
         //GET: Forums/Reply
-        public ActionResult Reply(int? id)
+        public ActionResult Reply()
         {
             return View();
         }
