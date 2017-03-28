@@ -18,26 +18,6 @@
             }
         </p>
 
-        <!-- Taking out the phone number verification portion -DBS
-        <p>
-            Phone Number: @(Model.PhoneNumber ?? "None") [
-            @if (Model.PhoneNumber != null)
-            {
-                @Html.ActionLink("Change", "AddPhoneNumber")
-                @: &nbsp;|&nbsp;
-                @Html.ActionLink("Remove", "RemovePhoneNumber")
-            }
-            else
-            {
-                @Html.ActionLink("Add", "AddPhoneNumber")
-            }
-            ]
-        </p>
-        <p>
-            External Logins: @Model.Logins.Count
-            @Html.ActionLink("[Manage]", "ManageLogins")
-        </p>
-        -->
         <p>
             @*This is where the edit account button will go
                 Controller method it calls: editUserAccount
@@ -46,8 +26,7 @@
                 *@
                 @Html.ActionLink("Edit Account Information", "editUserAccount")
         </p>
-        <!-- Taking out the two factor authentication and whatnot -DBS -->
-
+        
         <p>
             @*Button for creating/editing expert account info
                 Controller Method: editExpertAccount
@@ -57,42 +36,5 @@
                     @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
                 }
         </p>
-        @if (Model.TwoFactor)
-        {
-            <form method="post" action="/Manage/DisableTFA">
-                <p>
-                    Two factor is currently enabled:
-                    <input type="submit" value="Disable" class="btn btn-default"/>
-                </p>
-            </form>
-        }
-        else
-        {
-            <form method="post" action="/Manage/EnableTFA">
-                <p>
-                    Two factor is currently disabled:
-                    <input type="submit" value="Enable" class="btn btn-default"/>
-                </p>
-            </form>
-        }
-        @if (Model.BrowserRemembered)
-        {
-            <form method="post" action="/Manage/ForgetBrowser">
-                <p>
-                    Browser is curently remembered for two factor:
-                    <input type="submit" value="Forget Browser" class="btn btn-default" />
-                </p>
-            </form>
-        }
-        else
-        {
-            <form method="post" action="/Manage/RememberBrowser">
-                <p>
-                    Browser is curently not remembered for two factor:
-                    <input type="submit" value="Remember Browser" class="btn btn-default"/>
-                </p>
-            </form>
-        }
-        -->
     </div>
 </div>
