@@ -63,7 +63,7 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            var countReplies = "SELECT COUNT(*) FROM bdo.ThreadMesagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id" + 1;
+            var countReplies = "SELECT COUNT(*) FROM bdo.ThreadMesagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
             var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
             ViewBag.CountReplies = totalReplies;
 
@@ -94,23 +94,10 @@ namespace Orca_Gamma.Controllers
                 FirstPost = model.FirstPost,
                 Date = DateTime.Now
             };
-                    
-            //try
-            //{
-                //if (!ModelState.IsValid)
-                //{
-                    _dbContext.ForumThreads.Add(post);
-                    _dbContext.SaveChanges();
-                    return RedirectToAction("Index");
-                //}
-            //}
-            //catch (RetryLimitExceededException /* dex */)
-            //{
-                //Log the error (uncomment dex variable name and add a line here to write a log.
-                //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            //}
 
-            //return View(post);
+            _dbContext.ForumThreads.Add(post);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         [Authorize]
