@@ -28,24 +28,44 @@ namespace Orca_Gamma.Controllers
 		[Authorize]
         public ActionResult Index()
         {
-            var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
-            return View(privateMessagePosts.ToList());
+            var privateMessageList = db.PrivateMessages.Include(p => p.User);
+            var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false);
+
+            //Get a list of all private messages ids from the between model
+            List<PrivateMessage> PostIDList = new List<PrivateMessage>();
+            foreach(var Post in betweenList)
+            {
+                if (Post.User.Id == User.Identity.GetUserId())
+                {
+                    PostIDList.Add(Post.PrivateMessage);
+                }
+            }
+
+            //var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
+            return View(PostIDList.ToList());
         }
 
 		// GET: PrivateMessagePosts/Details/5
 		[Authorize]
-		public ActionResult Details(int? id)
+		public ActionResult Details(int? id) //id of privatemessage
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            if (privateMessagePost == null)
+
+            //PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
+            //IEnumerable<PrivateMessagePost> list = from s in db.PrivateMessagePosts where s.Id == id select s;
+            var list = db.PrivateMessagePosts.Where(r => r.PrivateMessage.Id == id).Include(p => p.User).Include(r => r.PrivateMessage);
+
+            if (list == null)
             {
                 return HttpNotFound();
             }
-            return View(privateMessagePost);
+
+            PrivateMessage privateMessage = db.PrivateMessages.Find(id);
+            ViewBag.SubjectOfMessage = privateMessage.Subject;
+            return View(list);
         }
 
 		// GET: PrivateMessagePosts/Create
@@ -64,25 +84,10 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(PrivateMessagePost model)
         {
-
-			// For David - Example adding PM user list
-			//IEnumerable<ApplicationUser> test = db.Users.ToList();
-			//var tempPM = db.PrivateMessages.First();
-
-			//foreach (var testUser in test) {
-			//	var temp = new PrivateMessageBetween {
-			//		User = testUser,
-			//		PrivateMessage = tempPM
-			//	};
-
-			//	db.PrivateMessagesBetween.Add(temp);
-			//}
-
-			//db.SaveChanges();
-
             ApplicationUser user = getCurrentUser();
             String currentUserId = User.Identity.GetUserId();
-
+            String currentUserUsername = user.UserName;
+            
             var initial = new PrivateMessage
             {
                 Date = DateTime.Now,
@@ -98,19 +103,49 @@ namespace Orca_Gamma.Controllers
                 PrivateMessage = initial
             };
 
-            var between = new PrivateMessageBetween
+            //Recipients-----------------------------------------------------------------------------------------------------------------------------
+            //Getting list of recipients through model.createdby and splitting at commas.
+            string inputString = model.CreatedBy;
+            string[] UserNameList = inputString.Split(',');
+            for (int i = 0; i < UserNameList.Length; i++)
             {
-                User = user,
-                PrivateMessage = initial
-            };
+                UserNameList[i] = UserNameList[i].Trim();
+            }
 
-            //if (ModelState.IsValid)
-            //{
-                db.PrivateMessages.Add(initial);
-                db.PrivateMessagePosts.Add(post);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            //}
+            //convert this to a list and add the current user if they're not in there.
+            List<String> UserNameListConverted = new List<String>(UserNameList);
+            if(!UserNameListConverted.Contains(currentUserUsername))
+            {
+                UserNameListConverted.Add(currentUserUsername);
+            }
+
+            //Make a list of their actual ApplicationUser models
+            List<ApplicationUser> RecipientList = new List<ApplicationUser>();
+            foreach (String UserName in UserNameListConverted)
+            {
+                ApplicationUser temp = db.Users.SingleOrDefault(g => g.UserName == UserName);
+                if(temp != null)
+                {
+                    RecipientList.Add(temp);
+                }
+            }
+
+            foreach (var recipient in RecipientList)
+            {
+                var temp = new PrivateMessageBetween
+                {
+                    User = recipient,
+                    PrivateMessage = initial
+                };
+
+                db.PrivateMessagesBetween.Add(temp);
+            }
+            //Recipients-----------------------------------------------------------------------------------------------------------------------------
+            
+            db.PrivateMessages.Add(initial);
+            db.PrivateMessagePosts.Add(post);
+            db.SaveChanges();
+            return RedirectToAction("Index");
             
             //return View(post);
         }
@@ -159,12 +194,12 @@ namespace Orca_Gamma.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            if (privateMessagePost == null)
+            PrivateMessage privateMessage = db.PrivateMessages.Find(id);
+            if (privateMessage == null)
             {
                 return HttpNotFound();
             }
-            return View(privateMessagePost);
+            return View(privateMessage);
         }
 
         // POST: PrivateMessagePosts/Delete/5
@@ -173,8 +208,45 @@ namespace Orca_Gamma.Controllers
 		[Authorize]
 		public ActionResult DeleteConfirmed(int id)
         {
-            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            db.PrivateMessagePosts.Remove(privateMessagePost);
+            PrivateMessage privateMessage = db.PrivateMessages.Find(id);
+            privateMessage.IsDeleted = true;
+            db.Entry(privateMessage).State = EntityState.Modified;
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        // GET: PrivateMessagePosts/Reply
+        [Authorize]
+        public ActionResult Reply(int? id)
+        {
+            if (id != null)
+            {
+                PrivateMessagePost temp = db.PrivateMessagePosts.Find(id);
+                var name = temp.User.FirstName;
+                ViewBag.PostTitle = temp.PrivateMessage.Subject;
+                ViewBag.User = name;
+                ViewBag.Message = temp.Body;
+            }
+            return View();
+        }
+
+        // POST: PrivateMessagePosts/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reply(int? id, PrivateMessagePost model)
+        {
+            ApplicationUser user = getCurrentUser();
+            PrivateMessagePost temp = db.PrivateMessagePosts.Find(id);
+            var post = new PrivateMessagePost
+            {
+                Body = model.Body,
+                User = user,
+                PrivateMessage = temp.PrivateMessage
+            };
+            
+            db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

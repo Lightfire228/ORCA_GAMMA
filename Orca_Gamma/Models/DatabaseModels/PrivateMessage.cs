@@ -22,7 +22,7 @@ namespace Orca_Gamma.Models.DatabaseModels {
 		public DateTime Date {
 			get; set;
 		}
-
+        
 		public String Subject {
 			get; set;
 		}

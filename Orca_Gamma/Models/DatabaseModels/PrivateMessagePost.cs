@@ -24,7 +24,7 @@ namespace Orca_Gamma.Models.DatabaseModels {
 		public int PartOf {
 			get; set;
 		}
-
+        
 		public String Body {
 			get; set;
 		}
