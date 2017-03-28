@@ -27,6 +27,14 @@ namespace Orca_Gamma.Models.DatabaseModels {
 			get; set;
 		}
 
+		public DateTime DateStarted {
+			get; set;
+		}
+
+		public DateTime DateFinished {
+			get; set;
+		}
+
 
 		public virtual ApplicationUser User {
 			get; set;
