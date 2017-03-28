@@ -19,10 +19,12 @@ namespace Orca_Gamma.Models.DatabaseModels {
 			get; set;
 		}
 
+		[Required]
 		public DateTime Date {
 			get; set;
 		}
-        
+
+		[Required]
 		public String Subject {
 			get; set;
 		}

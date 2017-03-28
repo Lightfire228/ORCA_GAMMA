@@ -234,6 +234,10 @@
     <Compile Include="Migrations\201703280551405_added-thread+pm-changes.Designer.cs">
       <DependentUpon>201703280551405_added-thread+pm-changes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703280617456_forgot-date-joined.cs" />
+    <Compile Include="Migrations\201703280617456_forgot-date-joined.Designer.cs">
+      <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DatabaseModels\CatagoryRequest.cs" />
@@ -372,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703280551405_added-thread+pm-changes.resx">
       <DependentUpon>201703280551405_added-thread+pm-changes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703280617456_forgot-date-joined.resx">
+      <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
