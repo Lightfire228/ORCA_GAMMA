@@ -24,8 +24,29 @@ namespace Orca_Gamma.Models.DatabaseModels {
 		public int PartOf {
 			get; set;
 		}
-
+        
+		[Required]
 		public String Body {
+			get; set;
+		}
+
+		[Required]
+		public DateTime Date {
+			get; set;
+		}
+
+		/**
+		 * I didn't know if we wanted to include the functionality to delete
+		 * private messages (the particular post, not the whole message), so
+		 * I threw it in here while I was messing with this
+		 * 
+		 * -- Cass
+		 */
+		public bool IsDeleted {
+			get; set;
+		}
+
+		public bool IsImportant {
 			get; set;
 		}
 

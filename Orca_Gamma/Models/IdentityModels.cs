@@ -41,6 +41,10 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
+		public DateTime DateJoined {
+			get; set;
+		}
+
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Create";
+    ViewBag.Recipient = "Recipient(s)";
 }
 
 <h2>Create</h2>
@@ -12,23 +13,32 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>PrivateMessagePost</h4>
+        <h4>Write Your Message</h4>
+        <h5>Type each recipient's Username seperated by commas.</h5>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @*Gotta use the createdby model to temporarily transfer the recipients to the controller, because the privatemessagepost model doesn't support that.*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.CreatedBy, (String)@ViewBag.Recipient, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.CreatedBy, 1, 200, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+            </div>
+        </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.PrivateMessage.Subject, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.PrivateMessage.Subject, new { htmlAttributes = new { @class = "form-control" } })
-                @*@Html.ValidationMessageFor(model => model.PrivateMessage.Subject, "", new { @class = "text-danger" })*@
+                @Html.ValidationMessageFor(model => model.PrivateMessage.Subject, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Body, new { htmlAttributes = new { @class = "form-control" } })
-                @*@Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })*@
+                @Html.TextAreaFor(model => model.Body, 5, 200, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
             </div>
         </div>
 

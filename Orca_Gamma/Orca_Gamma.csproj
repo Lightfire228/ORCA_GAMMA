@@ -230,8 +230,18 @@
     <Compile Include="Migrations\201702201829322_adding-fl-names.Designer.cs">
       <DependentUpon>201702201829322_adding-fl-names.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703280551405_added-thread+pm-changes.cs" />
+    <Compile Include="Migrations\201703280551405_added-thread+pm-changes.Designer.cs">
+      <DependentUpon>201703280551405_added-thread+pm-changes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703280617456_forgot-date-joined.cs" />
+    <Compile Include="Migrations\201703280617456_forgot-date-joined.Designer.cs">
+      <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\DatabaseModels\CatagoryRequest.cs" />
+    <Compile Include="Models\DatabaseModels\UpDownVote.cs" />
     <Compile Include="Models\ViewModels\AdminViewModel.cs" />
     <Compile Include="Models\DatabaseModels\Catagory.cs" />
     <Compile Include="Models\DatabaseModels\Collaborator.cs" />
@@ -328,6 +338,7 @@
     <Content Include="Views\Links\Index.cshtml" />
     <Content Include="Views\Manage\editExpertAccount.cshtml" />
     <Content Include="Views\Forums\Index.cshtml" />
+    <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Forums\Create.cshtml" />
     <Content Include="Views\Forums\Details.cshtml" />
     <Content Include="Views\Projects\Create.cshtml" />
@@ -340,7 +351,7 @@
     <Content Include="Views\PrivateMessagePosts\Details.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Edit.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Index.cshtml" />
-    <Content Include="Views\Forums\Reply.cshtml" />
+    <Content Include="Views\PrivateMessagePosts\Reply.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -362,6 +373,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702201829322_adding-fl-names.resx">
       <DependentUpon>201702201829322_adding-fl-names.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703280551405_added-thread+pm-changes.resx">
+      <DependentUpon>201703280551405_added-thread+pm-changes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703280617456_forgot-date-joined.resx">
+      <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
