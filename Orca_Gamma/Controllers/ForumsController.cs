@@ -63,9 +63,13 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            var countReplies = "SELECT COUNT(*) FROM bdo.ThreadMesagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
-            var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
-            ViewBag.CountReplies = totalReplies;
+            //var countReplies = "SELECT COUNT(dbo.ThreadMessagePosts.Id) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
+            //var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
+            //ViewBag.CountReplies = totalReplies;
+
+            //var getLastPost = "SELECT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id ORDER BY ThreadMessagePosts.Date DESC";
+            //var showLastPost = _dbContext.Database.SqlQuery<int>(getLastPost).Single();
+            //ViewBag.LastPost = showLastPost;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
@@ -102,8 +106,11 @@ namespace Orca_Gamma.Controllers
 
         [Authorize]
         //GET: Forums/Reply
-        public ActionResult Reply()
+        public ActionResult Reply(int? id)
         {
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            ViewBag.Subject = post.Thread.Subject;
+
             return View();
         }
 
@@ -140,6 +147,7 @@ namespace Orca_Gamma.Controllers
             ViewBag.FirstPost = post.FirstPost;
             ViewBag.Date = post.Date;
             ViewBag.UserName = post.User.UserName;
+            ViewBag.DateJoined = post.User.DateJoined;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
