@@ -338,6 +338,31 @@ namespace Orca_Gamma.Controllers
             base.Dispose(disposing);
         }
 
+        //this is going to be to display expert info all on one page
+        //should only need a get method for this information -Geoff
+        //GET: /Manage/expertInfo
+        public ActionResult expertInfo()
+        {
+            String id = User.Identity.GetUserId();
+            
+            Expert expert = _dbContext.Experts.Find(id);
+
+            IEnumerable<Keyword> keywords = from keyRelation in _dbContext.KeywordRelations.ToList()
+                           from key in _dbContext.Keywords.ToList()
+                           where key.Id == keyRelation.KeywordId && keyRelation.ExpertId == id
+                           select key;
+
+            var cat = expert.Catagory;
+
+            var model = new ExpertInfoViewModel
+            {
+                Keywords = keywords,
+                Catagory = cat
+            };
+
+            return View(model);
+        }
+
         //this is just for regular user acount informaiton change -Geoff
         //GET: //Manage/editUserAccount
         public ActionResult editUserAccount()
