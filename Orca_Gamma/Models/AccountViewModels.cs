@@ -77,9 +77,11 @@ namespace Orca_Gamma.Models
         [Display(Name = "User Name")]
         public string UserName { get; set; }
 
+        [RegularExpression("[A-Za-z0-9]+")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
+        [RegularExpression("[A-Za-z0-9]+")]
         [Display(Name = "Last Name")]
         public string LastName{ get; set; }
 
