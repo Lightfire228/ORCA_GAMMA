@@ -21,7 +21,7 @@ namespace Orca_Gamma.Controllers {
             {
                 expert = expert.Where(n => n.Catagory.Name.Contains(searchString));
             }
-			return View(/*expert.ToList()*/);
+			return View(expert.ToList());
 		}
 
 		public ActionResult About() {

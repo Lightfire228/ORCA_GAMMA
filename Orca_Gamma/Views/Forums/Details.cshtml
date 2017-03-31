@@ -5,51 +5,8 @@
 
 
 <h2>@ViewBag.Subject</h2>
-@*<p>
-    @Html.ActionLink("Reply", "Reply", new { id = ViewBag.Id})
-</p>*@
+
 @*<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Thread.FirstPost)
-        </th>
-    </tr>
-</table>
-<table class="table">
-@foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Body)
-           <br />
-                by @Html.DisplayFor(modelItem => item.User.UserName) on @Html.DisplayFor(modelItem => item.Date)
-            </td>
-        </tr>
-    }
-</table>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-<br />*@
-@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))*@
-
-@*<div>
-    <h4></h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Thread.FirstPost)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Thread.FirstPost)
-        </dd>
-    </dl>
-</div>*@
-
-<table class="table">
 
     
     
@@ -68,7 +25,7 @@
                         <h3>
                         @ViewBag.Subject
                         </h3>
-                    </div>*@
+                    </div>
                     <div class="col-md-3">
                         <p class="text-right text-muted">
                             @ViewBag.Date
@@ -115,20 +72,146 @@
         </td>
     </tr>
     }
-</table>
+</table>*@
+@*<script>
+    $(document).ready(function () {
+        $('.stripeMe tr:even').addClass('alt');
+
+        $('.stripeMe tr').hover(
+          function () {
+              $(this).addClass("highlight");
+          },
+           function () {
+               $(this).removeClass("highlight");
+           });
+    });
+</script>
+<style>
+    tr.alt td {
+background-color : #F7F7F7;
+}
+tr.highlight td {
+background-color : #bcd4ec;
+}
+</style>*@
+
+<style>
+    tr:nth-child(odd)		{ background-color: springgreen; }
+    tr:nth-child(even)		{ background-color: whitesmoke; }
+</style>
+@helper AlternateBackground(string color)
+{
+if (ViewBag.count == null) { ViewBag.count = 0; }
+    <text>style="background-color:@(ViewBag.count % 2 == 1 ? color : "none")"</text>
+ViewBag.count++;
+}
+<table class="table">
+        
+       @foreach (var item in Model)
+       {
+
+                <tr>
+                    <td>
+                        <div class="col">
+                            <div class="left">
+                                <h3>
+                                    @ViewBag.UserName
+                                </h3>
+                                <p>
+                                    Joined:
+                                    <br />
+                                    @ViewBag.DateJoined
+                                </p>
+                                <a>
+                                    <img src="http://www.marshall.edu/CEGAS/events/mcc/images/alt_primary_logo_11.png"
+                                         style="width:50px;height:50px;" />
+                                </a>
+                                <p>
+                                    Author
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col">
+                            <p class="text-left">
+                                @ViewBag.Date
+                            </p>
+                            <br />
+                            <p class="text-left">
+                                @ViewBag.FirstPost
+                            </p>
+                        </div>
+                    </td>
+                    <td>
+                        @Html.ActionLink("Reply", "Reply", new { id = item.Id })
+                    </td>
+                </tr>
+           break;
+       }
+
+                @foreach (var item in Model)
+                {
+
+                    <tr>
+                        <td>
+                            <div class="col">
+                                <div class="left">
+                                    <h3>
+                                        @Html.DisplayFor(modelItem => item.User.UserName)
+                                    </h3>
+                                    <p>
+                                        Joined:
+                                        <br />
+                                        @Html.DisplayFor(modelItem => item.User.DateJoined)
+                                    </p>
+                                    <a>
+                                        <img src="http://www.marshall.edu/CEGAS/events/mcc/images/alt_primary_logo_11.png"
+                                             style="width:50px;height:50px;" />
+                                    </a>
+                                    <p>
+                                        Member
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="col">
+                                <p class="text-left">
+                                    @Html.DisplayFor(modelItem => item.Date)
+                                </p>
+                                @*</div>
+                                    </td>
+                                    <td>
+                                        <br />
+
+                                        <div class="col">*@
+                                <br />
+                                <p class="text-left">
+                                    @Html.DisplayFor(modelItem => item.Body)
+                                </p>
+
+                            </div>
+                        </td>
+                        <td>
+                            @Html.ActionLink("Reply", "Reply", new { id = item.Id })
+                        </td>
+                    </tr>
+                }
+            </table>
 
 
-<p>
-   
-    @Html.ActionLink("Back to List", "Index")
-</p>
+    <p>
 
-<br />
-Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+
+    <br />
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
     @Html.PagedListPager(Model, page => Url.Action("Index",
         new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

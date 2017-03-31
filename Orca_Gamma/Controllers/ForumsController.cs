@@ -87,15 +87,15 @@ namespace Orca_Gamma.Controllers
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ForumThread model)
+        public ActionResult Create(ThreadMessagePost model)
         {
 			ApplicationUser user = getCurrentUser();
 
             var post = new ForumThread
             {
 				User = user, // This is how you do foreign keys - Cass
-                Subject = model.Subject,
-                FirstPost = model.FirstPost,
+                Subject = model.Thread.Subject,
+                FirstPost = model.Thread.FirstPost,
                 Date = DateTime.Now
             };
 
@@ -148,6 +148,7 @@ namespace Orca_Gamma.Controllers
             ViewBag.Date = post.Date;
             ViewBag.UserName = post.User.UserName;
             ViewBag.DateJoined = post.User.DateJoined;
+            ViewBag.Post = post.Id;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
