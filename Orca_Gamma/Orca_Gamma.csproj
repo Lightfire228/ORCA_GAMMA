@@ -354,6 +354,7 @@
     <Content Include="Views\PrivateMessagePosts\Index.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Reply.cshtml" />
     <Content Include="Views\Manage\expertInfo.cshtml" />
+    <Content Include="Views\Forums\Reply.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

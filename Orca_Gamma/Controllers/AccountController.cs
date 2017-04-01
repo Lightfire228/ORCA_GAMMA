@@ -180,6 +180,7 @@ namespace Orca_Gamma.Controllers
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
+                user.DateJoined = DateTime.Now;
 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)

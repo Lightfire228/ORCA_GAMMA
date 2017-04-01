@@ -41,7 +41,9 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
-		public DateTime DateJoined {
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime DateJoined {
 			get; set;
 		}
 
@@ -104,6 +106,7 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
         public IEnumerable ApplicationUsers { get; internal set; }
+       
 
         /*
 		 * Required, these three tables have cyclic references that are non null
