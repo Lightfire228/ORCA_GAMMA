@@ -23,7 +23,10 @@
             Controller class: ManageController
             -Geoff*@
         <p>
-            @Html.ActionLink("Expert Account Info", "expertInfo")
+            @if (Model.IsExpert)
+            {
+                @Html.ActionLink("Expert Account Info", "expertInfo")
+            }
         </p>
 
         <p>
@@ -33,16 +36,6 @@
                 -Geoff
                 *@
                 @Html.ActionLink("Edit Account Information", "editUserAccount")
-        </p>
-        
-        <p>
-            @*Button for creating/editing expert account info
-                Controller Method: editExpertAccount
-                Controller Class: ManageController
-                 -Geoff*@
-                @if (Model.IsExpert) {
-                    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
-                }
         </p>
     </div>
 </div>

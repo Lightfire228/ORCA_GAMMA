@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Orca_Gamma.Models.ExpertInfoViewModel>
+﻿@model Orca_Gamma.Models.ExpertInfoViewModel
 
 @{
     ViewBag.Title = "expertInfo";
@@ -7,15 +7,31 @@
 <h2>Expert Account Information</h2>
 
 <p>
+    Current Category: @Html.DisplayFor(model => model.Catagory.Name)
+
+    @*Button for creating/editing expert account info
+        Controller Method: editExpertAccount
+        Controller Class: ManageController
+         -Geoff*@
+    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+
+
+</p>
+
+<p>
     @Html.ActionLink("Create New Keyword", "Create")
 </p>
 <table class="table">
     <tr>
+        <th>
+            Names
+        </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.Keywords) {
     <tr>
+        @Html.DisplayFor(modelItem => item.Name)
         <td>
             @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
             @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
