@@ -127,7 +127,7 @@ namespace Orca_Gamma.Controllers
             return RedirectToAction("Index");
 
         }
-   
+
         // GET: Projects/Edit/5
         [Authorize]
         public ActionResult Edit(int? id)
@@ -145,6 +145,7 @@ namespace Orca_Gamma.Controllers
 
             return View(project);
         }
+
 
         // POST: Projects/Edit/5
         [HttpPost]
