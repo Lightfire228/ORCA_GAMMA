@@ -238,9 +238,14 @@
     <Compile Include="Migrations\201703280617456_forgot-date-joined.Designer.cs">
       <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704020148278_Added-Bio-and-Forum-Keywords.cs" />
+    <Compile Include="Migrations\201704020148278_Added-Bio-and-Forum-Keywords.Designer.cs">
+      <DependentUpon>201704020148278_Added-Bio-and-Forum-Keywords.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DatabaseModels\CatagoryRequest.cs" />
+    <Compile Include="Models\DatabaseModels\ThreadKeyword.cs" />
     <Compile Include="Models\DatabaseModels\UpDownVote.cs" />
     <Compile Include="Models\ViewModels\AdminViewModel.cs" />
     <Compile Include="Models\DatabaseModels\Catagory.cs" />
@@ -380,6 +385,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703280617456_forgot-date-joined.resx">
       <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704020148278_Added-Bio-and-Forum-Keywords.resx">
+      <DependentUpon>201704020148278_Added-Bio-and-Forum-Keywords.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
