@@ -110,6 +110,11 @@ namespace Orca_Gamma.Models
 		public DbSet<ThreadMessagePost> ThreadMessagePosts {
 			get; set;
 		}
+
+		public DbSet<ThreadKeyword> ThreadKeywords {
+			get; set;
+		}
+
         public IEnumerable ApplicationUsers { get; internal set; }
        
 
