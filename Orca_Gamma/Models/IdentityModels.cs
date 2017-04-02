@@ -41,6 +41,11 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
+		[Display(Name = "Bio")]
+		public String Bio {
+			get; set;
+		}
+
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DateJoined {
@@ -105,6 +110,11 @@ namespace Orca_Gamma.Models
 		public DbSet<ThreadMessagePost> ThreadMessagePosts {
 			get; set;
 		}
+
+		public DbSet<ThreadKeyword> ThreadKeywords {
+			get; set;
+		}
+
         public IEnumerable ApplicationUsers { get; internal set; }
        
 
