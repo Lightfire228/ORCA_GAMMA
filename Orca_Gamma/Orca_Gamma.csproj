@@ -343,7 +343,6 @@
     <Content Include="Views\Links\Index.cshtml" />
     <Content Include="Views\Manage\editExpertAccount.cshtml" />
     <Content Include="Views\Forums\Index.cshtml" />
-    <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Forums\Create.cshtml" />
     <Content Include="Views\Forums\Details.cshtml" />
     <Content Include="Views\Projects\Create.cshtml" />
