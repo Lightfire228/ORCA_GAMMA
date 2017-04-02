@@ -63,13 +63,13 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            //var countReplies = "SELECT COUNT(dbo.ThreadMessagePosts.Id) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
-            //var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
-            //ViewBag.CountReplies = totalReplies;
+            var countReplies = "SELECT DISTINCT COUNT(dbo.ThreadMessagePosts.Id) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
+            var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
+            ViewBag.CountReplies = totalReplies;
 
-            //var getLastPost = "SELECT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id ORDER BY ThreadMessagePosts.Date DESC";
-            //var showLastPost = _dbContext.Database.SqlQuery<int>(getLastPost).Single();
-            //ViewBag.LastPost = showLastPost;
+            var getLastPost = "SELECT DISTINCT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id GROUP BY ThreadMessagePosts.Id ORDER BY ThreadMessagePosts.Date DESC";
+            var showLastPost = _dbContext.Database.SqlQuery<DateTime>(getLastPost).Single();
+            ViewBag.LastPost = showLastPost;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
@@ -87,15 +87,15 @@ namespace Orca_Gamma.Controllers
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ThreadMessagePost model)
+        public ActionResult Create(ForumThread model)
         {
 			ApplicationUser user = getCurrentUser();
 
             var post = new ForumThread
             {
 				User = user, // This is how you do foreign keys - Cass
-                Subject = model.Thread.Subject,
-                FirstPost = model.Thread.FirstPost,
+                Subject = model.Subject,
+                FirstPost = model.FirstPost,
                 Date = DateTime.Now
             };
 
@@ -148,7 +148,6 @@ namespace Orca_Gamma.Controllers
             ViewBag.Date = post.Date;
             ViewBag.UserName = post.User.UserName;
             ViewBag.DateJoined = post.User.DateJoined;
-            ViewBag.Post = post.Id;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
