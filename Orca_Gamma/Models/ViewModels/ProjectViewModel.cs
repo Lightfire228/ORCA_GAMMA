@@ -11,6 +11,10 @@ namespace Orca_Gamma.Models
         public string Name { get; set; }
         public string Description { set; get; }
 
+        //new:
+        public string DateStarted { set; get; }
+        public string DateFinished { set; get; }
+
     }
 
 }
