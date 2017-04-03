@@ -19,7 +19,7 @@
 </p>
 
 <p>
-    @Html.ActionLink("Create New Keyword", "Create")
+    @Html.ActionLink("Create New Keyword", "createKeyword")
 </p>
 <table class="table">
     <tr>
@@ -33,8 +33,6 @@
     <tr>
         @Html.DisplayFor(modelItem => item.Name)
         <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
             @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
         </td>
     </tr>

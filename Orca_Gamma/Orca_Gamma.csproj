@@ -355,6 +355,7 @@
     <Content Include="Views\PrivateMessagePosts\Reply.cshtml" />
     <Content Include="Views\Manage\expertInfo.cshtml" />
     <Content Include="Views\Forums\Reply.cshtml" />
+    <Content Include="Views\Manage\createKeyword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
