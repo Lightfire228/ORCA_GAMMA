@@ -238,9 +238,18 @@
     <Compile Include="Migrations\201703280617456_forgot-date-joined.Designer.cs">
       <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704020148278_Added-Bio-and-Forum-Keywords.cs" />
+    <Compile Include="Migrations\201704020148278_Added-Bio-and-Forum-Keywords.Designer.cs">
+      <DependentUpon>201704020148278_Added-Bio-and-Forum-Keywords.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704020207470_forgot-to-include-new-table.cs" />
+    <Compile Include="Migrations\201704020207470_forgot-to-include-new-table.Designer.cs">
+      <DependentUpon>201704020207470_forgot-to-include-new-table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DatabaseModels\CatagoryRequest.cs" />
+    <Compile Include="Models\DatabaseModels\ThreadKeyword.cs" />
     <Compile Include="Models\DatabaseModels\UpDownVote.cs" />
     <Compile Include="Models\ViewModels\AdminViewModel.cs" />
     <Compile Include="Models\DatabaseModels\Catagory.cs" />
@@ -325,7 +334,30 @@
     <Content Include="Views\Manage\ManageLogins.cshtml" />
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Posts\Index.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\UsersAdmin\Index.cshtml" />
+    <Content Include="Views\UsersAdmin\Edit.cshtml" />
+    <Content Include="Views\UsersAdmin\Details.cshtml" />
+    <Content Include="Views\UsersAdmin\Delete.cshtml" />
+    <Content Include="Views\UsersAdmin\Create.cshtml" />
+    <Content Include="Views\RolesAdmin\Index.cshtml" />
+    <Content Include="Views\RolesAdmin\Edit.cshtml" />
+    <Content Include="Views\RolesAdmin\Details.cshtml" />
+    <Content Include="Views\RolesAdmin\Delete.cshtml" />
+    <Content Include="Views\RolesAdmin\Create.cshtml" />
+    <Content Include="Views\Account\DisplayEmail.cshtml" />
+    <Content Include="Views\Manage\editUserAccount.cshtml" />
+    <Content Include="Views\Links\Index.cshtml" />
+    <Content Include="Views\Manage\editExpertAccount.cshtml" />
+    <Content Include="Views\Forums\Index.cshtml" />
+    <Content Include="Views\Forums\Create.cshtml" />
+    <Content Include="Views\Forums\Details.cshtml" />
+    <Content Include="Views\Projects\Create.cshtml" />
+    <Content Include="Views\Projects\Delete.cshtml" />
+    <Content Include="Views\Projects\Details.cshtml" />
+    <Content Include="Views\Projects\Edit.cshtml" />
+    <Content Include="Views\Projects\Index.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Create.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Delete.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Details.cshtml" />
@@ -381,6 +413,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703280617456_forgot-date-joined.resx">
       <DependentUpon>201703280617456_forgot-date-joined.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704020148278_Added-Bio-and-Forum-Keywords.resx">
+      <DependentUpon>201704020148278_Added-Bio-and-Forum-Keywords.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704020207470_forgot-to-include-new-table.resx">
+      <DependentUpon>201704020207470_forgot-to-include-new-table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
