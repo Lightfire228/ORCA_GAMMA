@@ -375,7 +375,7 @@ namespace Orca_Gamma.Controllers
         //GET: /Manage/createKeyword
         public ActionResult createKeyword()
         {
-            return View(getCurrentUser());
+            return View();
         }
 
         //POST: /Manage/createKeyword

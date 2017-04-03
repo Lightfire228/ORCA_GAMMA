@@ -24,14 +24,16 @@
 <table class="table">
     <tr>
         <th>
-            Names
+            @Html.DisplayName("Names")
         </th>
         <th></th>
     </tr>
 
 @foreach (var item in Model.Keywords) {
     <tr>
-        @Html.DisplayFor(modelItem => item.Name)
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
         <td>
             @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
         </td>
