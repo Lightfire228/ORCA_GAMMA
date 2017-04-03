@@ -27,6 +27,9 @@
                 @Html.DisplayFor(modelItem => item.Body)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
                 @Html.ActionLink("Reply", "Reply", new { id = item.Id })
             </td>
         </tr>
@@ -35,5 +38,5 @@
 </table>
 
 <p>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to Inbox", "Index")
 </p>
