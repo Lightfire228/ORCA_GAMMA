@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
 using System.Web.Security;
+using System.Collections.Generic;
 
 namespace Orca_Gamma.Controllers
 {
@@ -25,6 +26,12 @@ namespace Orca_Gamma.Controllers
         {
             _dbContext = new ApplicationDbContext();
         }
+
+        public ApplicationUser getCurrentUser()
+        {
+            return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+        }
+
 
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
@@ -56,27 +63,21 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            int pageSize = 20;
+            //var countReplies = "SELECT COUNT(dbo.ThreadMessagePosts.Id) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
+            //var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
+            //ViewBag.CountReplies = totalReplies;
+
+            //var getLastPost = "SELECT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id ORDER BY ThreadMessagePosts.Date DESC";
+            //var showLastPost = _dbContext.Database.SqlQuery<int>(getLastPost).Single();
+            //ViewBag.LastPost = showLastPost;
+
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
 
             return View(threads.ToPagedList(pageNumber, pageSize));
         }
 
-        public ApplicationUser getCurrentUser()
-        {
-            return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
-        }
-
-        private ApplicationUserManager _userManager;
-        protected ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? (_userManager =
-           HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>());
-            }
-        }
-
+        [Authorize]
         //GET: Forums/Create
         public ActionResult Create()
         {
@@ -86,57 +87,74 @@ namespace Orca_Gamma.Controllers
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ForumThread model)
+        public ActionResult Create(ThreadMessagePost model)
         {
 			ApplicationUser user = getCurrentUser();
 
             var post = new ForumThread
             {
 				User = user, // This is how you do foreign keys - Cass
-                Subject = model.Subject,
-                FirstPost = model.FirstPost,
+                Subject = model.Thread.Subject,
+                FirstPost = model.Thread.FirstPost,
                 Date = DateTime.Now
-
             };
-                    
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _dbContext.ForumThreads.Add(post);
-                    _dbContext.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
-            catch (RetryLimitExceededException /* dex */)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-            }
 
-            return View(post);
+            _dbContext.ForumThreads.Add(post);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Index");
         }
 
-        public ActionResult Details(int? id)
+        [Authorize]
+        //GET: Forums/Reply
+        public ActionResult Reply(int? id)
         {
-            if(id ==null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            ViewBag.Subject = post.Thread.Subject;
 
-			// You don't want the user, you want the post they have clicked on - Cass
-			var post = _dbContext.ForumThreads.Find(id);
-
-            if (post == null)
-            {
-                return HttpNotFound();
-            }
-
-			// You may want to change the model to a custom view model
-			// if you want the "Details" view to take user input - Cass
-			return View(post);
+            return View();
         }
 
+        //POST: Forums/Reply
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reply(int? id, ThreadMessagePost model)
+        {
+            ApplicationUser user = getCurrentUser();
+            ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+
+            var thread = new ThreadMessagePost
+            {
+                User = user,
+                Thread = post.Thread,
+                Body = model.Body,
+                Date = DateTime.Now
+             };
+
+             _dbContext.ThreadMessagePosts.Add(thread);
+             _dbContext.SaveChanges();
+             return RedirectToAction("Index");
+
+        }
+
+        // GET: /Forums/Details/
+        public ViewResult Details(int? id, int? page)
+        {
+            var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
+                       select s;
+
+            ForumThread post = _dbContext.ForumThreads.Find(id);
+            ViewBag.Subject = post.Subject;
+            ViewBag.FirstPost = post.FirstPost;
+            ViewBag.Date = post.Date;
+            ViewBag.UserName = post.User.UserName;
+            ViewBag.DateJoined = post.User.DateJoined;
+            ViewBag.Post = post.Id;
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            return View(thread.ToList().ToPagedList(pageNumber, pageSize));
+        }
 
 
         protected override void Dispose(bool disposing)
