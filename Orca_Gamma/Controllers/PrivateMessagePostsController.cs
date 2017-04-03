@@ -217,48 +217,10 @@ namespace Orca_Gamma.Controllers
             db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
             return RedirectToAction("Index");
-            
-            //return View(post);
         }
 
-		// GET: PrivateMessagePosts/Edit/5
-		[Authorize]
-		public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            if (privateMessagePost == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.PartOf = new SelectList(db.PrivateMessages, "Id", "UserId", privateMessagePost.PartOf);
-            ViewBag.CreatedBy = new SelectList(db.ApplicationUsers, "Id", "FirstName", privateMessagePost.CreatedBy);
-            return View(privateMessagePost);
-        }
-
-        // POST: PrivateMessagePosts/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,CreatedBy,PartOf,Body")] PrivateMessagePost privateMessagePost)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(privateMessagePost).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.PartOf = new SelectList(db.PrivateMessages, "Id", "UserId", privateMessagePost.PartOf);
-            ViewBag.CreatedBy = new SelectList(db.ApplicationUsers, "Id", "FirstName", privateMessagePost.CreatedBy);
-            return View(privateMessagePost);
-        }
-
-		// GET: PrivateMessagePosts/Delete/5
-		[Authorize]
+        // GET: PrivateMessagePosts/Delete/5
+        [Authorize]
 		public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -279,20 +241,15 @@ namespace Orca_Gamma.Controllers
 		[Authorize]
 		public ActionResult DeleteConfirmed(int id)
         {
-            //PrivateMessage privateMessage = db.PrivateMessages.Find(id);
+            var userId = User.Identity.GetUserId();
 
-            //privateMessage.IsDeleted = true;
-            //db.Entry(privateMessage).State = EntityState.Modified;
+            List<PrivateMessageBetween> pm = (from pms in db.PrivateMessagesBetween.ToList()
+                                       where pms.UserId == userId && pms.PrivateMessageId == id
+                                       select pms).ToList();
 
-            var privateMessageBetween = db.PrivateMessagesBetween.Where(b => b.UserId == User.Identity.GetUserId()).Where(b => b.PrivateMessageId == id);
-
-            if(privateMessageBetween != null)
-            {
-                PrivateMessageBetween link = (PrivateMessageBetween)privateMessageBetween;
-                db.PrivateMessagesBetween.Remove(link);
-                db.SaveChanges();
-            }
-
+            db.PrivateMessagesBetween.Remove(pm[0]);
+            db.SaveChanges();
+            
             return RedirectToAction("Index");
         }
 

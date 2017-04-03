@@ -365,7 +365,7 @@
     <Content Include="Views\PrivateMessagePosts\Index.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Reply.cshtml" />
     <Content Include="Views\Forums\Reply.cshtml" />
-	<Content Include="Views\Projects\Create.cshtml" />
+    <Content Include="Views\Projects\Create.cshtml" />
     <Content Include="Views\Projects\Delete.cshtml" />
     <Content Include="Views\Projects\Details.cshtml" />
     <Content Include="Views\Projects\Edit.cshtml" />
