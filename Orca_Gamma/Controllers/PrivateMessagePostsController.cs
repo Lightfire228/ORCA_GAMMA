@@ -15,8 +15,6 @@ namespace Orca_Gamma.Controllers
 {
     public class PrivateMessagePostsController : Controller
     {
-
-		
         private ApplicationDbContext db = new ApplicationDbContext();
 
         public ApplicationUser getCurrentUser()
@@ -26,21 +24,93 @@ namespace Orca_Gamma.Controllers
 
 		// GET: PrivateMessagePosts
 		[Authorize]
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder, string previousFilter, string searchString, string lastSort)
         {
+            var theId = User.Identity.GetUserId();
             var privateMessageList = db.PrivateMessages.Include(p => p.User);
-            var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false);
+            var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId);
+
+            ViewBag.CurrentSort = sortOrder;
+            if (lastSort != sortOrder)
+            {
+                ViewBag.LastSort = sortOrder;
+            }
+            else
+            {
+                if(sortOrder == "subject_desc")
+                {
+                    sortOrder = "subject_asc";
+                }
+                else if(sortOrder == "creator_desc")
+                {
+                    sortOrder = "creator_asc";
+                }
+                else if(sortOrder == "date_desc")
+                {
+                    sortOrder = "date_asc";
+                }
+                else if (sortOrder == "subject_asc")
+                {
+                    sortOrder = "subject_desc";
+                }
+                else if (sortOrder == "creator_asc")
+                {
+                    sortOrder = "creator_desc";
+                }
+                else if (sortOrder == "date_asc")
+                {
+                    sortOrder = "date_desc";
+                }
+            }
+
+            ViewBag.SortParm = String.IsNullOrEmpty(sortOrder);
+
+            if (searchString == null)
+            {
+                searchString = previousFilter;
+            }
+            ViewBag.CurrentFilter = searchString;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "subject_asc":
+                    betweenList = betweenList.OrderBy(s => s.PrivateMessage.Subject);
+                    break;
+                case "creator_desc":
+                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.UserId);
+                    break;
+                case "date_desc":
+                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
+                    break;
+                case "subject_desc":
+                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Subject);
+                    break;
+                case "creator_asc":
+                    betweenList = betweenList.OrderBy(s => s.PrivateMessage.UserId);
+                    break;
+                case "date_asc":
+                    betweenList = betweenList.OrderBy(s => s.PrivateMessage.Date);
+                    break;
+                default:
+                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
+                    ViewBag.LastSort = "date_desc";
+                    break;
+            }
 
             //Get a list of all private messages ids from the between model
             List<PrivateMessage> PostIDList = new List<PrivateMessage>();
-            foreach(var Post in betweenList)
+            foreach (var Post in betweenList)
             {
-                if (Post.User.Id == User.Identity.GetUserId())
+                if (Post.User.Id == theId)
                 {
                     PostIDList.Add(Post.PrivateMessage);
                 }
             }
-
+            
             //var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
             return View(PostIDList.ToList());
         }
@@ -72,8 +142,6 @@ namespace Orca_Gamma.Controllers
 		[Authorize]
 		public ActionResult Create()
         {
-            //ViewBag.PartOf = new SelectList(db.PrivateMessages, "Id", "UserId");
-            //ViewBag.CreatedBy = new SelectList(db.ApplicationUsers, "Id", "FirstName");
             return View();
         }
 
@@ -100,7 +168,10 @@ namespace Orca_Gamma.Controllers
             {
                 Body = model.Body,
                 User = user,
-                PrivateMessage = initial
+                PrivateMessage = initial,
+                Date = DateTime.Now,
+                IsDeleted = false,
+                IsImportant = false
             };
 
             //Recipients-----------------------------------------------------------------------------------------------------------------------------
@@ -146,48 +217,10 @@ namespace Orca_Gamma.Controllers
             db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
             return RedirectToAction("Index");
-            
-            //return View(post);
         }
 
-		// GET: PrivateMessagePosts/Edit/5
-		[Authorize]
-		public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            if (privateMessagePost == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.PartOf = new SelectList(db.PrivateMessages, "Id", "UserId", privateMessagePost.PartOf);
-            ViewBag.CreatedBy = new SelectList(db.ApplicationUsers, "Id", "FirstName", privateMessagePost.CreatedBy);
-            return View(privateMessagePost);
-        }
-
-        // POST: PrivateMessagePosts/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,CreatedBy,PartOf,Body")] PrivateMessagePost privateMessagePost)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(privateMessagePost).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.PartOf = new SelectList(db.PrivateMessages, "Id", "UserId", privateMessagePost.PartOf);
-            ViewBag.CreatedBy = new SelectList(db.ApplicationUsers, "Id", "FirstName", privateMessagePost.CreatedBy);
-            return View(privateMessagePost);
-        }
-
-		// GET: PrivateMessagePosts/Delete/5
-		[Authorize]
+        // GET: PrivateMessagePosts/Delete/5
+        [Authorize]
 		public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -208,10 +241,15 @@ namespace Orca_Gamma.Controllers
 		[Authorize]
 		public ActionResult DeleteConfirmed(int id)
         {
-            PrivateMessage privateMessage = db.PrivateMessages.Find(id);
-            privateMessage.IsDeleted = true;
-            db.Entry(privateMessage).State = EntityState.Modified;
+            var userId = User.Identity.GetUserId();
+
+            List<PrivateMessageBetween> pm = (from pms in db.PrivateMessagesBetween.ToList()
+                                       where pms.UserId == userId && pms.PrivateMessageId == id
+                                       select pms).ToList();
+
+            db.PrivateMessagesBetween.Remove(pm[0]);
             db.SaveChanges();
+            
             return RedirectToAction("Index");
         }
 
@@ -226,11 +264,12 @@ namespace Orca_Gamma.Controllers
                 ViewBag.PostTitle = temp.PrivateMessage.Subject;
                 ViewBag.User = name;
                 ViewBag.Message = temp.Body;
+                ViewBag.Date = temp.Date;
             }
             return View();
         }
 
-        // POST: PrivateMessagePosts/Create
+        // POST: PrivateMessagePosts/Reply
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -243,7 +282,10 @@ namespace Orca_Gamma.Controllers
             {
                 Body = model.Body,
                 User = user,
-                PrivateMessage = temp.PrivateMessage
+                PrivateMessage = temp.PrivateMessage,
+                Date = DateTime.Now,
+                IsDeleted = false,
+                IsImportant = false
             };
             
             db.PrivateMessagePosts.Add(post);

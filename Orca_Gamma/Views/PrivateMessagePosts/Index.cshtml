@@ -9,16 +9,24 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm("Index", "PrivateMessagePosts", FormMethod.Get))
+{
+    <p>
+        Search Inbox by Subject: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="search" />
+    </p>
+}
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Subject)
+            @Html.ActionLink("Subject", "Index", new { sortOrder = "subject_desc", previousFilter = ViewBag.CurrentFilter, lastSort = ViewBag.LastSort })
         </th>
         <th>
-            Creator
+            @Html.ActionLink("Creator", "Index", new { sortOrder = "creator_desc", previousFilter = ViewBag.CurrentFilter, lastSort = ViewBag.LastSort })
         </th>
         <th>
-            Date Created
+            @Html.ActionLink("Date Created", "Index", new { sortOrder = "date_desc", previousFilter = ViewBag.CurrentFilter, lastSort = ViewBag.LastSort })
         </th>
     </tr>
 
