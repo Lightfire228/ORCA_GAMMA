@@ -14,10 +14,6 @@ namespace Orca_Gamma.Models.DatabaseModels {
 			get; set;
 		}
 
-		public Boolean IsValidated {
-			get; set;
-		}
-
 		[ForeignKey("Catagory")]
 		public int CatagoryId {
 			get; set;
