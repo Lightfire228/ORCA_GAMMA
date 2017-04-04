@@ -338,6 +338,76 @@ namespace Orca_Gamma.Controllers
             base.Dispose(disposing);
         }
 
+        //this is going to be to display expert info all on one page
+        //should only need a get method for this information -Geoff
+        //GET: /Manage/expertInfo
+        public ActionResult expertInfo()
+        {
+            String id = User.Identity.GetUserId();
+
+            if (_dbContext.Experts.Find(id) != null)
+            {
+
+                Expert expert = _dbContext.Experts.Find(id);
+
+                IEnumerable<Keyword> keywords = from keyRelation in _dbContext.KeywordRelations.ToList()
+                                                from key in _dbContext.Keywords.ToList()
+                                                where key.Id == keyRelation.KeywordId && keyRelation.ExpertId == id
+                                                select key;
+
+                var cat = expert.Catagory;
+
+                var model = new ExpertInfoViewModel
+                {
+                    Keywords = keywords,
+                    Catagory = cat
+                };
+
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
+        //Creating a new keyword on the expert account -Geoff
+        //GET: /Manage/createKeyword
+        public ActionResult createKeyword()
+        {
+            return View();
+        }
+
+        //POST: /Manage/createKeyword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult createKeyword(Keyword model)
+        {
+            Keyword keyword = new Keyword
+            {
+                Name = model.Name
+            };
+            _dbContext.Keywords.Add(keyword);
+
+            String id = getCurrentUser().Id;
+            Expert expert = _dbContext.Experts.Find(id);
+            KeywordRelation relation = new KeywordRelation
+            {
+                Keyword = keyword,
+                Expert = expert
+            };
+            _dbContext.KeywordRelations.Add(relation);
+
+            _dbContext.SaveChanges();
+
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(model);
+
+        }
+
         //this is just for regular user acount informaiton change -Geoff
         //GET: //Manage/editUserAccount
         public ActionResult editUserAccount()

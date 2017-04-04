@@ -18,6 +18,17 @@
             }
         </p>
 
+        @*this will be the new button to remove the ones beneath here
+            Controller method: experInfo()
+            Controller class: ManageController
+            -Geoff*@
+        <p>
+            @if (Model.IsExpert)
+            {
+                @Html.ActionLink("Expert Account Info", "expertInfo")
+            }
+        </p>
+
         <p>
             @*This is where the edit account button will go
                 Controller method it calls: editUserAccount
@@ -25,16 +36,6 @@
                 -Geoff
                 *@
                 @Html.ActionLink("Edit Account Information", "editUserAccount")
-        </p>
-        
-        <p>
-            @*Button for creating/editing expert account info
-                Controller Method: editExpertAccount
-                Controller Class: ManageController
-                 -Geoff*@
-                @if (Model.IsExpert) {
-                    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
-                }
         </p>
     </div>
 </div>
