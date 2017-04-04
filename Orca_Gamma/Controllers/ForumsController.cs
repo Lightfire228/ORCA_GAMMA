@@ -101,6 +101,7 @@ namespace Orca_Gamma.Controllers
                 FirstPost = model.Thread.FirstPost,
                 IsDeleted = false,
                 Date = DateTime.Now
+                
             };
 
             var thread = new ThreadMessagePost
@@ -121,13 +122,16 @@ namespace Orca_Gamma.Controllers
                 Keyword = keyword,
                 Thread = post
             };
-
-            // _dbContext.ThreadKeywords.Add(threadKeyword);
-            //_dbContext.Keywords.Add(keyword);
-            _dbContext.ThreadMessagePosts.Add(thread);
-            _dbContext.ForumThreads.Add(post);
-            _dbContext.SaveChanges();
-            return RedirectToAction("Index");
+            while (!ModelState.IsValid)
+            {
+                // _dbContext.ThreadKeywords.Add(threadKeyword);
+                //_dbContext.Keywords.Add(keyword);
+                _dbContext.ThreadMessagePosts.Add(thread);
+                _dbContext.ForumThreads.Add(post);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View();
         }
 
         [Authorize]
@@ -171,19 +175,9 @@ namespace Orca_Gamma.Controllers
             ForumThread post = _dbContext.ForumThreads.Find(id);
             List<ForumThread> posts = new List<ForumThread>();
             ViewBag.Subject = post.Subject;
-            ViewBag.FirstPost = post.FirstPost;
-            ViewBag.Date = post.Date;
-            ViewBag.UserName = post.User.UserName;
-            ViewBag.DateJoined = post.User.DateJoined;
-            ViewBag.Post = posts;
-
-            ShowThreadViewModel model = new ShowThreadViewModel();
             
             var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
                          select s;
-
-            var tuple = new Tuple<ForumThread, ThreadMessagePost>(post, new ThreadMessagePost());
-            var thread1 = tuple.Item1.Id.Equals(tuple.Item2.CreatedBy);
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);

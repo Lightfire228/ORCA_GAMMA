@@ -46,6 +46,15 @@
             <td>
                 @ViewBag.LastPost
             </td>
+            <td>
+                @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <input type="checkbox" name="Close" value="@item.IsDeleted" class="checkbox-inline" />
+
+                }
+
+            </td>
+
         </tr>
     }
 </table>
