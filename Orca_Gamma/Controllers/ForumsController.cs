@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
+using Orca_Gamma.Models.ViewModels;
 using Orca_Gamma.Models.DatabaseModels;
 using System.Net;
 using System.Data;
@@ -63,13 +64,15 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            var countReplies = "SELECT DISTINCT COUNT(dbo.ThreadMessagePosts.Id) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
-            var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
-            ViewBag.CountReplies = totalReplies;
+            //var countReplies = "SELECT DISTINCT COUNT(dbo.ThreadMessagePosts.Body) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
+            ////var countReply = from s in _dbContext.ThreadMessagePosts.Where(s => s.PartOf == s.Thread.Id)
+            //                 //select s;
+            //var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
+            //ViewBag.CountReplies = totalReplies;
 
-            var getLastPost = "SELECT DISTINCT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id GROUP BY ThreadMessagePosts.Id ORDER BY ThreadMessagePosts.Date DESC";
-            var showLastPost = _dbContext.Database.SqlQuery<DateTime>(getLastPost).Single();
-            ViewBag.LastPost = showLastPost;
+            //var getLastPost = "SELECT DISTINCT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id GROUP BY ThreadMessagePosts.Date ORDER BY ThreadMessagePosts.Date DESC";
+            //var showLastPost = _dbContext.Database.SqlQuery<DateTime>(getLastPost).Single();
+            //ViewBag.LastPost = showLastPost;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
@@ -87,18 +90,41 @@ namespace Orca_Gamma.Controllers
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ForumThread model)
+        public ActionResult Create(ThreadMessagePost model, ThreadKeyword threadKey, Keyword key)
         {
 			ApplicationUser user = getCurrentUser();
 
             var post = new ForumThread
             {
-				User = user, // This is how you do foreign keys - Cass
-                Subject = model.Subject,
-                FirstPost = model.FirstPost,
+                User = user, // This is how you do foreign keys - Cass
+                Subject = model.Thread.Subject,
+                FirstPost = model.Thread.FirstPost,
+                IsDeleted = false,
                 Date = DateTime.Now
             };
 
+            var thread = new ThreadMessagePost
+            {
+                User = user,
+                Body = model.Body,
+                Date = DateTime.Now,
+                Thread = post
+            };
+
+            var keyword = new Keyword
+            {
+                Name = key.Name
+            };
+
+            var threadKeyword = new ThreadKeyword
+            {
+                Keyword = keyword,
+                Thread = post
+            };
+
+            // _dbContext.ThreadKeywords.Add(threadKeyword);
+            //_dbContext.Keywords.Add(keyword);
+            _dbContext.ThreadMessagePosts.Add(thread);
             _dbContext.ForumThreads.Add(post);
             _dbContext.SaveChanges();
             return RedirectToAction("Index");
@@ -139,15 +165,25 @@ namespace Orca_Gamma.Controllers
         // GET: /Forums/Details/
         public ViewResult Details(int? id, int? page)
         {
-            var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
-                       select s;
+            ApplicationDbContext db = new ApplicationDbContext();
+            ApplicationUser user = getCurrentUser();
 
             ForumThread post = _dbContext.ForumThreads.Find(id);
+            List<ForumThread> posts = new List<ForumThread>();
             ViewBag.Subject = post.Subject;
             ViewBag.FirstPost = post.FirstPost;
             ViewBag.Date = post.Date;
             ViewBag.UserName = post.User.UserName;
             ViewBag.DateJoined = post.User.DateJoined;
+            ViewBag.Post = posts;
+
+            ShowThreadViewModel model = new ShowThreadViewModel();
+            
+            var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
+                         select s;
+
+            var tuple = new Tuple<ForumThread, ThreadMessagePost>(post, new ThreadMessagePost());
+            var thread1 = tuple.Item1.Id.Equals(tuple.Item2.CreatedBy);
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
