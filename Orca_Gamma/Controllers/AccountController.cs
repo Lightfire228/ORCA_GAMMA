@@ -197,18 +197,17 @@ namespace Orca_Gamma.Controllers
                             ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
                             return View();
                         }
-                    }
 
-					// Creates an expert field and adds it to the db on user registration -Cass
-					if (selectedRoles.Contains("Expert")) {
-						Expert expert = new Expert() {
-							Id = user.Id,
-							Catagory = _dbContext.Catagories.FirstOrDefault()
-						};
-						_dbContext.Experts.Add(expert);
+						// Creates an expert field and adds it to the db on user registration -Cass
+						if (selectedRoles.Contains("Expert")) {
+							Expert expert = new Expert() {
+								Id = user.Id,
+								Catagory = _dbContext.Catagories.FirstOrDefault()
+							};
+							_dbContext.Experts.Add(expert);
 
+						}
 					}
-
 
 					// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
 					// Send an email with this link
