@@ -14,7 +14,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Net;
-
+using Orca_Gamma.Models.DatabaseModels;
 
 namespace Orca_Gamma.Controllers
 {
@@ -24,6 +24,7 @@ namespace Orca_Gamma.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+		private ApplicationDbContext _dbContext = new ApplicationDbContext();
 
         public AccountController()
         {
@@ -198,15 +199,26 @@ namespace Orca_Gamma.Controllers
                         }
                     }
 
+					// Creates an expert field and adds it to the db on user registration -Cass
+					if (selectedRoles.Contains("Expert")) {
+						Expert expert = new Expert() {
+							Id = user.Id,
+							Catagory = _dbContext.Catagories.FirstOrDefault()
+						};
+						_dbContext.Experts.Add(expert);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+					}
 
-                    //return RedirectToAction("Index", "Home");
-                    return RedirectToAction("Login");
+
+					// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+					// Send an email with this link
+					// string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+					// var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+					// await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+					//return RedirectToAction("Index", "Home");
+
+					_dbContext.SaveChanges();
+					return RedirectToAction("Login");
                 }
                 AddErrors(result);
             }
