@@ -1,0 +1,43 @@
+﻿@model Orca_Gamma.Models.ExpertInfoViewModel
+
+@{
+    ViewBag.Title = "expertInfo";
+}
+
+<h2>Expert Account Information</h2>
+
+<p>
+    Current Category: @Html.DisplayFor(model => model.Catagory.Name)
+
+    @*Button for creating/editing expert account info
+        Controller Method: editExpertAccount
+        Controller Class: ManageController
+         -Geoff*@
+    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+
+
+</p>
+
+<p>
+    @Html.ActionLink("Create New Keyword", "createKeyword")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Names")
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.Keywords) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+}
+
+</table>
