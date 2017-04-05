@@ -14,13 +14,20 @@
                 @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Body)
+                @if (item.IsDeleted == false)
+                {
+                    @Html.DisplayFor(modelItem => item.Body)
+                }
+                else
+                {
+                    @ViewBag.deleted
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
-                @Html.ActionLink("Reply", "Reply", new { id = item.Id })
+                @Html.ActionLink("Reply", "Reply", new { id = item.Id }) | @Html.ActionLink("Delete", "ReplyDelete", new { id = item.Id })
             </td>
         </tr>
     }
