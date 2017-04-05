@@ -35,5 +35,21 @@ namespace Orca_Gamma.Controllers {
 
 			return View();
 		}
-	}
+
+        //GET
+        public ActionResult UserProfile(String id)
+        {
+            if (id.Equals(""))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var profile = db.Users.Find(id);
+            var expert = db.Experts.Find(id);
+            var catagory = db.Catagories.Find(expert.CatagoryId);
+
+            ViewBag.Catagory = catagory.Name;
+            return View(profile);
+        }
+    }
 }

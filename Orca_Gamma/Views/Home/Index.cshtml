@@ -11,22 +11,20 @@
 <p>
     @using (Html.BeginForm())
     {
-    <p><b>
-        Search Options: 
-        </b>
-        @Html.TextBox("SearchString") <br/>
+    <p>
+        Search Options: @Html.TextBox("SearchString")
         <input type="submit" value="Filter" />
     </p>
     }
 
 </p>
-<table>
+<table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.User.FirstName)
+            UserName
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.User.LastName)
+            Name
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Catagory.Name)
@@ -37,13 +35,16 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.User.FirstName)
+                @Html.DisplayFor(modelItem => item.User.UserName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.LastName)
+                @Html.DisplayFor(modelItem => item.User.LastName), @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Catagory.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Profile", "UserProfile", new { id = item.User.Id })
             </td>
         </tr>
     }

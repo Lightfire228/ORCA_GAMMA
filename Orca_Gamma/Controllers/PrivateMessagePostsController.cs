@@ -135,6 +135,7 @@ namespace Orca_Gamma.Controllers
 
             PrivateMessage privateMessage = db.PrivateMessages.Find(id);
             ViewBag.SubjectOfMessage = privateMessage.Subject;
+            ViewBag.deleted = "[Deleted]";
             return View(list);
         }
 
@@ -243,6 +244,7 @@ namespace Orca_Gamma.Controllers
         {
             var userId = User.Identity.GetUserId();
 
+            //I casted it as a List basically... I dunno, it's stupid but it works.
             List<PrivateMessageBetween> pm = (from pms in db.PrivateMessagesBetween.ToList()
                                        where pms.UserId == userId && pms.PrivateMessageId == id
                                        select pms).ToList();
@@ -274,6 +276,7 @@ namespace Orca_Gamma.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
         public ActionResult Reply(int? id, PrivateMessagePost model)
         {
             ApplicationUser user = getCurrentUser();
@@ -290,6 +293,38 @@ namespace Orca_Gamma.Controllers
             
             db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        public ActionResult ReplyDelete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
+            if (privateMessagePost == null)
+            {
+                return HttpNotFound();
+            }
+            return View(privateMessagePost);
+        }
+
+        // POST: PrivateMessagePosts/Delete/5
+        [HttpPost, ActionName("ReplyDelete")]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult ReplyDeleteConfirmed(int id)
+        {
+            var userId = User.Identity.GetUserId();
+
+            //I casted it as a List basically... I dunno, it's stupid but it works.
+            PrivateMessagePost pm = db.PrivateMessagePosts.Find(id);
+            pm.IsDeleted = true;
+            
+            db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 
