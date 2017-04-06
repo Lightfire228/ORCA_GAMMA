@@ -408,36 +408,44 @@ namespace Orca_Gamma.Controllers
 
         }
 
+
         //this is just for regular user acount informaiton change -Geoff
         //GET: //Manage/editUserAccount
         public ActionResult editUserAccount()
         {
-            return View(getCurrentUser());
+            ApplicationUser user = getCurrentUser();
+            ViewBag.FirstName = user.FirstName;
+            ViewBag.LastName = user.LastName;
+            ViewBag.Email = user.Email;
+            ViewBag.Phone = user.PhoneNumber;
+            return View();
         }
 
         //this is the post method for regular user account info change -Geoff
         //POST: /Manage/editUserAccount
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult editUserAccount(ApplicationUser model)
+        public ActionResult editUserAccount(EditAccountViewModel model)
         {
-			String id = model.Id;
-			ApplicationUser user = _dbContext.Users.Find(model.Id);
+            String id = model.User.Id;
+            ApplicationUser user = getCurrentUser();
 
-			user.FirstName   = model.FirstName;
-			user.LastName    = model.LastName;
-			user.Email       = model.Email;
+            user.FirstName = model.FirstName.Trim();
+            user.LastName = model.LastName.Trim();
+            user.Email = model.Email;
             //Don't want them to edit login UserName -DBS
-			//user.UserName    = user.UserName;
-			user.PhoneNumber = model.PhoneNumber; 
+            //user.UserName    = user.UserName;
+            user.PhoneNumber = model.PhoneNumber;
+            
 
+           
 			_dbContext.SaveChanges();
 
             if (ModelState.IsValid)
             {
                 return RedirectToAction("Index");
             }
-            return View(model);
+            return View();
         }
 
         //needs to check if they already have expert information or not

@@ -26,12 +26,14 @@ namespace Orca_Gamma.Models
 			get; set;
 		}
 
-		[Display(Name = "First Name")]
+        [RegularExpression("^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$")]
+        [Display(Name = "First Name")]
 		public String FirstName {
 			get; set;
 		}
 
-		[Display(Name = "Last Name")]
+        [RegularExpression("^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$")]
+        [Display(Name = "Last Name")]
 		public String LastName {
 			get; set;
 		}
