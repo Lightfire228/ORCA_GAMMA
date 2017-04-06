@@ -167,17 +167,29 @@ namespace Orca_Gamma.Controllers
         }
 
         // GET: /Forums/Details/
-        public ViewResult Details(int? id, int? page)
+        public ViewResult Details(string sortOrder, string currentFilter, string searchString, int? id, int? page)
         {
             ApplicationDbContext db = new ApplicationDbContext();
             ApplicationUser user = getCurrentUser();
 
-            ForumThread post = _dbContext.ForumThreads.Find(id);
-            List<ForumThread> posts = new List<ForumThread>();
-            ViewBag.Subject = post.Subject;
-            
+            ViewBag.CurrentSort = sortOrder;
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
             var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
-                         select s;
+                           select s;
+            ViewBag.CurrentFilter = searchString;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                thread = thread.Where(t => t.Body.Contains(searchString));
+            }
+            ForumThread post = _dbContext.ForumThreads.Find(id);
+            ViewBag.Subject = post.Subject;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);

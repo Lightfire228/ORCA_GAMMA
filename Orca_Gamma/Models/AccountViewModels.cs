@@ -78,12 +78,12 @@ namespace Orca_Gamma.Models
         public string UserName { get; set; }
 
         [Required]
-        [RegularExpression("^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$")]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage = "Not a valid user name")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required]
-        [RegularExpression("^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$")]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage ="Not a valid user name")]
         [Display(Name = "Last Name")]
         public string LastName{ get; set; }
 
@@ -135,12 +135,12 @@ namespace Orca_Gamma.Models
         public ApplicationUser User { get; set; }
 
         [Required]
-        [RegularExpression("^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$")]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage = "Not a valid name")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required]
-        [RegularExpression("^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$")]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage = "Not a valid name")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
