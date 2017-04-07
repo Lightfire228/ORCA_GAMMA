@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
+using Orca_Gamma.Models.ViewModels;
 using Microsoft.AspNet.Identity;
 using System.Web.Security;
 
@@ -22,13 +23,14 @@ namespace Orca_Gamma.Controllers
             return db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
-		// GET: PrivateMessagePosts
-		[Authorize]
+        // GET: PrivateMessagePosts
+        [Authorize]
         public ActionResult Index(string sortOrder, string previousFilter, string searchString, string lastSort)
         {
             var theId = User.Identity.GetUserId();
             var privateMessageList = db.PrivateMessages.Include(p => p.User);
             var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId);
+            var postList = db.PrivateMessagePosts;
 
             ViewBag.CurrentSort = sortOrder;
             if (lastSort != sortOrder)
@@ -37,15 +39,15 @@ namespace Orca_Gamma.Controllers
             }
             else
             {
-                if(sortOrder == "subject_desc")
+                if (sortOrder == "subject_desc")
                 {
                     sortOrder = "subject_asc";
                 }
-                else if(sortOrder == "creator_desc")
+                else if (sortOrder == "creator_desc")
                 {
                     sortOrder = "creator_asc";
                 }
-                else if(sortOrder == "date_desc")
+                else if (sortOrder == "date_desc")
                 {
                     sortOrder = "date_asc";
                 }
@@ -102,22 +104,57 @@ namespace Orca_Gamma.Controllers
             }
 
             //Get a list of all private messages ids from the between model
-            List<PrivateMessage> PostIDList = new List<PrivateMessage>();
-            foreach (var Post in betweenList)
+            List<PMIndexViewModel> PostIDList = new List<PMIndexViewModel>();
+            foreach (var k in betweenList)
             {
-                if (Post.User.Id == theId)
+                if (k.User.Id == theId)
                 {
-                    PostIDList.Add(Post.PrivateMessage);
+                    //var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId);
+
+                    //List<PrivateMessagePost> PostApartOfList = (from a in db.PrivateMessagePosts.ToList()
+                    //                   where a.PartOf == k.PrivateMessageId
+                    //                   select a).ToList();
+
+                    int headMessageID = k.PrivateMessageId;
+
+                    //var relevantPostList = db.PrivateMessagePosts.Where(x => x.PartOf == (headMessageID)).ToList();
+
+                    PrivateMessagePost tryThis = db.PrivateMessagePosts.Find(75);
+                    String lastReply = tryThis.User.FirstName;
+                    DateTime lastReplyTime = tryThis.Date;
+                    //String lastReply = "Default";
+                    //DateTime lastReplyTime = DateTime.Now;
+
+                    //foreach (var tempPost in relevantPostList)
+                    //{
+                    //    var findThisGuy = db.Users.Find(tempPost.CreatedBy);
+                    //    lastReply = findThisGuy.FirstName;
+                    //    lastReplyTime = tempPost.Date;
+                    //}
+
+                    var temp = new PMIndexViewModel
+                    {
+                        Id = k.PrivateMessage.Id,
+                        UserId = k.UserId,
+                        Date = k.PrivateMessage.Date,
+                        Subject = k.PrivateMessage.Subject,
+                        IsDeleted = k.PrivateMessage.IsDeleted,
+                        IsImportant = k.PrivateMessage.IsImportant,
+                        User = k.User,
+                        LastPost = lastReply,
+                        LastReplyTime = lastReplyTime
+                    };
+                    PostIDList.Add(temp);
                 }
             }
-            
+
             //var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
             return View(PostIDList.ToList());
         }
 
-		// GET: PrivateMessagePosts/Details/5
-		[Authorize]
-		public ActionResult Details(int? id) //id of privatemessage
+        // GET: PrivateMessagePosts/Details/5
+        [Authorize]
+        public ActionResult Details(int? id) //id of privatemessage
         {
             if (id == null)
             {
@@ -139,9 +176,9 @@ namespace Orca_Gamma.Controllers
             return View(list);
         }
 
-		// GET: PrivateMessagePosts/Create
-		[Authorize]
-		public ActionResult Create()
+        // GET: PrivateMessagePosts/Create
+        [Authorize]
+        public ActionResult Create()
         {
             return View();
         }
@@ -156,7 +193,7 @@ namespace Orca_Gamma.Controllers
             ApplicationUser user = getCurrentUser();
             String currentUserId = User.Identity.GetUserId();
             String currentUserUsername = user.UserName;
-            
+
             var initial = new PrivateMessage
             {
                 Date = DateTime.Now,
@@ -186,7 +223,7 @@ namespace Orca_Gamma.Controllers
 
             //convert this to a list and add the current user if they're not in there.
             List<String> UserNameListConverted = new List<String>(UserNameList);
-            if(!UserNameListConverted.Contains(currentUserUsername))
+            if (!UserNameListConverted.Contains(currentUserUsername))
             {
                 UserNameListConverted.Add(currentUserUsername);
             }
@@ -196,7 +233,7 @@ namespace Orca_Gamma.Controllers
             foreach (String UserName in UserNameListConverted)
             {
                 ApplicationUser temp = db.Users.SingleOrDefault(g => g.UserName == UserName);
-                if(temp != null)
+                if (temp != null)
                 {
                     RecipientList.Add(temp);
                 }
@@ -213,7 +250,7 @@ namespace Orca_Gamma.Controllers
                 db.PrivateMessagesBetween.Add(temp);
             }
             //Recipients-----------------------------------------------------------------------------------------------------------------------------
-            
+
             db.PrivateMessages.Add(initial);
             db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
@@ -222,7 +259,7 @@ namespace Orca_Gamma.Controllers
 
         // GET: PrivateMessagePosts/Delete/5
         [Authorize]
-		public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id)
         {
             if (id == null)
             {
@@ -239,19 +276,19 @@ namespace Orca_Gamma.Controllers
         // POST: PrivateMessagePosts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-		[Authorize]
-		public ActionResult DeleteConfirmed(int id)
+        [Authorize]
+        public ActionResult DeleteConfirmed(int id)
         {
             var userId = User.Identity.GetUserId();
 
             //I casted it as a List basically... I dunno, it's stupid but it works.
             List<PrivateMessageBetween> pm = (from pms in db.PrivateMessagesBetween.ToList()
-                                       where pms.UserId == userId && pms.PrivateMessageId == id
-                                       select pms).ToList();
+                                              where pms.UserId == userId && pms.PrivateMessageId == id
+                                              select pms).ToList();
 
             db.PrivateMessagesBetween.Remove(pm[0]);
             db.SaveChanges();
-            
+
             return RedirectToAction("Index");
         }
 
@@ -290,7 +327,7 @@ namespace Orca_Gamma.Controllers
                 IsDeleted = false,
                 IsImportant = false
             };
-            
+
             db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -322,7 +359,7 @@ namespace Orca_Gamma.Controllers
             //I casted it as a List basically... I dunno, it's stupid but it works.
             PrivateMessagePost pm = db.PrivateMessagePosts.Find(id);
             pm.IsDeleted = true;
-            
+
             db.SaveChanges();
 
             return RedirectToAction("Index");
