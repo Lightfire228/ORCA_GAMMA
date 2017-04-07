@@ -6,34 +6,78 @@
 
 <h2>@ViewBag.SubjectOfMessage</h2>
 
-<table class="table">
+<p>
+    @Html.ActionLink("Reply", "Reply", new { id = ViewBag.ID }) |
+    @Html.ActionLink("Back to Inbox", "Index")
+</p>
+
+<style>
+    table { border: none; border-collapse: collapse; }
+    table td { 
+        border-left: 1px solid #DDDDDD; 
+        border-top: 1px solid #DDDDDD;
+        word-wrap: break-word;
+    }
+    table td:first-child { border-left: none; }
+</style>
+
+@*<table class="table">*@
+<table style="width: 100%;table-layout:fixed;" cellpadding="0" cellspacing="0">
+    <colgroup width="15%" /> @*Define how much of the table the left column gets.*@
+    <colgroup width="75%" /> @*Define how much the center column should get, etc.*@
+    <colgroup width="10%" />
     @foreach (var item in Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.User.FirstName)
+                <div class="col">
+                    <div class="left">
+                        <h3>
+                            @Html.DisplayFor(modelItem => item.User.UserName)
+                        </h3>
+                        <p>
+                            @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.LastName)
+                        </p>
+                    </div>
+                </div>
             </td>
             <td>
-                @if (item.IsDeleted == false)
-                {
-                    @Html.DisplayFor(modelItem => item.Body)
-                }
-                else
-                {
-                    @ViewBag.deleted
-                }
+                <div class="col">
+                    <div class="left">
+                        <p>
+
+                            @if (item.IsDeleted == false)
+                            {
+                                @Html.DisplayFor(modelItem => item.Body)
+                            }
+                            else
+                            {
+                                @ViewBag.deleted
+                            }
+                        </p>
+                    </div>
+                </div>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.ActionLink("Reply", "Reply", new { id = item.Id }) | @Html.ActionLink("Delete", "ReplyDelete", new { id = item.Id })
+                <div class="col">
+                    <div class="left">
+                        <p>
+                            Sent: @Html.DisplayFor(modelItem => item.Date)
+                        </p>
+                        <p>
+                            @if (item.User.Id == ViewBag.UserID)
+                            {
+                                @Html.ActionLink("Delete", "ReplyDelete", new { id = item.Id })
+                            }
+                        </p>
+                    </div>
+                </div>
             </td>
         </tr>
     }
 
 </table>
-
 <p>
+    @Html.ActionLink("Reply", "Reply", new { id = ViewBag.ID }) |
     @Html.ActionLink("Back to Inbox", "Index")
 </p>

@@ -63,6 +63,10 @@ namespace Orca_Gamma.Controllers
                 {
                     sortOrder = "date_desc";
                 }
+                else if (sortOrder == "latest_desc")
+                {
+                    sortOrder = "latest_asc";
+                }
             }
 
             ViewBag.SortParm = String.IsNullOrEmpty(sortOrder);
@@ -77,79 +81,103 @@ namespace Orca_Gamma.Controllers
                 betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
             }
 
-            switch (sortOrder)
-            {
-                case "subject_asc":
-                    betweenList = betweenList.OrderBy(s => s.PrivateMessage.Subject);
-                    break;
-                case "creator_desc":
-                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.UserId);
-                    break;
-                case "date_desc":
-                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
-                    break;
-                case "subject_desc":
-                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Subject);
-                    break;
-                case "creator_asc":
-                    betweenList = betweenList.OrderBy(s => s.PrivateMessage.UserId);
-                    break;
-                case "date_asc":
-                    betweenList = betweenList.OrderBy(s => s.PrivateMessage.Date);
-                    break;
-                default:
-                    betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
-                    ViewBag.LastSort = "date_desc";
-                    break;
-            }
+            //switch (sortOrder)
+            //{
+            //    case "subject_asc":
+            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.Subject);
+            //        break;
+            //    case "creator_desc":
+            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.UserId);
+            //        break;
+            //    case "date_desc":
+            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
+            //        break;
+            //    case "subject_desc":
+            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Subject);
+            //        break;
+            //    case "creator_asc":
+            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.UserId);
+            //        break;
+            //    case "date_asc":
+            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.Date);
+            //        break;
+            //    case "latest_asc":
+            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.Date);
+            //        break;
+            //    case "latest_desc":
+            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
+            //        break;
+            //    default:
+            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
+            //        ViewBag.LastSort = "date_desc";
+            //        break;
+            //}
 
             //Get a list of all private messages ids from the between model
             List<PMIndexViewModel> PostIDList = new List<PMIndexViewModel>();
+            IEnumerable<PrivateMessagePost> pmps = db.PrivateMessagePosts.Include(g => g.User).Include(h => h.PrivateMessage).ToList();
+            IEnumerable<ApplicationUser> aus = db.Users.ToList();
             foreach (var k in betweenList)
             {
                 if (k.User.Id == theId)
                 {
-                    //var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId);
-
-                    //List<PrivateMessagePost> PostApartOfList = (from a in db.PrivateMessagePosts.ToList()
-                    //                   where a.PartOf == k.PrivateMessageId
-                    //                   select a).ToList();
-
-                    int headMessageID = k.PrivateMessageId;
-
-                    //var relevantPostList = db.PrivateMessagePosts.Where(x => x.PartOf == (headMessageID)).ToList();
-
-                    PrivateMessagePost tryThis = db.PrivateMessagePosts.Find(75);
-                    String lastReply = tryThis.User.FirstName;
-                    DateTime lastReplyTime = tryThis.Date;
-                    //String lastReply = "Default";
-                    //DateTime lastReplyTime = DateTime.Now;
-
-                    //foreach (var tempPost in relevantPostList)
-                    //{
-                    //    var findThisGuy = db.Users.Find(tempPost.CreatedBy);
-                    //    lastReply = findThisGuy.FirstName;
-                    //    lastReplyTime = tempPost.Date;
-                    //}
+                    String lastReply = "Default";
+                    DateTime lastReplyTime = DateTime.Now;
+                    PrivateMessagePost tryThis = pmps.Last(x => x.PartOf == k.PrivateMessageId);
+                    lastReply = tryThis.User.UserName;
+                    lastReplyTime = tryThis.Date;
 
                     var temp = new PMIndexViewModel
                     {
                         Id = k.PrivateMessage.Id,
-                        UserId = k.UserId,
+                        UserId = k.PrivateMessage.User.FirstName,
                         Date = k.PrivateMessage.Date,
                         Subject = k.PrivateMessage.Subject,
                         IsDeleted = k.PrivateMessage.IsDeleted,
                         IsImportant = k.PrivateMessage.IsImportant,
-                        User = k.User,
+                        User = k.PrivateMessage.User,
                         LastPost = lastReply,
                         LastReplyTime = lastReplyTime
                     };
                     PostIDList.Add(temp);
                 }
             }
+            //List<Order> SortedList = objListOrder.OrderBy(o=>o.OrderDate).ToList();
+            List<PMIndexViewModel> SortedList;
+            switch (sortOrder)
+            {
+                case "subject_asc":
+                    SortedList = PostIDList.OrderBy(s => s.Subject).ToList();
+                    break;
+                case "subject_desc":
+                    SortedList = PostIDList.OrderByDescending(s => s.Subject).ToList();
+                    break;
+                case "creator_asc":
+                    SortedList = PostIDList.OrderBy(s => s.UserId).ToList();
+                    break;
+                case "creator_desc":
+                    SortedList = PostIDList.OrderByDescending(s => s.UserId).ToList();
+                    break;
+                case "date_asc":
+                    SortedList = PostIDList.OrderBy(s => s.Date).ToList();
+                    break;
+                case "date_desc":
+                    SortedList = PostIDList.OrderByDescending(s => s.Date).ToList();
+                    break;
+                case "latest_asc":
+                    SortedList = PostIDList.OrderBy(s => s.LastReplyTime).ToList();
+                    break;
+                case "latest_desc":
+                    SortedList = PostIDList.OrderByDescending(s => s.LastReplyTime).ToList();
+                    break;
+                default:
+                    SortedList = PostIDList.OrderByDescending(s => s.LastReplyTime).ToList();
+                    ViewBag.LastSort = "latest_desc";
+                    break;
+            }
 
             //var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
-            return View(PostIDList.ToList());
+            return View(SortedList.ToList());
         }
 
         // GET: PrivateMessagePosts/Details/5
@@ -160,9 +188,7 @@ namespace Orca_Gamma.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            //PrivateMessagePost privateMessagePost = db.PrivateMessagePosts.Find(id);
-            //IEnumerable<PrivateMessagePost> list = from s in db.PrivateMessagePosts where s.Id == id select s;
+ 
             var list = db.PrivateMessagePosts.Where(r => r.PrivateMessage.Id == id).Include(p => p.User).Include(r => r.PrivateMessage);
 
             if (list == null)
@@ -173,6 +199,8 @@ namespace Orca_Gamma.Controllers
             PrivateMessage privateMessage = db.PrivateMessages.Find(id);
             ViewBag.SubjectOfMessage = privateMessage.Subject;
             ViewBag.deleted = "[Deleted]";
+            ViewBag.ID = privateMessage.Id;
+            ViewBag.UserID = System.Web.HttpContext.Current.User.Identity.GetUserId();
             return View(list);
         }
 
@@ -298,12 +326,9 @@ namespace Orca_Gamma.Controllers
         {
             if (id != null)
             {
-                PrivateMessagePost temp = db.PrivateMessagePosts.Find(id);
-                var name = temp.User.FirstName;
-                ViewBag.PostTitle = temp.PrivateMessage.Subject;
-                ViewBag.User = name;
-                ViewBag.Message = temp.Body;
-                ViewBag.Date = temp.Date;
+                PrivateMessage temp = db.PrivateMessages.Find(id);
+                ViewBag.PostTitle = temp.Subject;
+                ViewBag.ID = temp.Id;
             }
             return View();
         }
@@ -317,12 +342,12 @@ namespace Orca_Gamma.Controllers
         public ActionResult Reply(int? id, PrivateMessagePost model)
         {
             ApplicationUser user = getCurrentUser();
-            PrivateMessagePost temp = db.PrivateMessagePosts.Find(id);
+            PrivateMessage temp = db.PrivateMessages.Find(id);
             var post = new PrivateMessagePost
             {
                 Body = model.Body,
                 User = user,
-                PrivateMessage = temp.PrivateMessage,
+                PrivateMessage = temp,
                 Date = DateTime.Now,
                 IsDeleted = false,
                 IsImportant = false
