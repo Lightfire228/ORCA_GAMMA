@@ -140,7 +140,7 @@ namespace Orca_Gamma.Controllers
         {
             ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
             ViewBag.Subject = post.Thread.Subject;
-
+            ViewBag.Body = post.Body;
             return View();
         }
 

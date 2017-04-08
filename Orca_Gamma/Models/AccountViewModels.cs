@@ -74,6 +74,7 @@ namespace Orca_Gamma.Models
         public string Email { get; set; }
 
         [Required]
+        [RegularExpression(".{1,25}", ErrorMessage ="User Names cannot be longer than 25 characters")]
         [Display(Name = "User Name")]
         public string UserName { get; set; }
 
