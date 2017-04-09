@@ -420,11 +420,12 @@ namespace Orca_Gamma.Controllers
         //POST: /Manage/editUserAccount
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
         public ActionResult editUserAccount(ApplicationUser model)
         {
 			String id = model.Id;
 			ApplicationUser user = _dbContext.Users.Find(model.Id);
-            Match match = Regex.Match(model.PhoneNumber, @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
+            Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
             if (match.Success)
             {
                 user.FirstName = model.FirstName;
@@ -433,6 +434,7 @@ namespace Orca_Gamma.Controllers
                 //Don't want them to edit login UserName -DBS
                 //user.UserName    = user.UserName;
                 user.PhoneNumber = model.PhoneNumber;
+                user.Bio = model.Bio;
 
                 _dbContext.SaveChanges();
 
