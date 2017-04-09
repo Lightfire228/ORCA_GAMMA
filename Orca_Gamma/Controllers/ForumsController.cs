@@ -33,6 +33,14 @@ namespace Orca_Gamma.Controllers
             return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
+        public DateTime GetESTime()
+        {
+            DateTime timeUTC = DateTime.UtcNow;
+            TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime estTime = TimeZoneInfo.ConvertTimeFromUtc(timeUTC, estZone);
+            return estTime;
+        }
+
 
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
@@ -93,6 +101,7 @@ namespace Orca_Gamma.Controllers
         public ActionResult Create(ThreadMessagePost model, ThreadKeyword threadKey, Keyword key)
         {
 			ApplicationUser user = getCurrentUser();
+            DateTime time = GetESTime();
 
             var post = new ForumThread
             {
@@ -100,7 +109,7 @@ namespace Orca_Gamma.Controllers
                 Subject = model.Thread.Subject,
                 FirstPost = model.Thread.FirstPost,
                 IsDeleted = false,
-                Date = DateTime.Now.ToLocalTime()
+                Date = time
                 
             };
 
@@ -108,7 +117,7 @@ namespace Orca_Gamma.Controllers
             {
                 User = user,
                 Body = model.Body,
-                Date = DateTime.Now.ToLocalTime(),
+                Date = time,
                 Thread = post
             };
 
@@ -151,13 +160,14 @@ namespace Orca_Gamma.Controllers
         {
             ApplicationUser user = getCurrentUser();
             ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            DateTime time = GetESTime();
 
             var thread = new ThreadMessagePost
             {
                 User = user,
                 Thread = post.Thread,
                 Body = model.Body,
-                Date = DateTime.Now
+                Date = time
              };
 
              _dbContext.ThreadMessagePosts.Add(thread);
