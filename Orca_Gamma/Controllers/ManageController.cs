@@ -10,6 +10,7 @@ using Orca_Gamma.Models;
 using System.Web.Security;
 using Orca_Gamma.Models.DatabaseModels;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Orca_Gamma.Controllers
 {
@@ -423,19 +424,26 @@ namespace Orca_Gamma.Controllers
         {
 			String id = model.Id;
 			ApplicationUser user = _dbContext.Users.Find(model.Id);
-
-			user.FirstName   = model.FirstName;
-			user.LastName    = model.LastName;
-			user.Email       = model.Email;
-            //Don't want them to edit login UserName -DBS
-			//user.UserName    = user.UserName;
-			user.PhoneNumber = model.PhoneNumber; 
-
-			_dbContext.SaveChanges();
-
-            if (ModelState.IsValid)
+            Match match = Regex.Match(model.PhoneNumber, @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
+            if (match.Success)
             {
-                return RedirectToAction("Index");
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Email = model.Email;
+                //Don't want them to edit login UserName -DBS
+                //user.UserName    = user.UserName;
+                user.PhoneNumber = model.PhoneNumber;
+
+                _dbContext.SaveChanges();
+
+                if (ModelState.IsValid)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            else
+            {
+                ViewBag.error = "Invalid phone number!";
             }
             return View(model);
         }
