@@ -3,8 +3,11 @@
     ViewBag.Title = "Reply";
 }
 
-<h2>Reply</h2>
-Replying to @ViewBag.Subject
+<h2>RE: @ViewBag.Subject</h2>
+<br />
+<div>
+    @ViewBag.Body
+</div>
 
 @using (Html.BeginForm())
 {
@@ -15,7 +18,7 @@ Replying to @ViewBag.Subject
     <div class="form-group">
         @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Body, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.TextAreaFor(model => model.Body, new { htmlAttributes = new { @class = "form-control", @style = "height:500px" } })
             @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -26,9 +29,9 @@ Replying to @ViewBag.Subject
     </div>
 </div>
 }
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+@*<div>
+    @Html.ActionLink("Back", "Details")
+</div>*@
 
 
 @section Scripts {

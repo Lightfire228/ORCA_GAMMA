@@ -74,14 +74,17 @@ namespace Orca_Gamma.Models
         public string Email { get; set; }
 
         [Required]
+        [RegularExpression(".{1,25}", ErrorMessage ="User Names cannot be longer than 25 characters")]
         [Display(Name = "User Name")]
         public string UserName { get; set; }
 
-        [RegularExpression("[A-Za-z0-9]+")]
+        [Required]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage = "Not a valid user name")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
-        [RegularExpression("[A-Za-z0-9]+")]
+        [Required]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage ="Not a valid user name")]
         [Display(Name = "Last Name")]
         public string LastName{ get; set; }
 
@@ -126,5 +129,30 @@ namespace Orca_Gamma.Models
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+    }
+
+    public class EditAccountViewModel
+    {
+        public ApplicationUser User { get; set; }
+
+        [Required]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage = "Not a valid name")]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage = "Not a valid name")]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        //[Phone]
+        [Display(Name = "Phone Number")]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid Phone number")]
+        public string PhoneNumber { get; set; }
     }
 }

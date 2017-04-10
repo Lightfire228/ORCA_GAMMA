@@ -24,9 +24,12 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Links", "Index", "Links")</li>
+                    @*<li>@Html.ActionLink("Links", "Index", "Links")</li>*@
                     <li>@Html.ActionLink("Forums", "Index", "Forums")</li>
-
+                    <li>@Html.ActionLink("Projects", "Index", "Projects")</li>
+                    @if (Request.IsAuthenticated) {
+                    <li>@Html.ActionLink("Private Messages", "Index", "PrivateMessagePosts")</li>
+                    }
                     @if (Request.IsAuthenticated && User.IsInRole("Admin")) {
                         <li>@*@Html.ActionLink("Roles", "Index", "RolesAdmin")*@</li>
                         <li>@Html.ActionLink("Users", "Index", "UsersAdmin")</li>

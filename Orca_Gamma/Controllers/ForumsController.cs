@@ -33,11 +33,19 @@ namespace Orca_Gamma.Controllers
             return _dbContext.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
+        public DateTime GetESTime()
+        {
+            DateTime timeUTC = DateTime.UtcNow;
+            TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime estTime = TimeZoneInfo.ConvertTimeFromUtc(timeUTC, estZone);
+            return estTime;
+        }
+
 
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
-            ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
 
             if (searchString != null)
             {
@@ -60,7 +68,7 @@ namespace Orca_Gamma.Controllers
                     threads = threads.OrderByDescending(s => s.Subject);
                     break;
                 default:
-                    threads = threads.OrderBy(s => s.Subject);
+                    threads = threads.OrderByDescending(s => s.Date);
                     break;
             }
 
@@ -93,6 +101,7 @@ namespace Orca_Gamma.Controllers
         public ActionResult Create(ThreadMessagePost model, ThreadKeyword threadKey, Keyword key)
         {
 			ApplicationUser user = getCurrentUser();
+            DateTime time = GetESTime();
 
             var post = new ForumThread
             {
@@ -100,7 +109,7 @@ namespace Orca_Gamma.Controllers
                 Subject = model.Thread.Subject,
                 FirstPost = model.Thread.FirstPost,
                 IsDeleted = false,
-                Date = DateTime.Now
+                Date = time
                 
             };
 
@@ -108,7 +117,7 @@ namespace Orca_Gamma.Controllers
             {
                 User = user,
                 Body = model.Body,
-                Date = DateTime.Now,
+                Date = time,
                 Thread = post
             };
 
@@ -140,7 +149,7 @@ namespace Orca_Gamma.Controllers
         {
             ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
             ViewBag.Subject = post.Thread.Subject;
-
+            ViewBag.Body = post.Body;
             return View();
         }
 
@@ -151,13 +160,14 @@ namespace Orca_Gamma.Controllers
         {
             ApplicationUser user = getCurrentUser();
             ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
+            DateTime time = GetESTime();
 
             var thread = new ThreadMessagePost
             {
                 User = user,
                 Thread = post.Thread,
                 Body = model.Body,
-                Date = DateTime.Now
+                Date = time
              };
 
              _dbContext.ThreadMessagePosts.Add(thread);
@@ -167,17 +177,29 @@ namespace Orca_Gamma.Controllers
         }
 
         // GET: /Forums/Details/
-        public ViewResult Details(int? id, int? page)
+        public ViewResult Details(string sortOrder, string currentFilter, string searchString, int? id, int? page)
         {
             ApplicationDbContext db = new ApplicationDbContext();
             ApplicationUser user = getCurrentUser();
 
-            ForumThread post = _dbContext.ForumThreads.Find(id);
-            List<ForumThread> posts = new List<ForumThread>();
-            ViewBag.Subject = post.Subject;
-            
+            ViewBag.CurrentSort = sortOrder;
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
             var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
-                         select s;
+                           select s;
+            ViewBag.CurrentFilter = searchString;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                thread = thread.Where(t => t.Body.Contains(searchString));
+            }
+            ForumThread post = _dbContext.ForumThreads.Find(id);
+            ViewBag.Subject = post.Subject;
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
