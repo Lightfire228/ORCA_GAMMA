@@ -20,6 +20,10 @@ namespace Orca_Gamma.Models.DatabaseModels {
 			get; set;
 		}
 
+		public Boolean IsDeleted {
+			get; set;
+		}	
+
 
 		public virtual PrivateMessage PrivateMessage {
 			get; set;

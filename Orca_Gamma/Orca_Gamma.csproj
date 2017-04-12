@@ -254,6 +254,10 @@
     <Compile Include="Migrations\201704041517320_added-important-removed-expert-isvalidated.Designer.cs">
       <DependentUpon>201704041517320_added-important-removed-expert-isvalidated.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704121753373_soft-delete-PMB.cs" />
+    <Compile Include="Migrations\201704121753373_soft-delete-PMB.Designer.cs">
+      <DependentUpon>201704121753373_soft-delete-PMB.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DatabaseModels\CatagoryRequest.cs" />
@@ -419,6 +423,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704041517320_added-important-removed-expert-isvalidated.resx">
       <DependentUpon>201704041517320_added-important-removed-expert-isvalidated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704121753373_soft-delete-PMB.resx">
+      <DependentUpon>201704121753373_soft-delete-PMB.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
