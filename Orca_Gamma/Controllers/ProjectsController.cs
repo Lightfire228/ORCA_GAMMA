@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
 using Microsoft.AspNet.Identity;
+using System.Web.Security;
 
 namespace Orca_Gamma.Controllers
 {
@@ -16,37 +17,19 @@ namespace Orca_Gamma.Controllers
     {
         private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
 
-        //this is legit
-        // GET: Projects
-        //public ActionResult Index(string searchString)
-        //{
-
-        //    var project = from p in db.Project
-        //                   select p;
-
-        //    if (!String.IsNullOrEmpty(searchString))
-        //    {
-        //        project = project.Where(s => s.Name.Contains(searchString));
-
-        //    }
-
-        //    return View(project.ToList());
-
-        //}
-
-        public ActionResult Index( string sortOrder, string searchString )
+        public ActionResult Index(string sortOrder, string searchString)
         {
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
 
             var project = from p in db.Project
-                           select p;
+                          select p;
 
             if (!String.IsNullOrEmpty(searchString))
-                   {
-                       project = project.Where(s => s.Name.Contains(searchString));
-                   }
+            {
+                project = project.Where(s => s.Name.Contains(searchString));
+            }
 
-                switch (sortOrder)
+            switch (sortOrder)
             {
                 case "Date":
                     project = project.OrderBy(p => p.DateStarted);
@@ -59,19 +42,6 @@ namespace Orca_Gamma.Controllers
             return View(project.ToList());
         }
 
-
-
-        /*
-         * without search (create/edit only)
-        // GET: Projects
-        public ActionResult Index()
-        {
-            var project = db.Project.Include(p => p.User);
-            return View(project.ToList());
-
-        }
-
-        */
 
         // GET: Projects/Details/5
         public ActionResult Details(int? id)
@@ -127,23 +97,38 @@ namespace Orca_Gamma.Controllers
             return RedirectToAction("Index");
 
         }
+ 
 
         // GET: Projects/Edit/5
         [Authorize]
         public ActionResult Edit(int? id)
         {
+       
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             Project project = db.Project.Find(id);
+          
             if (project == null)
             {
                 return HttpNotFound();
             }
 
-            return View(project);
+            var projects = db.Project.Find(id);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (projectLead == user)
+            {
+                return View(project);
+
+            }
+            else
+                return RedirectToAction("Index");
+
+            //return View(project);
         }
 
 
