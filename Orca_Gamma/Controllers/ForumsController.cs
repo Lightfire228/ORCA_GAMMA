@@ -85,7 +85,14 @@ namespace Orca_Gamma.Controllers
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            return View(threads.ToPagedList(pageNumber, pageSize));
+			// equivelant of 
+			// Math.Ceiling(threads.Count(), pageSize);
+			int maxPages = 1 + ((threads.Count() - 1) / pageSize);
+
+			if (pageNumber > maxPages)
+				return View("Error");
+
+			return View(threads.ToPagedList(pageNumber, pageSize));
         }
 
         [Authorize]
@@ -204,7 +211,12 @@ namespace Orca_Gamma.Controllers
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            return View(thread.ToList().ToPagedList(pageNumber, pageSize));
+			int maxPages = 1 + ((thread.Count() - 1) / pageSize);
+
+			if (pageNumber > maxPages)
+				return View("Error");
+
+			return View(thread.ToList().ToPagedList(pageNumber, pageSize));
         }
 
 
