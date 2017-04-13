@@ -113,6 +113,10 @@ namespace Orca_Gamma.Controllers
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
             }
+            if (Request.IsAuthenticated)
+            {
+                
+            }
         }
 
         //

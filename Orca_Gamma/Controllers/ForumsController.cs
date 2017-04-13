@@ -55,8 +55,9 @@ namespace Orca_Gamma.Controllers
             {
                 searchString = currentFilter;
             }
-            var threads = from s in _dbContext.ForumThreads
-                          select s;
+
+            IEnumerable<ForumThread> threads = _dbContext.ForumThreads.ToList();
+
             ViewBag.CurrentFilter = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -72,10 +73,29 @@ namespace Orca_Gamma.Controllers
                     break;
             }
 
-            //var countReplies = "SELECT DISTINCT COUNT(dbo.ThreadMessagePosts.Body) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
-            ////var countReply = from s in _dbContext.ThreadMessagePosts.Where(s => s.PartOf == s.Thread.Id)
-            //                 //select s;
-            //var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
+            var posts = _dbContext.ThreadMessagePosts.ToList();
+            List<ThreadViewModel> models = new List<ThreadViewModel>();
+
+            foreach (var thread in threads)
+            {
+                var currPosts = posts.Where(p => p.Thread == thread);
+                var lastPost = currPosts.OrderBy(p => p.Date).LastOrDefault();
+                var count = currPosts.OrderBy(p => p.Id);
+           
+                var model = new ThreadViewModel
+                {
+                    Thread = thread,
+                    Post = lastPost
+                };
+
+                ViewBag.CountReplies = count;
+                models.Add(model);
+
+            }
+
+            //var countReplies = "SELECT DISTINCT dbo.ThreadMessagePosts.PartOf FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id GROUP BY dbo.ThreadMessagePosts.PartOf";
+            var countReplies = "SELECT COUNT(dbo.ThreadMessagePosts.PartOf) from dbo.ThreadMessagePosts LEFT JOIN dbo.ForumThreads ON dbo.ForumThreads.ID = dbo.ThreadMessagePosts.PartOf ";
+            var totalReplies = _dbContext.Database.SqlQuery<int>(countReplies).Single();
             //ViewBag.CountReplies = totalReplies;
 
             //var getLastPost = "SELECT DISTINCT TOP 1 ThreadMessagePosts.Date FROM dbo.ThreadMessagePosts,dbo.ForumThreads Where dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id GROUP BY ThreadMessagePosts.Date ORDER BY ThreadMessagePosts.Date DESC";
@@ -85,7 +105,7 @@ namespace Orca_Gamma.Controllers
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            return View(threads.ToPagedList(pageNumber, pageSize));
+            return View(models.ToPagedList(pageNumber, pageSize));
         }
 
         [Authorize]
@@ -191,9 +211,11 @@ namespace Orca_Gamma.Controllers
             {
                 searchString = currentFilter;
             }
+
             var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
                            select s;
             ViewBag.CurrentFilter = searchString;
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 thread = thread.Where(t => t.Body.Contains(searchString));
