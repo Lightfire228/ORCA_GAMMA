@@ -3,6 +3,7 @@
 
 ## Appharbor links
 Ours: http://orcagamma.apphb.com/
+Appharbor direct: https://appharbor.com/applications/
 
 Astronaut Sloth: http://marcos.apphb.com/
 
