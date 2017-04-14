@@ -55,8 +55,9 @@ namespace Orca_Gamma.Controllers
             {
                 searchString = currentFilter;
             }
-            var threads = from s in _dbContext.ForumThreads
-                          select s;
+
+            IEnumerable<ForumThread> threads = _dbContext.ForumThreads.ToList();
+
             ViewBag.CurrentFilter = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -70,6 +71,29 @@ namespace Orca_Gamma.Controllers
                 default:
                     threads = threads.OrderByDescending(s => s.Date);
                     break;
+            }
+
+            var posts = _dbContext.ThreadMessagePosts.ToList();
+            List<ThreadViewModel> models = new List<ThreadViewModel>();
+
+            foreach (var thread in threads)
+            {
+                var currPosts = posts.Where(p => p.Thread == thread);
+                var lastPost = currPosts.OrderBy(p => p.Date).LastOrDefault();
+                var count = currPosts.OrderBy(p => p.Id);
+
+                var model = new ThreadViewModel
+                {
+                    Thread = thread,
+                    Post = lastPost
+                };
+                foreach (var thread1 in threads)
+                {
+                    ViewBag.CountReplies = count.Count();
+                }
+                //ViewBag.CountReplies = count.Count();
+                models.Add(model);
+
             }
 
             //var countReplies = "SELECT DISTINCT COUNT(dbo.ThreadMessagePosts.Body) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
@@ -92,8 +116,9 @@ namespace Orca_Gamma.Controllers
 			if (pageNumber > maxPages)
 				return View("Error");
 
-			return View(threads.ToPagedList(pageNumber, pageSize));
+			return View(models.ToPagedList(pageNumber, pageSize));
         }
+
 
         [Authorize]
         //GET: Forums/Create
@@ -157,6 +182,7 @@ namespace Orca_Gamma.Controllers
             ThreadMessagePost post = _dbContext.ThreadMessagePosts.Find(id);
             ViewBag.Subject = post.Thread.Subject;
             ViewBag.Body = post.Body;
+
             return View();
         }
 
@@ -198,13 +224,16 @@ namespace Orca_Gamma.Controllers
             {
                 searchString = currentFilter;
             }
+
             var thread = from s in _dbContext.ThreadMessagePosts.Where(s => s.Thread.Id == id)
                            select s;
+
             ViewBag.CurrentFilter = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
                 thread = thread.Where(t => t.Body.Contains(searchString));
             }
+
             ForumThread post = _dbContext.ForumThreads.Find(id);
             ViewBag.Subject = post.Subject;
 
