@@ -135,7 +135,21 @@ namespace Orca_Gamma.Controllers
 			ApplicationUser user = getCurrentUser();
             DateTime time = GetESTime();
 
-            var post = new ForumThread
+			Boolean error = false;
+			if (model.Thread.Subject == null) {
+				error = true;
+
+				ViewBag.subjectBlank = "Subject cannot be empty";
+			}
+			if (model.Body == null) {
+				error = true;
+
+				ViewBag.bodyBlank = "Body cannot be empty";
+			}
+			if (error)
+				return View(model);
+
+			var post = new ForumThread
             {
                 User = user, // This is how you do foreign keys - Cass
                 Subject = model.Thread.Subject,
