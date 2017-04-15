@@ -13,7 +13,7 @@
         Controller Method: editExpertAccount
         Controller Class: ManageController
          -Geoff*@
-    @Html.ActionLink("Edit/Create Expert Information", "editExpertAccount")
+    @Html.ActionLink("Change Category", "editExpertAccount")
 
 
 </p>
@@ -24,7 +24,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayName("Names")
+            @Html.DisplayName("Keyword")
         </th>
         <th></th>
     </tr>
@@ -35,9 +35,9 @@
             @Html.DisplayFor(modelItem => item.Name)
         </td>
         <td>
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            @Html.ActionLink("Delete", "keywordDelete", new { id = item.Id })
         </td>
     </tr>
-}
+    }
 
 </table>
