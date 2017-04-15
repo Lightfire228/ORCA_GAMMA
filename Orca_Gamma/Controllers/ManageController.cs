@@ -12,6 +12,7 @@ using Orca_Gamma.Models.DatabaseModels;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Net;
+using System.Net.Mail;
 
 namespace Orca_Gamma.Controllers
 {
@@ -462,26 +463,35 @@ namespace Orca_Gamma.Controllers
 			String id = model.Id;
 			ApplicationUser user = _dbContext.Users.Find(model.Id);
             Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
-            if (match.Success)
+            try
             {
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                //Don't want them to edit login UserName -DBS
-                //user.UserName    = user.UserName;
-                user.PhoneNumber = model.PhoneNumber;
-                user.Bio = model.Bio;
+                MailAddress m = new MailAddress(model.Email);
 
-                _dbContext.SaveChanges();
-
-                if (ModelState.IsValid)
+                if (match.Success)
                 {
-                    return RedirectToAction("Index");
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Email = model.Email;
+                    //Don't want them to edit login UserName -DBS
+                    //user.UserName    = user.UserName;
+                    user.PhoneNumber = model.PhoneNumber;
+                    user.Bio = model.Bio;
+
+                    _dbContext.SaveChanges();
+
+                    if (ModelState.IsValid)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                }
+                else
+                {
+                    ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
                 }
             }
-            else
+            catch (FormatException)
             {
-                ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
+                ViewBag.errorEmail = "Invalid Email format!";
             }
             return View(model);
         }
