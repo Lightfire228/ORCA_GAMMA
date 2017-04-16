@@ -23,13 +23,21 @@ namespace Orca_Gamma.Controllers
             return db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
+        public DateTime GetESTime()
+        {
+            DateTime timeUTC = DateTime.UtcNow;
+            TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime estTime = TimeZoneInfo.ConvertTimeFromUtc(timeUTC, estZone);
+            return estTime;
+        }
+
         // GET: PrivateMessagePosts
         [Authorize]
         public ActionResult Index(string sortOrder, string previousFilter, string searchString, string lastSort)
         {
             var theId = User.Identity.GetUserId();
             var privateMessageList = db.PrivateMessages.Include(p => p.User);
-            var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId);
+            var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId).Where(k => k.IsDeleted == false);
             var postList = db.PrivateMessagePosts;
 
             ViewBag.CurrentSort = sortOrder;
@@ -81,38 +89,6 @@ namespace Orca_Gamma.Controllers
                 betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
             }
 
-            //switch (sortOrder)
-            //{
-            //    case "subject_asc":
-            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.Subject);
-            //        break;
-            //    case "creator_desc":
-            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.UserId);
-            //        break;
-            //    case "date_desc":
-            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
-            //        break;
-            //    case "subject_desc":
-            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Subject);
-            //        break;
-            //    case "creator_asc":
-            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.UserId);
-            //        break;
-            //    case "date_asc":
-            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.Date);
-            //        break;
-            //    case "latest_asc":
-            //        betweenList = betweenList.OrderBy(s => s.PrivateMessage.Date);
-            //        break;
-            //    case "latest_desc":
-            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
-            //        break;
-            //    default:
-            //        betweenList = betweenList.OrderByDescending(s => s.PrivateMessage.Date);
-            //        ViewBag.LastSort = "date_desc";
-            //        break;
-            //}
-
             //Get a list of all private messages ids from the between model
             List<PMIndexViewModel> PostIDList = new List<PMIndexViewModel>();
             IEnumerable<PrivateMessagePost> pmps = db.PrivateMessagePosts.Include(g => g.User).Include(h => h.PrivateMessage).ToList();
@@ -122,7 +98,7 @@ namespace Orca_Gamma.Controllers
                 if (k.User.Id == theId)
                 {
                     String lastReply = "Default";
-                    DateTime lastReplyTime = DateTime.Now;
+                    DateTime lastReplyTime = GetESTime();
                     PrivateMessagePost tryThis = pmps.Last(x => x.PartOf == k.PrivateMessageId);
                     lastReply = tryThis.User.UserName;
                     lastReplyTime = tryThis.Date;
@@ -142,7 +118,7 @@ namespace Orca_Gamma.Controllers
                     PostIDList.Add(temp);
                 }
             }
-            //List<Order> SortedList = objListOrder.OrderBy(o=>o.OrderDate).ToList();
+
             List<PMIndexViewModel> SortedList;
             switch (sortOrder)
             {
@@ -175,8 +151,6 @@ namespace Orca_Gamma.Controllers
                     ViewBag.LastSort = "latest_desc";
                     break;
             }
-
-            //var privateMessagePosts = db.PrivateMessagePosts.Include(p => p.PrivateMessage).Include(p => p.User);
             return View(SortedList.ToList());
         }
 
@@ -206,8 +180,9 @@ namespace Orca_Gamma.Controllers
 
         // GET: PrivateMessagePosts/Create
         [Authorize]
-        public ActionResult Create()
+        public ActionResult Create(String UserName)
         {
+            ViewBag.Recipient = UserName;
             return View();
         }
 
@@ -224,7 +199,7 @@ namespace Orca_Gamma.Controllers
 
             var initial = new PrivateMessage
             {
-                Date = DateTime.Now,
+                Date = GetESTime(),
                 Subject = model.PrivateMessage.Subject,
                 IsDeleted = false,
                 User = user
@@ -235,7 +210,7 @@ namespace Orca_Gamma.Controllers
                 Body = model.Body,
                 User = user,
                 PrivateMessage = initial,
-                Date = DateTime.Now,
+                Date = GetESTime(),
                 IsDeleted = false,
                 IsImportant = false
             };
@@ -258,6 +233,10 @@ namespace Orca_Gamma.Controllers
 
             //Make a list of their actual ApplicationUser models
             List<ApplicationUser> RecipientList = new List<ApplicationUser>();
+            //Create list of UserName's that do not exist
+            List<String> UserNameListNotFound = new List<String>();
+            //True if there's a username that doesn't exist
+            Boolean UserNameNotFound = false;
             foreach (String UserName in UserNameListConverted)
             {
                 ApplicationUser temp = db.Users.SingleOrDefault(g => g.UserName == UserName);
@@ -265,6 +244,25 @@ namespace Orca_Gamma.Controllers
                 {
                     RecipientList.Add(temp);
                 }
+                else
+                {
+                    UserNameListNotFound.Add(UserName);
+                    UserNameNotFound = true;
+                }
+            }
+
+            if(UserNameNotFound == true)
+            {
+                String preface = "Error. One or more UserNames not found: ";
+                String temp = "";
+                foreach (String name in UserNameListNotFound)
+                {
+                    temp = temp + name + ", ";
+                }
+                temp = temp.Substring(0, temp.Length - 2);
+                preface = preface + temp;
+                ViewBag.error = preface;
+                return View();
             }
 
             foreach (var recipient in RecipientList)
@@ -277,8 +275,6 @@ namespace Orca_Gamma.Controllers
 
                 db.PrivateMessagesBetween.Add(temp);
             }
-            //Recipients-----------------------------------------------------------------------------------------------------------------------------
-
             db.PrivateMessages.Add(initial);
             db.PrivateMessagePosts.Add(post);
             db.SaveChanges();
@@ -310,11 +306,13 @@ namespace Orca_Gamma.Controllers
             var userId = User.Identity.GetUserId();
 
             //I casted it as a List basically... I dunno, it's stupid but it works.
-            List<PrivateMessageBetween> pm = (from pms in db.PrivateMessagesBetween.ToList()
+            List<PrivateMessageBetween> pmtemp = (from pms in db.PrivateMessagesBetween.ToList()
                                               where pms.UserId == userId && pms.PrivateMessageId == id
                                               select pms).ToList();
+            PrivateMessageBetween pm = pmtemp[0];
+            pm.IsDeleted = true;
 
-            db.PrivateMessagesBetween.Remove(pm[0]);
+            //db.PrivateMessagesBetween.Remove(pm);
             db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -348,12 +346,19 @@ namespace Orca_Gamma.Controllers
                 Body = model.Body,
                 User = user,
                 PrivateMessage = temp,
-                Date = DateTime.Now,
+                Date = GetESTime(),
                 IsDeleted = false,
                 IsImportant = false
             };
-
             db.PrivateMessagePosts.Add(post);
+
+            //Make all recipients get the message in their inbox again had they deleted it before.
+            var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(k => k.IsDeleted == true).Where(y => y.PrivateMessageId == temp.Id);
+            foreach(var k in betweenList)
+            {
+                k.IsDeleted = false;
+            }
+
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -370,6 +375,19 @@ namespace Orca_Gamma.Controllers
             {
                 return HttpNotFound();
             }
+            else
+            {
+                if (privateMessagePost.IsDeleted == false)
+                {
+                    ViewBag.BigHeading = "Reply Delete";
+                    ViewBag.Heading = "Are you sure you want to delete this message? You can restore it later.";
+                }
+                else if (privateMessagePost.IsDeleted == true)
+                {
+                    ViewBag.BigHeading = "Reply Restore";
+                    ViewBag.Heading = "Are you sure you want to restore this message?";
+                }
+            }
             return View(privateMessagePost);
         }
 
@@ -383,7 +401,14 @@ namespace Orca_Gamma.Controllers
 
             //I casted it as a List basically... I dunno, it's stupid but it works.
             PrivateMessagePost pm = db.PrivateMessagePosts.Find(id);
-            pm.IsDeleted = true;
+            if (pm.IsDeleted == false)
+            {
+                pm.IsDeleted = true;
+            }
+            else
+            {
+                pm.IsDeleted = false;
+            }
 
             db.SaveChanges();
 
