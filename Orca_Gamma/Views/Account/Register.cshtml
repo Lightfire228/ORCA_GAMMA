@@ -14,19 +14,6 @@
     <h4>Create a new account.</h4>
     <hr />
     <div class="form-group">
-        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @if (ViewBag.error != null)
-                {
-                <div class="text-danger">
-                    @ViewBag.error
-                </div>
-            }
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
         @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @if (ViewBag.error != null)
@@ -35,7 +22,7 @@
                     @ViewBag.error
                 </div>
             }
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "Please enter a Username under 25 characters long." })
                         @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -66,6 +53,19 @@
         </div>
     </div>
     <div class="form-group">
+        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @if (ViewBag.error != null)
+                {
+                <div class="text-danger">
+                    @ViewBag.error
+                </div>
+            }
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Example12345@Email.com" })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
         @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @if (ViewBag.error != null)
@@ -74,7 +74,7 @@
                     @ViewBag.error
                 </div>
             }
-            @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "555-555-5555" } })
             @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -87,7 +87,7 @@
                     @ViewBag.error
                 </div>
             }
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder= "use capital letter, number, and symbol" })
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder= "Must have a capital letter, a number, and a special character." })
             @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -100,13 +100,13 @@
                     @ViewBag.error
                 </div>
             }
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder= "Please re-enter your new password." })
             @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
         <label class="col-md-2 control-label">
-            Select User Role
+            Register As:
         </label>
         <div class="col-md-10">
             @foreach (var item in (SelectList)ViewBag.RoleId)
@@ -116,6 +116,7 @@
                     @Html.Label(item.Value, new { @class = "control-label" })
                 }
             }
+            <label>  -  (Leave empty to register as a Basic User)</label>
         </div>
     </div>
     <div class="form-group">

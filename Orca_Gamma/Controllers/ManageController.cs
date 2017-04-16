@@ -445,7 +445,7 @@ namespace Orca_Gamma.Controllers
             }
             else
             {
-                ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
+                ViewBag.error = "Invalid phone number! Must be (555) 555-5555, 555-555-5555, 555-5555, or 1234567890";
             }
             return View(model);
         }
