@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Net;
 using Orca_Gamma.Models.DatabaseModels;
+using System.Text.RegularExpressions;
 
 namespace Orca_Gamma.Controllers
 {
@@ -178,9 +179,13 @@ namespace Orca_Gamma.Controllers
             //second check is to make sure captcha is right
             if (ModelState.IsValid && this.IsCaptchaValid("Captcha is not valid"))
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+               // Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
+               // if (match.Success)
+               // {
+                    var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
+                    user.PhoneNumber = model.PhoneNumber;
                 user.DateJoined = DateTime.Now;
 
                 var result = await UserManager.CreateAsync(user, model.Password);

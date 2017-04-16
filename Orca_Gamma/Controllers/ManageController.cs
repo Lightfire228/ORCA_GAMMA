@@ -425,7 +425,7 @@ namespace Orca_Gamma.Controllers
         {
 			String id = model.Id;
 			ApplicationUser user = _dbContext.Users.Find(model.Id);
-            Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
+            Match match = Regex.Match(model.PhoneNumber ?? "", @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$");
             if (match.Success)
             {
                 user.FirstName = model.FirstName;
