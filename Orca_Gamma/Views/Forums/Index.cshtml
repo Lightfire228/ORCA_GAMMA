@@ -23,9 +23,9 @@
             Topics
             @*@Html.ActionLink("Topic", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })*@
         </th>
-        <th>
+        @*<th>
             Replies
-        </th>
+        </th>*@
         <th>
             Last Post
         </th>
@@ -41,9 +41,9 @@
                 by @Html.DisplayFor(modelItem => item.Thread.User.UserName) on @Html.DisplayFor(modelItem => item.Thread.Date)
             </td>
 
-            <td>
+            @*<td>
                 @ViewBag.CountReplies
-            </td>
+            </td>*@
             <td>
                 by @Html.DisplayFor(modelItem => item.Post.User.UserName) on<br /> @Html.DisplayFor(modelItem => item.Post.Date)
             </td>

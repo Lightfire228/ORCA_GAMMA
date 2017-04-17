@@ -438,10 +438,11 @@ namespace Orca_Gamma.Controllers
             //Don't want them to edit login UserName -DBS
             //user.UserName    = user.UserName;
             user.Bio = model.Bio;
-            Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
-            if (match.Success)
-            {
-                user.PhoneNumber = model.PhoneNumber;
+            //Moving regex and error message over to EditUserViewModel -RD
+            //Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
+            //if (match.Success)
+            //{
+            user.PhoneNumber = model.PhoneNumber;
 
                 _dbContext.SaveChanges();
 
@@ -449,11 +450,11 @@ namespace Orca_Gamma.Controllers
                 {
                     return RedirectToAction("Index");
                 }
-            }
-            else
-            {
-                ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
-            }
+            //}
+            //else
+            //{
+               // ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
+            //}
             return View(model);
         }
 

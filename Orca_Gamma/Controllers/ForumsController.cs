@@ -1,20 +1,13 @@
-﻿using PagedList;
+﻿using Microsoft.AspNet.Identity;
+using Orca_Gamma.Models;
+using Orca_Gamma.Models.DatabaseModels;
+using Orca_Gamma.Models.ViewModels;
+using PagedList;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web.Mvc;
-using Orca_Gamma.Models;
-using Orca_Gamma.Models.ViewModels;
-using Orca_Gamma.Models.DatabaseModels;
-using System.Net;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using System.Web;
-using Microsoft.AspNet.Identity.Owin;
-using System.Web.Security;
-using System.Collections.Generic;
 
 namespace Orca_Gamma.Controllers
 {
@@ -87,14 +80,11 @@ namespace Orca_Gamma.Controllers
                     Thread = thread,
                     Post = lastPost
                 };
-                foreach (var thread1 in threads)
-                {
-                    ViewBag.CountReplies = count.Count();
-                }
-                //ViewBag.CountReplies = count.Count();
+                ViewBag.CountReplies = count.Count();
                 models.Add(model);
 
             }
+
 
             //var countReplies = "SELECT DISTINCT COUNT(dbo.ThreadMessagePosts.Body) FROM dbo.ThreadMessagePosts, dbo.ForumThreads WHERE dbo.ThreadMessagePosts.PartOf=dbo.ForumThreads.Id";
             ////var countReply = from s in _dbContext.ThreadMessagePosts.Where(s => s.PartOf == s.Thread.Id)
