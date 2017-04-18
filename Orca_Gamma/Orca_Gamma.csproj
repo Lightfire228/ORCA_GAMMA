@@ -388,6 +388,9 @@
     <Content Include="Views\Manage\createKeyword.cshtml" />
     <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\PrivateMessagePosts\ReplyDelete.cshtml" />
+    <Content Include="Views\Projects\Collab.cshtml" />
+    <Content Include="Views\Projects\CollabCreate.cshtml" />
+    <Content Include="Views\Projects\CollabDelete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
