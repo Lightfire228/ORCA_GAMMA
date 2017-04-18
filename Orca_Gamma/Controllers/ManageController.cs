@@ -11,6 +11,8 @@ using System.Web.Security;
 using Orca_Gamma.Models.DatabaseModels;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Net;
+using System.Net.Mail;
 
 namespace Orca_Gamma.Controllers
 {
@@ -19,7 +21,7 @@ namespace Orca_Gamma.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-		private ApplicationDbContext _dbContext = new ApplicationDbContext();
+        private ApplicationDbContext _dbContext = new ApplicationDbContext();
 
         public ManageController()
         {
@@ -37,9 +39,9 @@ namespace Orca_Gamma.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -76,7 +78,7 @@ namespace Orca_Gamma.Controllers
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
-				IsExpert = UserManager.IsInRole(userId, "Expert")
+                IsExpert = UserManager.IsInRole(userId, "Expert")
             };
             return View(model);
         }
@@ -403,10 +405,45 @@ namespace Orca_Gamma.Controllers
 
             if (ModelState.IsValid)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("expertInfo");
             }
             return View(model);
 
+        }
+
+        //this will be where they check to make sure they want to delte - Geoff
+        //GET: //Manage/keywordDelete
+        public ActionResult keywordDelete(int? id)
+        {
+            if(id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Keyword keyword = _dbContext.Keywords.Find(id);
+            if(keyword == null)
+            {
+                return HttpNotFound();
+            }
+            return View(keyword);
+        }
+
+        //soft delete of keyword. removes relation between expert and keyword -Geoff
+        //POST: //Manage/keywordDelete
+        [HttpPost, ActionName("keywordDelete")]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult keywordDeleteConfirmed(int id)
+        {
+            var userId = User.Identity.GetUserId();
+
+            //need to find the one to remove
+            List<KeywordRelation> list = (from words in _dbContext.KeywordRelations.ToList()
+                                          where words.ExpertId == userId && words.KeywordId == id
+                                          select words).ToList();
+
+            _dbContext.KeywordRelations.Remove(list[0]);
+            _dbContext.SaveChanges();
+            return RedirectToAction("expertInfo");
         }
 
         //this is just for regular user acount informaiton change -Geoff
@@ -426,26 +463,35 @@ namespace Orca_Gamma.Controllers
 			String id = model.Id;
 			ApplicationUser user = _dbContext.Users.Find(model.Id);
             Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
-            if (match.Success)
+            try
             {
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                //Don't want them to edit login UserName -DBS
-                //user.UserName    = user.UserName;
-                user.PhoneNumber = model.PhoneNumber;
-                user.Bio = model.Bio;
+                MailAddress m = new MailAddress(model.Email);
 
-                _dbContext.SaveChanges();
-
-                if (ModelState.IsValid)
+                if (match.Success)
                 {
-                    return RedirectToAction("Index");
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Email = model.Email;
+                    //Don't want them to edit login UserName -DBS
+                    //user.UserName    = user.UserName;
+                    user.PhoneNumber = model.PhoneNumber;
+                    user.Bio = model.Bio;
+
+                    _dbContext.SaveChanges();
+
+                    if (ModelState.IsValid)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                }
+                else
+                {
+                    ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
                 }
             }
-            else
+            catch (FormatException)
             {
-                ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
+                ViewBag.errorEmail = "Invalid Email format!";
             }
             return View(model);
         }
