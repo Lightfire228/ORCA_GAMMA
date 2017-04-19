@@ -70,7 +70,7 @@
                             <div class="col">
                                 <div class="left">
                                     <h3>
-                                        @Html.DisplayFor(modelItem => item.User.UserName)
+                                        @Html.ActionLink(item.User.UserName, "UserProfile", "Home", new { id = item.User.Id }, null)
                                     </h3>
                                     <p>
                                         Joined:

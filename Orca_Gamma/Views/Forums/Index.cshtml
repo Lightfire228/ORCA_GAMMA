@@ -38,14 +38,14 @@
             <td>
                 @Html.ActionLink(item.Thread.Subject, "Details", new { id = item.Thread.Id })
            <br />
-                by @Html.DisplayFor(modelItem => item.Thread.User.UserName) on @Html.DisplayFor(modelItem => item.Thread.Date)
+                by @Html.ActionLink(item.Thread.User.UserName, "UserProfile", "Home",  new { id = item.Thread.User.Id}, null) on @Html.DisplayFor(modelItem => item.Thread.Date)
             </td>
 
             @*<td>
                 @ViewBag.CountReplies
             </td>*@
             <td>
-                by @Html.DisplayFor(modelItem => item.Post.User.UserName) on<br /> @Html.DisplayFor(modelItem => item.Post.Date)
+                by @Html.ActionLink(item.Post.User.UserName, "UserProfile", "Home", new { id = item.Post.User.Id }, null) on<br /> @Html.DisplayFor(modelItem => item.Post.Date)
             </td>
             <td>
                 @if (Request.IsAuthenticated && User.IsInRole("Admin"))
