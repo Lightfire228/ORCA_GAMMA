@@ -63,14 +63,37 @@ namespace Orca_Gamma.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //get the project they clicked on
             Project project = db.Project.Find(id);
             if (project == null)
             {
                 return HttpNotFound();
             }
+            //get a list of collaborators on this project
+            List<Collaborator> collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.ProjectId == id).ToList();
+            //convert the list of collaborators to a list of their applicationuser objects
+            List<ApplicationUser> collabUserList = new List<ApplicationUser>();
+            ApplicationUser temp;
+            foreach (Collaborator collab in collabList)
+            {
+                temp = db.Users.Find(collab.UserId);
+                collabUserList.Add(temp);
+            };
+
+            var projectWithCollabList = new ProjectViewModel
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                DateStarted = project.DateStarted,
+                DateFinished = project.DateFinished,
+                CollaboratorList = collabUserList,
+                User = project.User
+            };
+
             String tempID = getCurrentUser().Id;
             ViewBag.currentID = tempID;
-            return View(project);
+            return View(projectWithCollabList);
         }
 
 
@@ -95,8 +118,6 @@ namespace Orca_Gamma.Controllers
 
                 DateStarted = DateTime.Now,
                 DateFinished = DateTime.Now
-
-
             };
 
             db.Project.Add(project);
@@ -186,29 +207,7 @@ namespace Orca_Gamma.Controllers
             db.SaveChanges();
             return RedirectToAction("Collab", new { id = projectId });
         }
-
-        ////POST: Projects/Delete Collab
-        //[HttpPost, ActionName("Remove Collab")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize]
-        //public Delete(userId, p_id)
-        //{
-        //    var userId = User.Identity.GetUserId();
-
-        //    //Delete from db the entry that matches
-
-        //    //I casted it as a List basically... I dunno, it's stupid but it works.
-        //    List<Collaborator> collab = (from pms in db.Collaborators.ToList()
-        //                                 where pms.UserId == userId && pms.PrivateMessageId == id
-        //                                 select pms).ToList();
-
-        //    db.PrivateMessagesBetween.Remove(pm[0]);
-        //    db.SaveChanges();
-
-        //}
-
-
-
+        
         // GET: Projects/Edit
         [Authorize]
         public ActionResult Edit(int? id)
@@ -249,7 +248,7 @@ namespace Orca_Gamma.Controllers
         {
             if (ModelState.IsValid)
             {
-                var project = db.Project.Find(model.ID);
+                var project = db.Project.Find(model.Id);
                 project.Name = model.Name;
                 project.Description = model.Description;
 

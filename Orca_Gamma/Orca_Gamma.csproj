@@ -369,7 +369,6 @@
     <Content Include="Views\PrivateMessagePosts\Create.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Delete.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Details.cshtml" />
-    <Content Include="Views\PrivateMessagePosts\Edit.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Index.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Reply.cshtml" />
     <Content Include="Views\PrivateMessagePosts\ReplyDelete.cshtml" />
