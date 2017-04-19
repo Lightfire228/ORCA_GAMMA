@@ -65,9 +65,13 @@
                             Sent: @Html.DisplayFor(modelItem => item.Date)
                         </p>
                         <p>
-                            @if (item.User.Id == ViewBag.UserID)
+                            @if (item.User.Id == ViewBag.UserID && item.IsDeleted == false)
                             {
                                 @Html.ActionLink("Delete", "ReplyDelete", new { id = item.Id })
+                            }
+                            @if(item.User.Id == ViewBag.UserID && item.IsDeleted == true)
+                            {
+                                @Html.ActionLink("Restore", "ReplyDelete", new { id = item.Id })
                             }
                         </p>
                     </div>
