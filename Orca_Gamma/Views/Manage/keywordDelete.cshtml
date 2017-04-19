@@ -1,15 +1,14 @@
-﻿@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
+﻿@model Orca_Gamma.Models.DatabaseModels.Keyword
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "keywordDelete";
 }
 
-<h2>Delete.</h2>
+<h2>keywordDelete</h2>
 
-<h3>Are you sure you want to delete this Role? </h3>
-<p>Deleting this Role will remove all users from this role. It will not delete the users.</p>
+<h3>Are you sure you want to delete this? You will have to create it again if you do.</h3>
 <div>
-    <h4>Role.</h4>
+    <h4>Keyword</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -19,9 +18,10 @@
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
+
     </dl>
-    @using (Html.BeginForm())
-    {
+
+    @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">

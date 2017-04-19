@@ -12,7 +12,6 @@
     <dl class="dl-horizontal">
         <dt>
             Project Lead
-            @*@Html.DisplayNameFor(model => model.User.FirstName)*@
         </dt>
 
         <dd>
@@ -35,7 +34,6 @@
             @Html.DisplayFor(model => model.Description)
         </dd>
 
-
         <dt>
             @Html.DisplayNameFor(model => model.DateStarted)
         </dt>
@@ -43,14 +41,20 @@
         <dd>
             @Html.DisplayFor(model => model.DateStarted)
         </dd>
-
-
-
-
-
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
+@if (@ViewBag.currentID == Model.User.Id)
+{
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+    </p>
+    <p>
+        @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
+    </p>
+    <p>
+        @Html.ActionLink("Manage Collaborators", "Collab", new { id = Model.Id })
+    </p>
+}

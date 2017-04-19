@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Orca_Gamma.Models.DatabaseModels.Collaborator>
+
+@{
+    ViewBag.Title = "Collab";
+}
+<h2>Manage Collaborators</h2>
+
+@Html.ActionLink("Attach Collaborator", "CollabCreate", new { projectId = ViewBag.p_id })
+
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.LastName)
+        </td>
+        <td>
+            @Html.ActionLink("Profile", "UserProfile", "Home", new { item.User.Id }, null) |
+            @Html.ActionLink("Delete", "CollabDelete", new { userId = item.User.Id, projectId = ViewBag.p_id })
+        </td>
+    </tr>
+}
+
+</table>

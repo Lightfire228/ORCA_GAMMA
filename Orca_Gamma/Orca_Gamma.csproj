@@ -217,7 +217,6 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PrivateMessagePostsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
-    <Compile Include="Controllers\RolesAdminController.cs" />
     <Compile Include="Controllers\UserAdminController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -257,6 +256,10 @@
     <Compile Include="Migrations\201704121753373_soft-delete-PMB.cs" />
     <Compile Include="Migrations\201704121753373_soft-delete-PMB.Designer.cs">
       <DependentUpon>201704121753373_soft-delete-PMB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704190539299_added-proj-soft-delete.cs" />
+    <Compile Include="Migrations\201704190539299_added-proj-soft-delete.Designer.cs">
+      <DependentUpon>201704190539299_added-proj-soft-delete.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -329,6 +332,8 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\DisplayEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
@@ -341,7 +346,6 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\SendCode.cshtml" />
     <Content Include="Views\Account\VerifyCode.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Forums\Create.cshtml" />
     <Content Include="Views\Forums\Details.cshtml" />
     <Content Include="Views\Forums\Index.cshtml" />
@@ -349,47 +353,44 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\Links\Index.cshtml" />
     <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
     <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\createKeyword.cshtml" />
     <Content Include="Views\Manage\editExpertAccount.cshtml" />
     <Content Include="Views\Manage\editUserAccount.cshtml" />
+    <Content Include="Views\Manage\expertInfo.cshtml" />
     <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\keywordDelete.cshtml" />
     <Content Include="Views\Manage\ManageLogins.cshtml" />
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Manage\expertInfo.cshtml" />
-    <Content Include="Views\UsersAdmin\Index.cshtml" />
-    <Content Include="Views\UsersAdmin\Edit.cshtml" />
-    <Content Include="Views\UsersAdmin\Details.cshtml" />
-    <Content Include="Views\UsersAdmin\Delete.cshtml" />
-    <Content Include="Views\UsersAdmin\Create.cshtml" />
-    <Content Include="Views\RolesAdmin\Index.cshtml" />
-    <Content Include="Views\RolesAdmin\Edit.cshtml" />
-    <Content Include="Views\RolesAdmin\Details.cshtml" />
-    <Content Include="Views\RolesAdmin\Delete.cshtml" />
-    <Content Include="Views\RolesAdmin\Create.cshtml" />
-    <Content Include="Views\Account\DisplayEmail.cshtml" />
-    <Content Include="Views\Projects\Create.cshtml" />
-    <Content Include="Views\Projects\Delete.cshtml" />
-    <Content Include="Views\Projects\Details.cshtml" />
-    <Content Include="Views\Projects\Edit.cshtml" />
-    <Content Include="Views\Projects\Index.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Create.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Delete.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Details.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Edit.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Index.cshtml" />
     <Content Include="Views\PrivateMessagePosts\Reply.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\PrivateMessagePosts\ReplyDelete.cshtml" />
+    <Content Include="Views\Projects\Collab.cshtml" />
+    <Content Include="Views\Projects\CollabCreate.cshtml" />
+    <Content Include="Views\Projects\CollabDelete.cshtml" />
+    <Content Include="Views\Projects\Create.cshtml" />
+    <Content Include="Views\Projects\Delete.cshtml" />
+    <Content Include="Views\Projects\Details.cshtml" />
+    <Content Include="Views\Projects\Edit.cshtml" />
+    <Content Include="Views\Projects\Index.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\UsersAdmin\Create.cshtml" />
+    <Content Include="Views\UsersAdmin\Delete.cshtml" />
+    <Content Include="Views\UsersAdmin\Details.cshtml" />
+    <Content Include="Views\UsersAdmin\Edit.cshtml" />
+    <Content Include="Views\UsersAdmin\Index.cshtml" />
     <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Manage\createKeyword.cshtml" />
-    <Content Include="Views\Home\UserProfile.cshtml" />
-    <Content Include="Views\PrivateMessagePosts\ReplyDelete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -430,6 +431,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201704121753373_soft-delete-PMB.resx">
       <DependentUpon>201704121753373_soft-delete-PMB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704190539299_added-proj-soft-delete.resx">
+      <DependentUpon>201704190539299_added-proj-soft-delete.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -69,11 +69,6 @@ namespace Orca_Gamma.Models
     public class RegisterViewModel
     {
         [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-        [Required]
         [RegularExpression(".{1,25}", ErrorMessage ="User Names cannot be longer than 25 characters")]
         [Display(Name = "User Name")]
         public string UserName { get; set; }
@@ -87,6 +82,17 @@ namespace Orca_Gamma.Models
         [RegularExpression("^[A-Za-z\\s]{1,25}[\\.]{0,1}[A-Za-z\\s]{0,25}$", ErrorMessage ="Not a valid user name")]
         [Display(Name = "Last Name")]
         public string LastName{ get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        //[Phone]
+        [Required]
+        [Display(Name = "Phone Number")]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid Phone number")]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -151,6 +157,7 @@ namespace Orca_Gamma.Models
         public string Email { get; set; }
 
         //[Phone]
+        [Required]
         [Display(Name = "Phone Number")]
         //[RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid Phone number")]
         [RegularExpression("^((\\(\\d{3}\\) ?)|(\\d{3}-))?\\d{3}-\\d{4}$", ErrorMessage = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555")]
