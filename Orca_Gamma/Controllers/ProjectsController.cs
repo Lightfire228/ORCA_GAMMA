@@ -22,6 +22,14 @@ namespace Orca_Gamma.Controllers
             return db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
+        public DateTime GetESTime()
+        {
+            DateTime timeUTC = DateTime.UtcNow;
+            TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime estTime = TimeZoneInfo.ConvertTimeFromUtc(timeUTC, estZone);
+            return estTime;
+        }
+
         public ActionResult Index(string sortOrder, string searchString)
         {
 
@@ -93,8 +101,11 @@ namespace Orca_Gamma.Controllers
                 Name = model.Name,
                 Description = model.Description,
 
-                DateStarted = DateTime.Now,
-                DateFinished = DateTime.Now
+                DateStarted = GetESTime(),
+
+                //this needs to be changed so they enter a finished date -Geoff
+                //**IMORTANT**
+                DateFinished = GetESTime()
 
 
             };
