@@ -13,8 +13,8 @@
     {
     <p>
         Project Name: @Html.TextBox("SearchString")
-        <input type="submit" value="Search" /></p>
-    
+        <input type="submit" value="Search" />
+    </p>
     }
 
 
@@ -24,10 +24,9 @@
     <tr>
         <th>
             Project Lead
-            @*@Html.DisplayNameFor(model => model.User)*@
         </th>
         <th>
-           Project Name
+            Project Name
         </th>
         <th>
             Description
@@ -51,7 +50,7 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.User.FirstName)
+                @Html.ActionLink(item.User.FirstName, "UserProfile", "Home", new { item.User.Id }, null)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -65,12 +64,9 @@
             </td>
 
             <td>
-                @Html.ActionLink("Edit Project", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Project Details", "Details", new { id = item.Id }) @*|
-                @Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
+                @Html.ActionLink("Project Details", "Details", new { id = item.Id })
             </td>
         </tr>
     }
-
 </table>
    

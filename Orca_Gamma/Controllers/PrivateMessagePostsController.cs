@@ -35,6 +35,7 @@ namespace Orca_Gamma.Controllers
         [Authorize]
         public ActionResult Index(string sortOrder, string previousFilter, string searchString, string lastSort)
         {
+
             var theId = User.Identity.GetUserId();
             var privateMessageList = db.PrivateMessages.Include(p => p.User);
             var betweenList = db.PrivateMessagesBetween.Include(k => k.User).Include(g => g.PrivateMessage).Where(r => r.PrivateMessage.IsDeleted == false).Where(i => i.UserId == theId).Where(k => k.IsDeleted == false);

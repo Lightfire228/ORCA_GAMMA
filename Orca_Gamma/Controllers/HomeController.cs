@@ -46,9 +46,16 @@ namespace Orca_Gamma.Controllers {
 
             var profile = db.Users.Find(id);
             var expert = db.Experts.Find(id);
-            var catagory = db.Catagories.Find(expert.CatagoryId);
-
-            ViewBag.Catagory = catagory.Name;
+            if(expert != null)
+            {
+                var catagory = db.Catagories.Find(expert.CatagoryId);
+                ViewBag.Catagory = catagory.Name;
+            }
+            else
+            {
+                ViewBag.Catagory = "Not an Expert";
+            }
+            
             return View(profile);
         }
     }

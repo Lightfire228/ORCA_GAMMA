@@ -118,7 +118,8 @@ namespace Orca_Gamma.Models
 		}
 
         public IEnumerable ApplicationUsers { get; internal set; }
-       
+        public object Collaborator { get; internal set; }
+
 
         /*
 		 * Required, these three tables have cyclic references that are non null
