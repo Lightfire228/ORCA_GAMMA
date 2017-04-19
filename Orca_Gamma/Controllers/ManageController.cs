@@ -453,7 +453,7 @@ namespace Orca_Gamma.Controllers
             return View(getCurrentUser());
         }
 
-        //this is the post method for regular user account info change -Geoff
+		//this is the post method for regular user account info change -Geoff
         //POST: /Manage/editUserAccount
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -462,39 +462,30 @@ namespace Orca_Gamma.Controllers
         {
 			String id = model.Id;
 			ApplicationUser user = _dbContext.Users.Find(model.Id);
-            Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
-            try
+            Match match = Regex.Match(model.PhoneNumber ?? "", @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$");
+            if (match.Success)
             {
-                MailAddress m = new MailAddress(model.Email);
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Email = model.Email;
+                //Don't want them to edit login UserName -DBS
+                //user.UserName    = user.UserName;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Bio = model.Bio;
 
-                if (match.Success)
+                _dbContext.SaveChanges();
+
+                if (ModelState.IsValid)
                 {
-                    user.FirstName = model.FirstName;
-                    user.LastName = model.LastName;
-                    user.Email = model.Email;
-                    //Don't want them to edit login UserName -DBS
-                    //user.UserName    = user.UserName;
-                    user.PhoneNumber = model.PhoneNumber;
-                    user.Bio = model.Bio;
-
-                    _dbContext.SaveChanges();
-
-                    if (ModelState.IsValid)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                }
-                else
-                {
-                    ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
+                    return RedirectToAction("Index");
                 }
             }
-            catch (FormatException)
+            else
             {
-                ViewBag.errorEmail = "Invalid Email format!";
+                ViewBag.error = "Invalid phone number! Must be (555) 555-5555, 555-555-5555, 555-5555, or 1234567890";
             }
             return View(model);
-        }
+}
 
         //needs to check if they already have expert information or not
         //GET: /Manage/editExpertAccount
