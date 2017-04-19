@@ -7,8 +7,10 @@
 }
 
 <h2>@ViewBag.Title.</h2>
+@if (!User.Identity.IsAuthenticated)
+{
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <h4>Create a new account.</h4>
@@ -79,16 +81,9 @@
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label"})
+        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @if (ViewBag.error != null)
-                {
-                <div class="text-danger">
-                    @ViewBag.error
-                </div>
-            }
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder= "Must have a capital letter, a number, and a special character." })
-            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "use capital letter, number, and symbol" })
         </div>
     </div>
     <div class="form-group">
@@ -111,7 +106,8 @@
         <div class="col-md-10">
             @foreach (var item in (SelectList)ViewBag.RoleId)
             {
-                if (!item.Value.Equals("Admin")) {
+                if (!item.Value.Equals("Admin"))
+                {
                     <input type="checkbox" name="SelectedRoles" value="@item.Value" class="checkbox-inline" />
                     @Html.Label(item.Value, new { @class = "control-label" })
                 }
@@ -138,7 +134,7 @@
             <input type="submit" class="btn btn-default" value="Register" />
         </div>
     </div>
-
+    }
 }
 
 @section Scripts {

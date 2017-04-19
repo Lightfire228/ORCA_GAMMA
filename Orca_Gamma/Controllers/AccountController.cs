@@ -82,8 +82,15 @@ namespace Orca_Gamma.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "");
+            }
+            else
+            {
+                ViewBag.ReturnUrl = returnUrl;
+                return View();
+            }
         }
 
         //
@@ -97,6 +104,7 @@ namespace Orca_Gamma.Controllers
             {
                 return View(model);
             }
+    
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
@@ -114,6 +122,7 @@ namespace Orca_Gamma.Controllers
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
             }
+  
         }
 
         //
@@ -164,8 +173,15 @@ namespace Orca_Gamma.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Register()
         {
-            ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "");
+            }
+            else
+            {
+                ViewBag.RoleId = new SelectList(await RoleManager.Roles.ToListAsync(), "Name", "Name");
+                return View();
+            }
         }
 
 

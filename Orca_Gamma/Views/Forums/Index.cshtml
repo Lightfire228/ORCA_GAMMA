@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<Orca_Gamma.Models.DatabaseModels.ForumThread>
+﻿@model PagedList.IPagedList<Orca_Gamma.Models.ViewModels.ThreadViewModel>
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 @{
@@ -23,9 +23,9 @@
             Topics
             @*@Html.ActionLink("Topic", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })*@
         </th>
-        <th>
+        @*<th>
             Replies
-        </th>
+        </th>*@
         <th>
             Last Post
         </th>
@@ -36,21 +36,21 @@
     {
         <tr>
             <td>
-                @Html.ActionLink(item.Subject, "Details", new { id = item.Id })
+                @Html.ActionLink(item.Thread.Subject, "Details", new { id = item.Thread.Id })
            <br />
-                by @Html.DisplayFor(modelItem => item.User.UserName) on @Html.DisplayFor(modelItem => item.Date)
+                by @Html.DisplayFor(modelItem => item.Thread.User.UserName) on @Html.DisplayFor(modelItem => item.Thread.Date)
             </td>
 
-            <td>
+            @*<td>
                 @ViewBag.CountReplies
-            </td>
+            </td>*@
             <td>
-                @ViewBag.LastPost
+                by @Html.DisplayFor(modelItem => item.Post.User.UserName) on<br /> @Html.DisplayFor(modelItem => item.Post.Date)
             </td>
             <td>
                 @if (Request.IsAuthenticated && User.IsInRole("Admin"))
                 {
-                    <input type="checkbox" name="Close" value="@item.IsDeleted" class="checkbox-inline" />
+                    <input type="checkbox" name="Close" value="@item.Thread.IsDeleted" class="checkbox-inline" />
 
                 }
 

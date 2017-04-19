@@ -450,7 +450,14 @@ namespace Orca_Gamma.Controllers
         //GET: //Manage/editUserAccount
         public ActionResult editUserAccount()
         {
-            return View(getCurrentUser());
+            ApplicationUser user = getCurrentUser();
+            ViewBag.FirstName = user.FirstName;
+            ViewBag.LastName = user.LastName;
+            ViewBag.Email = user.Email;
+            ViewBag.Bio = user.Bio;
+            ViewBag.Phone = user.PhoneNumber;
+
+            return View();
         }
 
 		//this is the post method for regular user account info change -Geoff
@@ -458,20 +465,21 @@ namespace Orca_Gamma.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult editUserAccount(ApplicationUser model)
+        public ActionResult editUserAccount(EditAccountViewModel model)
         {
-			String id = model.Id;
-			ApplicationUser user = _dbContext.Users.Find(model.Id);
-            Match match = Regex.Match(model.PhoneNumber ?? "", @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$");
-            if (match.Success)
-            {
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                //Don't want them to edit login UserName -DBS
-                //user.UserName    = user.UserName;
-                user.PhoneNumber = model.PhoneNumber;
-                user.Bio = model.Bio;
+			String id = model.User.Id;
+            ApplicationUser user = getCurrentUser();
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
+            //Don't want them to edit login UserName -DBS
+            //user.UserName    = user.UserName;
+            user.Bio = model.Bio;
+            //Moving regex and error message over to EditUserViewModel -RD
+            //Match match = Regex.Match(model.PhoneNumber ?? "", @"^((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}$");
+            //if (match.Success)
+            //{
+            user.PhoneNumber = model.PhoneNumber;
 
                 _dbContext.SaveChanges();
 
@@ -479,11 +487,12 @@ namespace Orca_Gamma.Controllers
                 {
                     return RedirectToAction("Index");
                 }
-            }
-            else
-            {
-                ViewBag.error = "Invalid phone number! Must be (555) 555-5555, 555-555-5555, 555-5555, or 1234567890";
-            }
+
+            //}
+            //else
+            //{
+               // ViewBag.error = "Invalid phone number! Must be (555) 555-5555 or 555-555-5555 or 555-5555";
+            //}
             return View(model);
 }
 
