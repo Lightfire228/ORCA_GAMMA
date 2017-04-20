@@ -1,5 +1,8 @@
-﻿@model IEnumerable<Orca_Gamma.Models.DatabaseModels.Project>
+﻿@*@model IEnumerable<Orca_Gamma.Models.DatabaseModels.Project>*@
+@model PagedList.IPagedList<Orca_Gamma.Models.DatabaseModels.Project>
+@using PagedList.Mvc;
 
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 @{
     ViewBag.Title = "Index";
 }
@@ -9,10 +12,10 @@
 <p>
     @Html.ActionLink("Create New Project", "Create")
 
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Index", "Projects", FormMethod.Get))
     {
     <p>
-        Project Name: @Html.TextBox("SearchString")
+        Project Name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
         <input type="submit" value="Search" />
     </p>
     }
@@ -50,7 +53,7 @@
     {
         <tr>
             <td>
-                @Html.ActionLink(item.User.FirstName, "UserProfile", "Home", new { item.User.Id }, null)
+                @Html.ActionLink(item.User.FirstName + " " + item.User.LastName, "UserProfile", "Home", new { item.User.Id }, null)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -69,4 +72,9 @@
         </tr>
     }
 </table>
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
    

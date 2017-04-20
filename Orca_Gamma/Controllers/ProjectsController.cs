@@ -4,12 +4,11 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
 using Microsoft.AspNet.Identity;
-using System.Web.Security;
+using PagedList;
 
 namespace Orca_Gamma.Controllers
 {
@@ -22,17 +21,20 @@ namespace Orca_Gamma.Controllers
             return db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
-        public ActionResult Index(string sortOrder, string searchString)
+        public ActionResult Index(string sortOrder, string searchString, string currentFilter, int? page)
         {
-
-            //new
-            var userId = User.Identity.GetUserId();
-            var projectsList = db.Project.Include(p => p.User);
-            var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.UserId == userId);
-            var postList = db.PrivateMessagePosts;
-
-
+            
+            //Date sort & project name search with pagedList
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
             var project = from p in db.Project
                           select p;
@@ -50,13 +52,17 @@ namespace Orca_Gamma.Controllers
                 case "date_desc":
                     project = project.OrderByDescending(p => p.DateStarted);
                     break;
-
             }
-            return View(project.ToList());
+
+
+            int pageSize = 15;
+            int pageNumber = (page ?? 1);
+
+            return View(project.OrderBy(p => p.DateStarted).ToPagedList(pageNumber, pageSize));
         }
 
 
-        // GET: Projects/Details/5
+        // GET: Projects/Details
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -164,7 +170,8 @@ namespace Orca_Gamma.Controllers
             return View();
         }
 
-        //GET
+
+        //GET: Projects/Remove Collab
         [Authorize]
         public ActionResult CollabDelete(String userId, int projectId)
         {
@@ -176,7 +183,8 @@ namespace Orca_Gamma.Controllers
             return RedirectToAction("Index");
         }
 
-        //POST
+
+        //POST: Projects/Remove Collab
         [HttpPost, ActionName("CollabDelete")]
         [Authorize]
         public ActionResult CollabDeleteConfirmed(String userId, int projectId)
@@ -186,27 +194,6 @@ namespace Orca_Gamma.Controllers
             db.SaveChanges();
             return RedirectToAction("Collab", new { id = projectId });
         }
-
-        ////POST: Projects/Delete Collab
-        //[HttpPost, ActionName("Remove Collab")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize]
-        //public Delete(userId, p_id)
-        //{
-        //    var userId = User.Identity.GetUserId();
-
-        //    //Delete from db the entry that matches
-
-        //    //I casted it as a List basically... I dunno, it's stupid but it works.
-        //    List<Collaborator> collab = (from pms in db.Collaborators.ToList()
-        //                                 where pms.UserId == userId && pms.PrivateMessageId == id
-        //                                 select pms).ToList();
-
-        //    db.PrivateMessagesBetween.Remove(pm[0]);
-        //    db.SaveChanges();
-
-        //}
-
 
 
         // GET: Projects/Edit
@@ -236,8 +223,6 @@ namespace Orca_Gamma.Controllers
             }
             else
                 return RedirectToAction("Index");
-
-            //return View(project);
         }
 
 
