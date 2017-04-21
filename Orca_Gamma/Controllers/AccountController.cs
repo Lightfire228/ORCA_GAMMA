@@ -230,9 +230,9 @@ namespace Orca_Gamma.Controllers
 
 						// Creates an expert field and adds it to the db on user registration -Cass
 						if (selectedRoles.Contains("Expert")) {
-							Expert expert = new Expert() {
-								Id = user.Id,
-								Catagory = _dbContext.Catagories.FirstOrDefault()
+                            Expert expert = new Expert() {
+                                Id = user.Id,
+                                Catagory = _dbContext.Catagories.Find(45)
 							};
 							_dbContext.Experts.Add(expert);
 
