@@ -9,6 +9,7 @@ using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
 using Microsoft.AspNet.Identity;
 using PagedList;
+using Orca_Gamma.Models.ViewModels;
 
 namespace Orca_Gamma.Controllers
 {
@@ -101,8 +102,6 @@ namespace Orca_Gamma.Controllers
 
                 DateStarted = DateTime.Now,
                 DateFinished = DateTime.Now
-
-
             };
 
             db.Project.Add(project);
@@ -114,9 +113,7 @@ namespace Orca_Gamma.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
             return RedirectToAction("Index");
-
         }
  
 
@@ -133,7 +130,7 @@ namespace Orca_Gamma.Controllers
             return RedirectToAction("Index");
         }
 
-        //GET
+        //GET: Collab
         [Authorize]
         public ActionResult CollabCreate(int? projectId)
         {
@@ -194,6 +191,39 @@ namespace Orca_Gamma.Controllers
             db.SaveChanges();
             return RedirectToAction("Collab", new { id = projectId });
         }
+
+
+
+        //GET: Transfer Project Lead
+        [Authorize]
+        public ActionResult LeadTransfer(int? projectId)
+        {
+            if (projectId != null)
+            {
+                Project project = db.Project.Find(projectId);
+                IEnumerable<Collaborator> collabList = db.Collaborators.Where(t => t.ProjectId == projectId);
+                var idList = new List<String>();
+                foreach (Collaborator collab in collabList)
+                {
+                    idList.Add(collab.UserId);
+                }
+                var unameList = new List<String>();
+                foreach (String id in idList)
+                {
+                    var toAdd = db.Users.Find(id);
+                    unameList.Add(toAdd.UserName);
+                }
+                return View(new LeadTransferViewModel { project = project, collabList = unameList });
+            }
+            return RedirectToAction("Index");
+        }
+
+
+        //POST: Projects/Lead Transfer
+        [HttpPost, ActionName("LeadTransfer")]
+        [Authorize]
+    
+
 
 
         // GET: Projects/Edit

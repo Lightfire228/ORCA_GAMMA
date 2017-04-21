@@ -48,7 +48,7 @@
 
     @if (@ViewBag.currentID == Model.User.Id)
     {
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) 
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
     }
    | @if (@ViewBag.currentID == Model.User.Id)
     {
@@ -57,5 +57,9 @@
    | @if (@ViewBag.currentID == Model.User.Id)
     {
         @Html.ActionLink("Manage Collaborators", "Collab", new { id = Model.Id }) 
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
+        @Html.ActionLink("Transfer Project Lead Role", "LeadTransfer", new { projectId = Model.Id })
     }
 </p>
