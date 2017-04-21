@@ -24,7 +24,7 @@ namespace Orca_Gamma.Controllers
 
         public ActionResult Index(string sortOrder, string searchString, string currentFilter, int? page)
         {
-            
+
             //Date sort & project name search with pagedList
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
 
@@ -115,13 +115,120 @@ namespace Orca_Gamma.Controllers
             }
             return RedirectToAction("Index");
         }
- 
+
+        // GET: Projects/Edit
+        [Authorize]
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Project project = db.Project.Find(id);
+
+            if (project == null)
+            {
+                return HttpNotFound();
+            }
+
+            var projects = db.Project.Find(id);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (projectLead == user)
+            {
+                return View(project);
+
+            }
+            else
+                return RedirectToAction("Index");
+        }
+
+
+        // POST: Projects/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult Edit(ProjectViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var project = db.Project.Find(model.ID);
+                project.Name = model.Name;
+                project.Description = model.Description;
+
+
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+
+        // GET: Projects/Delete
+        [Authorize]
+        public ActionResult Delete(int? id)
+        {
+
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Project project = db.Project.Find(id);
+
+            if (project == null)
+            {
+                return HttpNotFound();
+            }
+
+            var projects = db.Project.Find(id);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (projectLead == user)
+            {
+                return View(project);
+            }
+
+            else
+                return RedirectToAction("Index");
+        }
+
+
+        // POST: Projects/Delete
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Project project = db.Project.Find(id);
+            db.Project.Remove(project);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
 
         //GET: Projects/Add Collab
         [Authorize]
         public ActionResult Collab(int? id)
         {
-            if(id != null)
+            var projects = db.Project.Find(id);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (id != null && projectLead == user)
             {
                 ViewBag.p_id = id;
                 var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.ProjectId == id);
@@ -173,7 +280,7 @@ namespace Orca_Gamma.Controllers
         public ActionResult CollabDelete(String userId, int projectId)
         {
             var tempCollab = db.Collaborators.Where(i => i.ProjectId == projectId).Where(k => k.UserId.Equals(userId)).ToList();
-            if(tempCollab[0] != null)
+            if (tempCollab[0] != null)
             {
                 return View(tempCollab[0]);
             }
@@ -193,12 +300,15 @@ namespace Orca_Gamma.Controllers
         }
 
 
-
         //GET: Transfer Project Lead
         [Authorize]
         public ActionResult LeadTransfer(int? projectId)
         {
-            if (projectId != null)
+            var projects = db.Project.Find(projectId);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (projectId != null && projectLead == user)
             {
                 var trueid = projectId;
                 Project project = db.Project.Find(projectId);
@@ -226,7 +336,8 @@ namespace Orca_Gamma.Controllers
         [Authorize]
         public ActionResult LeadTransfer(LeadTransferViewModel model)
         {
-            if(model != null)
+
+            if (model != null)
             {
                 //Make old leader into a collaborator
                 Project project = db.Project.Find(model.project);
@@ -240,7 +351,7 @@ namespace Orca_Gamma.Controllers
                     UserId = oldLeadUser.Id
                 };
                 db.Collaborators.Add(tempCollab);
-                
+
                 //Make selected username's id the leader of that project.
                 String newLeadUserName = model.selectedCollab;
                 var newLeadUser = db.Users.SingleOrDefault(k => k.UserName.Equals(newLeadUserName));
@@ -257,109 +368,5 @@ namespace Orca_Gamma.Controllers
             return RedirectToAction("Index");
         }
 
-
-
-        // GET: Projects/Edit
-        [Authorize]
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            Project project = db.Project.Find(id);
-			
-            if (project == null)
-            {
-                return HttpNotFound();
-            }
-
-            var projects = db.Project.Find(id);
-            var projectLead = projects.User;
-            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
-
-            if (projectLead == user)
-            {
-                return View(project);
-
-            }
-            else
-                return RedirectToAction("Index");
-        }
-
-
-        // POST: Projects/Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult Edit(ProjectViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var project = db.Project.Find(model.ID);
-                project.Name = model.Name;
-                project.Description = model.Description;
-
-
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(model);
-        }
-
-
-        // GET: Projects/Delete
-        [Authorize]
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            Project project = db.Project.Find(id);
-
-            if (project == null)
-            {
-                return HttpNotFound();
-            }
-
-            var projects = db.Project.Find(id);
-            var projectLead = projects.User;
-            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
-
-            if (projectLead == user)
-            {
-                return View(project);
-            }
-
-            else
-                return RedirectToAction("Index");
-
-        }
-
-        // POST: Projects/Delete
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult DeleteConfirmed(int id)
-        { 
-            Project project = db.Project.Find(id);
-            db.Project.Remove(project);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-    }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }
-
