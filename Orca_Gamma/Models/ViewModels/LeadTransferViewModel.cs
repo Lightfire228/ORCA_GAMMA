@@ -10,7 +10,7 @@ namespace Orca_Gamma.Models.ViewModels
 {
     public class LeadTransferViewModel
     {
-        public Project project
+        public int project
         {
             get; set;
         }

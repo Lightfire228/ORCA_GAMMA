@@ -200,6 +200,7 @@ namespace Orca_Gamma.Controllers
         {
             if (projectId != null)
             {
+                var trueid = projectId;
                 Project project = db.Project.Find(projectId);
                 IEnumerable<Collaborator> collabList = db.Collaborators.Where(t => t.ProjectId == projectId);
                 var idList = new List<String>();
@@ -213,7 +214,8 @@ namespace Orca_Gamma.Controllers
                     var toAdd = db.Users.Find(id);
                     unameList.Add(toAdd.UserName);
                 }
-                return View(new LeadTransferViewModel { project = project, collabList = unameList });
+                ViewBag.Project = projectId;
+                return View(new LeadTransferViewModel { project = (int)trueid, collabList = unameList });
             }
             return RedirectToAction("Index");
         }
@@ -222,7 +224,38 @@ namespace Orca_Gamma.Controllers
         //POST: Projects/Lead Transfer
         [HttpPost, ActionName("LeadTransfer")]
         [Authorize]
-    
+        public ActionResult LeadTransfer(LeadTransferViewModel model)
+        {
+            if(model != null)
+            {
+                //Make old leader into a collaborator
+                Project project = db.Project.Find(model.project);
+                String oldLeadId = project.ProjectLead;
+                var oldLeadUser = db.Users.SingleOrDefault(g => g.Id.Equals(oldLeadId));
+                var tempCollab = new Collaborator
+                {
+                    User = oldLeadUser,
+                    Project = project,
+                    ProjectId = project.Id,
+                    UserId = oldLeadUser.Id
+                };
+                db.Collaborators.Add(tempCollab);
+                
+                //Make selected username's id the leader of that project.
+                String newLeadUserName = model.selectedCollab;
+                var newLeadUser = db.Users.SingleOrDefault(k => k.UserName.Equals(newLeadUserName));
+                project.User = newLeadUser;
+                project.ProjectLead = newLeadUser.Id;
+
+                //Delete selected leader's collaboration entry.
+                var toDelete = db.Collaborators.FirstOrDefault(p => p.UserId.Equals(newLeadUser.Id) && p.ProjectId == project.Id);
+                db.Collaborators.Remove(toDelete);
+
+                db.SaveChanges();
+                return RedirectToAction("Details", new { id = project.Id });
+            }
+            return RedirectToAction("Index");
+        }
 
 
 
