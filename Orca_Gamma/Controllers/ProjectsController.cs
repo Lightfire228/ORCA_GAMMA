@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using PagedList;
 using Orca_Gamma.Models.ViewModels;
 
+//best controller ever
 namespace Orca_Gamma.Controllers
 {
     public class ProjectsController : Controller
