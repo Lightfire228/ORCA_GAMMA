@@ -15,7 +15,7 @@
     @using (Html.BeginForm("Index", "Projects", FormMethod.Get))
     {
     <p>
-        Project Name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        Project Name/Description: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
         <input type="submit" value="Search" />
     </p>
     }
