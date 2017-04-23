@@ -71,6 +71,7 @@ namespace Orca_Gamma.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
+            var user = _dbContext.Users.Find(userId);
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
@@ -78,8 +79,36 @@ namespace Orca_Gamma.Controllers
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
-                IsExpert = UserManager.IsInRole(userId, "Expert")
+                IsExpert = UserManager.IsInRole(userId, "Expert"),
+                User = user
             };
+
+            ViewBag.Specialty = "Specialty";
+            var expert = _dbContext.Experts.Find(userId);
+            if (expert != null)
+            {
+                var catagory = _dbContext.Catagories.Find(expert.CatagoryId);
+                ViewBag.Category = catagory.Name;
+
+                //make a comma seperated string with each keyword associated with expert.
+                var keywordList = _dbContext.KeywordRelations.Where(k => k.ExpertId.Equals(userId)).Select(k => k.Keyword.Name).ToList();
+                String commaSeperated = "";
+                foreach(String keyword in keywordList)
+                {
+                    commaSeperated += keyword + ", ";
+                }
+                if(!commaSeperated.Equals(""))
+                {
+                    commaSeperated = commaSeperated.TrimEnd(' ');
+                    commaSeperated = commaSeperated.TrimEnd(',');
+                }
+                model.Keywords = commaSeperated;
+
+                if(keywordList.Count > 1)
+                {
+                    ViewBag.Specialty = "Specialties";
+                }
+            }
             return View(model);
         }
 
