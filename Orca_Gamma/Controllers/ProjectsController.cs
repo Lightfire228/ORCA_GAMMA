@@ -62,7 +62,7 @@ namespace Orca_Gamma.Controllers
             }
 
 
-            int pageSize = 15;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
 
             return View(project.OrderBy(p => p.DateStarted).ToPagedList(pageNumber, pageSize));
@@ -314,7 +314,7 @@ namespace Orca_Gamma.Controllers
                 var tempUser = db.Users.FirstOrDefault(g => g.UserName == model.UserId);
                 if (tempUser == null)
                 {
-                    ViewBag.ERR = "User \"" + model.UserId + "\" does not exist."; 
+                    ViewBag.ERR = "User \"" + model.UserId + "\" does not exist.";
                     return View();
                 }
                 //Ensure a collab can't be added twice.
