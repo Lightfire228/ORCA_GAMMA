@@ -8,7 +8,8 @@ namespace Orca_Gamma.Models.ViewModels
 {
     public class ThreadViewModel
     {
-        public ForumThread Thread { get; set; }
-        public ThreadMessagePost Post { get; set; }
+        public ForumThread Threads { get; set; }
+        public ThreadMessagePost Posts { get; set; }
+        public Keyword Keys { get; set; } 
     }
 }

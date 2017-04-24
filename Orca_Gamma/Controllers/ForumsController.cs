@@ -67,7 +67,12 @@ namespace Orca_Gamma.Controllers
             }
 
             var posts = _dbContext.ThreadMessagePosts.ToList();
+            var keys = _dbContext.Keywords.ToList();
             List<ThreadViewModel> models = new List<ThreadViewModel>();
+
+            //ForumThread forumThread = _dbContext.ForumThreads.Find(id);
+
+            var keywords = _dbContext.ThreadKeywords;
 
             foreach (var thread in threads)
             {
@@ -77,8 +82,9 @@ namespace Orca_Gamma.Controllers
 
                 var model = new ThreadViewModel
                 {
-                    Thread = thread,
-                    Post = lastPost
+                    Threads = thread,
+                    Posts = lastPost,
+                    Keys = keys
                 };
                 ViewBag.CountReplies = count.Count();
                 models.Add(model);
@@ -120,13 +126,13 @@ namespace Orca_Gamma.Controllers
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ThreadMessagePost model, ThreadKeyword threadKey, Keyword key)
+        public ActionResult Create(CreatePostViewModel model)
         {
 			ApplicationUser user = getCurrentUser();
             DateTime time = GetESTime();
 
 			Boolean error = false;
-			if (model.Thread.Subject == null) {
+			if (model.Subject == null) {
 				error = true;
 
 				ViewBag.subjectBlank = "Subject cannot be empty";
@@ -142,8 +148,8 @@ namespace Orca_Gamma.Controllers
 			var post = new ForumThread
             {
                 User = user, // This is how you do foreign keys - Cass
-                Subject = model.Thread.Subject,
-                FirstPost = model.Thread.FirstPost,
+                Subject = model.Subject,
+                FirstPost = null,
                 IsDeleted = false,
                 Date = time
                 
@@ -159,7 +165,7 @@ namespace Orca_Gamma.Controllers
 
             var keyword = new Keyword
             {
-                Name = key.Name
+                Name = model.Name
             };
 
             var threadKeyword = new ThreadKeyword
@@ -167,16 +173,16 @@ namespace Orca_Gamma.Controllers
                 Keyword = keyword,
                 Thread = post
             };
-            while (!ModelState.IsValid)
-            {
-                // _dbContext.ThreadKeywords.Add(threadKeyword);
-                //_dbContext.Keywords.Add(keyword);
+            //while (!ModelState.IsValid)
+            //{
+                _dbContext.ThreadKeywords.Add(threadKeyword);
+                _dbContext.Keywords.Add(keyword);
                 _dbContext.ThreadMessagePosts.Add(thread);
                 _dbContext.ForumThreads.Add(post);
                 _dbContext.SaveChanges();
                 return RedirectToAction("Index");
-            }
-            return View();
+            //}
+            //return View();
         }
 
         [Authorize]
