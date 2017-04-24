@@ -1,7 +1,7 @@
 ﻿@model Orca_Gamma.Models.ViewModels.LeadTransferViewModel
 
 @{
-    ViewBag.Title = "LeadTransfer";
+    ViewBag.Title = "Lead Transfer";
 }
 
 <h2>Lead Transfer</h2>
@@ -11,24 +11,30 @@
 {
     @Html.AntiForgeryToken()
     
-    <div class="form-horizontal">
-        <h4>Transfer lead to:</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.collabList, "ProjectId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.selectedCollab, new SelectList(Model.collabList))
-                @Html.ValidationMessageFor(model => model.selectedCollab, "", new { @class = "text-danger" })
+    if (Model.collabList.Count <= 0) {
+        <strong>There are no collaborators to transfer the lead role to!</strong>
+    }
+    else {
+
+        <div class="form-horizontal">
+            <h4>Transfer lead to:</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.collabList, "New Project Lead", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.selectedCollab, new SelectList(Model.collabList))
+                    @Html.ValidationMessageFor(model => model.selectedCollab, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.project)
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
             </div>
         </div>
-        @Html.HiddenFor(model => model.project)
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
+    }
 }
 
 <div>

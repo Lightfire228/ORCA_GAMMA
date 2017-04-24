@@ -35,9 +35,13 @@ namespace Orca_Gamma.Controllers
         {
 
             //Date sort & project name search with pagedList
-            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+			// Note this must run and initialize the ViewBag for the links in the view to work
+            ViewBag.DateSortParm       = sortOrder == "Date"        ? "Date_desc" : "Date";
+            ViewBag.ProjectLead        = sortOrder == "Lead"        ? "Lead_desc" : "Lead";
+            ViewBag.ProjectName        = sortOrder == "Name"        ? "Name_desc" : "Name";
+			ViewBag.ProjectDescription = sortOrder == "Description" ? "Desc_desc" : "Description";
 
-            if (searchString != null)
+			if (searchString != null)
             {
                 page = 1;
             }
@@ -62,25 +66,41 @@ namespace Orca_Gamma.Controllers
             //this is where I take sortOrder value and display
             switch (sortOrder)
             {
-                case "project_lead":
-                    project = project.OrderBy(p => p.ProjectLead);
-                    break;
-                case "project_name":
-                    project = project.OrderBy(p => p.Name);
-                    break;
-                case "description":
-                    project = project.OrderBy(p => p.Description);
-                    break;
-                case "date_created":
-                    project = project.OrderBy(p => p.DateStarted);
-                    break;    
-            }
+				case "Date":
+				default:
+					project = project.OrderByDescending(p => p.DateStarted);
+					break;
+				case "Date_desc":
+					project = project.OrderBy(p => p.DateStarted);
+					break;
+
+				case "Lead":
+					project = project.OrderBy(p => p.User.FirstName);
+					break;
+				case "Lead_desc":
+					project = project.OrderByDescending(p => p.User.FirstName);
+					break;
+
+				case "Name":
+					project = project.OrderBy(p => p.Name);
+					break;
+				case "Name_desc":
+					project = project.OrderByDescending(p => p.Name);
+					break;
+
+				case "Description":
+					project = project.OrderBy(p => p.Description);
+					break;
+				case "Description_desc":
+					project = project.OrderByDescending(p => p.Description);
+					break;
+			}
 
 
             int pageSize = 15;
             int pageNumber = (page ?? 1);
 
-            return View(project.OrderBy(p => p.DateStarted).ToPagedList(pageNumber, pageSize));
+            return View(project.ToPagedList(pageNumber, pageSize));
         }
 
 
