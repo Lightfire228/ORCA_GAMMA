@@ -155,7 +155,7 @@ namespace Orca_Gamma.Controllers
 
                 //this needs to be changed so they enter a finished date -Geoff
                 //**IMORTANT**
-                DateFinished = GetESTime()
+                DateFinished = GetESTime(),
 
                 IsDeleted = false,
             };
@@ -173,79 +173,6 @@ namespace Orca_Gamma.Controllers
         }
  
 
-        //GET: Projects/Add Collab
-        [Authorize]
-        public ActionResult Collab(int? id)
-        {
-            if(id != null)
-            {
-                ViewBag.p_id = id;
-                var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.ProjectId == id);
-                return View(collabList.ToList());
-            }
-            return RedirectToAction("Index");
-        }
-
-        //GET
-        [Authorize]
-        public ActionResult CollabCreate(int? projectId)
-        {
-            var tempProject = db.Project.Find(projectId);
-
-            var tempCollab = new Collaborator
-            {
-                Project = tempProject
-            };
-            return View(tempCollab);
-        }
-
-        //POST: Projects/Add Collab
-        [HttpPost]
-        [Authorize]
-        public ActionResult CollabCreate(Collaborator model)
-        {
-            var tempProject = db.Project.Find(model.ProjectId);
-
-            if (model.UserId != "")
-            {
-                var tempUser = db.Users.SingleOrDefault(g => g.UserName == model.UserId);
-                var tempCollab = new Collaborator
-                {
-                    User = tempUser,
-                    Project = tempProject
-                };
-
-                db.Collaborators.Add(tempCollab);
-                db.SaveChanges();
-
-                return RedirectToAction("Collab", new { id = tempCollab.ProjectId });
-            }
-            return View();
-        }
-
-        //GET
-        [Authorize]
-        public ActionResult CollabDelete(String userId, int projectId)
-        {
-            var tempCollab = db.Collaborators.Where(i => i.ProjectId == projectId).Where(k => k.UserId.Equals(userId)).ToList();
-            if(tempCollab[0] != null)
-            {
-                return View(tempCollab[0]);
-            }
-            return RedirectToAction("Index");
-        }
-
-        //POST
-        [HttpPost, ActionName("CollabDelete")]
-        [Authorize]
-        public ActionResult CollabDeleteConfirmed(String userId, int projectId)
-        {
-            List<Collaborator> toDelete = db.Collaborators.Where(i => i.ProjectId == projectId).Where(k => k.UserId.Equals(userId)).ToList();
-            db.Collaborators.Remove(toDelete[0]);
-            db.SaveChanges();
-            return RedirectToAction("Collab", new { id = projectId });
-        }
-        
         // GET: Projects/Edit
         [Authorize]
         public ActionResult Edit(int? id)
