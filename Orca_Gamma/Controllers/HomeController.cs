@@ -152,7 +152,24 @@ namespace Orca_Gamma.Controllers {
             {
                 var catagory = db.Catagories.Find(expert.CatagoryId);
                 ViewBag.Catagory = catagory.Name;
-            }
+
+				//make a comma seperated string with each keyword associated with expert.
+				var keywordList = db.KeywordRelations.Where(k => k.ExpertId.Equals(id)).Select(k => k.Keyword.Name).ToList();
+				String commaSeperated = "";
+				foreach (String keyword in keywordList) {
+					commaSeperated += keyword + ", ";
+				}
+				if (!commaSeperated.Equals("")) {
+					commaSeperated = commaSeperated.TrimEnd(' ');
+					commaSeperated = commaSeperated.TrimEnd(',');
+				}
+				ViewBag.Keywords = commaSeperated;
+
+				if (keywordList.Count > 1) {
+					ViewBag.Specialty = "Specialties";
+				}
+
+			}
             else
             {
                 ViewBag.Catagory = "Not an Expert";
