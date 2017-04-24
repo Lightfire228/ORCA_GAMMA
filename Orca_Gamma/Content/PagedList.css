@@ -50,8 +50,8 @@
   z-index: 2;
   color: #ffffff;
   cursor: default;
-  background-color: #428bca;
-  border-color: #428bca;
+  background-color: #04944a;
+  border-color: #04944a;
 }
 
 .pagination > .disabled > span,
@@ -163,4 +163,19 @@
   color: #999999;
   cursor: not-allowed;
   background-color: #ffffff;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+    color: green; 
+}
+
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+    background-color: green;
+    border-color: green;
 }
