@@ -38,7 +38,7 @@ namespace Orca_Gamma.Controllers
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
-            //ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
+            ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
             ViewBag.ForumName = sortOrder == "Name" ? "name_desc" : "Name";
             ViewBag.ForumDate = sortOrder == "Date" ? "date_desc" : "Date";
 
@@ -56,7 +56,8 @@ namespace Orca_Gamma.Controllers
             ViewBag.CurrentFilter = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
-                threads = threads.Where(t => t.Subject.Contains(searchString));
+                threads = threads.Where(t => t.Subject.Contains(searchString) ||
+                     t.FirstPost.Contains(searchString));
             }
             switch (sortOrder)
             {
@@ -72,24 +73,26 @@ namespace Orca_Gamma.Controllers
                 case "Date":
                     threads = threads.OrderBy(s => s.Date);
                     break;
-                //default:
-                //    threads = threads.OrderByDescending(s => s.Date);
-                //    break;
+                default:
+                    threads = threads.OrderByDescending(s => s.Date);
+                    break;
             }
 
             var posts = _dbContext.ThreadMessagePosts.ToList();
-            List<ThreadViewModel> models = new List<ThreadViewModel>();
-
+          
+            List<ThreadViewModel> models = new List<ThreadViewModel>();               
+        
             foreach (var thread in threads)
             {
+
                 var currPosts = posts.Where(p => p.Thread == thread);
                 var lastPost = currPosts.OrderBy(p => p.Date).LastOrDefault();
                 var count = currPosts.OrderBy(p => p.Id);
 
                 var model = new ThreadViewModel
                 {
-                    Thread = thread,
-                    Post = lastPost
+                    Threads = thread,
+                    Posts = lastPost
                 };
                 ViewBag.CountReplies = count.Count();
                 models.Add(model);
@@ -131,13 +134,13 @@ namespace Orca_Gamma.Controllers
         //POST: Forums/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ThreadMessagePost model, ThreadKeyword threadKey, Keyword key)
+        public ActionResult Create(CreatePostViewModel model)
         {
 			ApplicationUser user = getCurrentUser();
             DateTime time = GetESTime();
 
 			Boolean error = false;
-			if (model.Thread.Subject == null) {
+			if (model.Subject == null) {
 				error = true;
 
 				ViewBag.subjectBlank = "Subject cannot be empty";
@@ -153,8 +156,8 @@ namespace Orca_Gamma.Controllers
 			var post = new ForumThread
             {
                 User = user, // This is how you do foreign keys - Cass
-                Subject = model.Thread.Subject,
-                FirstPost = model.Thread.FirstPost,
+                Subject = model.Subject,
+                FirstPost = model.FirstPost,
                 IsDeleted = false,
                 Date = time
                 
@@ -168,26 +171,26 @@ namespace Orca_Gamma.Controllers
                 Thread = post
             };
 
-            var keyword = new Keyword
-            {
-                Name = key.Name
-            };
+            //var keyword = new Keyword
+            //{
+            //    Name = model.Name
+            //};
 
-            var threadKeyword = new ThreadKeyword
-            {
-                Keyword = keyword,
-                Thread = post
-            };
-            while (!ModelState.IsValid)
-            {
-                // _dbContext.ThreadKeywords.Add(threadKeyword);
+            //var threadKeyword = new ThreadKeyword
+            //{
+            //    Keyword = keyword,
+            //    Thread = post
+            //};
+            //while (!ModelState.IsValid)
+            //{
+                //_dbContext.ThreadKeywords.Add(threadKeyword);
                 //_dbContext.Keywords.Add(keyword);
                 _dbContext.ThreadMessagePosts.Add(thread);
                 _dbContext.ForumThreads.Add(post);
                 _dbContext.SaveChanges();
                 return RedirectToAction("Index");
-            }
-            return View();
+            //}
+            //return View();
         }
 
         [Authorize]

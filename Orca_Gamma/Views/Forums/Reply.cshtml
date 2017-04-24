@@ -23,9 +23,9 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })
+        @*@Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })*@
         <div class="col-md-10">
-            @Html.TextAreaFor(model => model.Body, new { htmlAttributes = new { @class = "form-control", @style = "height:500px" } })
+            @Html.TextAreaFor(model => model.Body, 5, 100, new { htmlAttributes = new { @class = "form-control", @style = "height:500px" } })
             @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
         </div>
     </div>
