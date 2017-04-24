@@ -119,8 +119,9 @@ namespace Orca_Gamma.Controllers
                                 IsImportant = k.PrivateMessage.IsImportant,
                                 User = k.PrivateMessage.User,
                                 LastPost = lastReply,
-                                LastReplyTime = lastReplyTime
-                            };
+                                LastReplyTime = lastReplyTime,
+								Replier = lastUser
+							};
                             PostIDList.Add(temp);
                         }
                     }
