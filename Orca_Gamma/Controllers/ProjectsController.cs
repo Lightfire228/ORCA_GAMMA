@@ -36,6 +36,8 @@ namespace Orca_Gamma.Controllers
 
             //Date sort & project name search with pagedList
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.ProjectLead = sortOrder == "Lead" ? "lead_desc" : "Lead";
+            ViewBag.ProjectName = sortOrder == "Name" ? "name_desc" : "Name";
 
             if (searchString != null)
             {
@@ -71,6 +73,18 @@ namespace Orca_Gamma.Controllers
                 case "description":
                     project = project.OrderBy(p => p.Description);
 					break;
+                case "Name":
+                    project = project.OrderBy(p => p.Name);
+                    break;
+                case "name_desc":
+                    project = project.OrderByDescending(p => p.Name);
+                    break;
+                case "Lead":
+                    project = project.OrderBy(p => p.ProjectLead);
+                    break;
+                case "lead_desc":
+                    project = project.OrderByDescending(p => p.ProjectLead);
+                    break;
 
 				case "date_created":
 				default:

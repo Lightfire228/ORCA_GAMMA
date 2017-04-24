@@ -26,10 +26,10 @@
 
     <tr>
         <th>
-            @Html.ActionLink("Project Lead", "Index", new { sortOrder = "project_lead"})
+            @Html.ActionLink("Project Name", "Index", new { sortOrder = ViewBag.ProjectLead })
         </th>
         <th>
-            @Html.ActionLink("Project Name", "Index", new { sortOrder = "project_name"})
+            @Html.ActionLink("Project Name", "Index", new { sortOrder = ViewBag.ProjectName })
         </th>
         <th>
             @Html.ActionLink("Description", "Index", new { sortOrder = "description"})
