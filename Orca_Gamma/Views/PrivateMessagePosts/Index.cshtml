@@ -12,7 +12,7 @@
 @using (Html.BeginForm("Index", "PrivateMessagePosts", FormMethod.Get))
 {
     <p>
-        Search Inbox by Subject: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        Search Inbox: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
         <input type="submit" value="search" />
     </p>
 }
@@ -40,15 +40,15 @@
                 @Html.DisplayFor(modelItem => item.Subject)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.UserName)
+                @Html.ActionLink(item.User.UserName, "UserProfile", "Home", new { item.User.Id }, null)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
                 <p>
-                @Html.DisplayFor(modelItem => item.LastReplyTime)
-                by @Html.DisplayFor(modelItem => item.LastPost)
+                @Html.DisplayFor(modelItem => item.LastReplyTime) by
+                @Html.ActionLink(item.LastPost, "UserProfile", "Home", new { item.Replier.Id }, null)
                 </p>
             </td>
             <td>
@@ -57,5 +57,4 @@
             </td>
         </tr>
     }
-
 </table>

@@ -1,4 +1,4 @@
-﻿@model Orca_Gamma.Models.DatabaseModels.Project
+﻿@model Orca_Gamma.Models.ProjectViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -15,7 +15,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.User.FirstName)
+            @Html.DisplayFor(model => model.User.FirstName) @Html.DisplayFor(model => model.User.LastName) @Html.ActionLink("(Profile)", "UserProfile", "Home", new { Model.User.Id }, null)
         </dd>
 
         <dt>
@@ -43,18 +43,43 @@
         </dd>
     </dl>
 </div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayFor(model => model.Name) Collaborators
+        </th>
+    </tr>
+
+    @foreach (var item in Model.CollaboratorList)
+    {
+        <tr>
+            <th>
+                @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
+            </th>
+            <th>
+                @Html.ActionLink("Profile", "UserProfile", "Home", new { item.Id }, null)
+            </th>
+        </tr>
+    }
+</table>
 <p>
-    @Html.ActionLink("Back to List", "Index")
-</p>
-@if (@ViewBag.currentID == Model.User.Id)
-{
-    <p>
+    @Html.ActionLink("Back to Projects", "Index") |
+
+    @if (@ViewBag.currentID == Model.User.Id)
+    {
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
-    </p>
-    <p>
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
         @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
-    </p>
-    <p>
-        @Html.ActionLink("Manage Collaborators", "Collab", new { id = Model.Id })
-    </p>
-}
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
+        @Html.ActionLink("Manage Collaborators", "Collab", new { id = Model.Id }) 
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
+        @Html.ActionLink("Transfer Project Lead Role", "LeadTransfer", new { projectId = Model.Id })
+    }
+</p>

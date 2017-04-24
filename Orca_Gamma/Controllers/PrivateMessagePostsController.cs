@@ -85,10 +85,10 @@ namespace Orca_Gamma.Controllers
                 searchString = previousFilter;
             }
             ViewBag.CurrentFilter = searchString;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
-            }
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
+            //}
 
             //Get a list of all private messages ids from the between model
             List<PMIndexViewModel> PostIDList = new List<PMIndexViewModel>();
@@ -102,21 +102,49 @@ namespace Orca_Gamma.Controllers
                     DateTime lastReplyTime = GetESTime();
                     PrivateMessagePost tryThis = pmps.Last(x => x.PartOf == k.PrivateMessageId);
                     lastReply = tryThis.User.UserName;
+                    ApplicationUser lastUser = tryThis.User;
                     lastReplyTime = tryThis.Date;
-
-                    var temp = new PMIndexViewModel
+                    //Search string check
+                    if(!String.IsNullOrEmpty(searchString))
                     {
-                        Id = k.PrivateMessage.Id,
-                        UserId = k.PrivateMessage.User.FirstName,
-                        Date = k.PrivateMessage.Date,
-                        Subject = k.PrivateMessage.Subject,
-                        IsDeleted = k.PrivateMessage.IsDeleted,
-                        IsImportant = k.PrivateMessage.IsImportant,
-                        User = k.PrivateMessage.User,
-                        LastPost = lastReply,
-                        LastReplyTime = lastReplyTime
-                    };
-                    PostIDList.Add(temp);
+                        if (k.PrivateMessage.User.FirstName.Contains(searchString)
+                        || lastReply.Contains(searchString)
+                        || k.PrivateMessage.User.LastName.Contains(searchString)
+                        || k.PrivateMessage.User.UserName.Contains(searchString)
+                        || k.PrivateMessage.Subject.Contains(searchString))
+                        {
+                            var temp = new PMIndexViewModel
+                            {
+                                Id = k.PrivateMessage.Id,
+                                UserId = k.PrivateMessage.User.FirstName,
+                                Date = k.PrivateMessage.Date,
+                                Subject = k.PrivateMessage.Subject,
+                                IsDeleted = k.PrivateMessage.IsDeleted,
+                                IsImportant = k.PrivateMessage.IsImportant,
+                                User = k.PrivateMessage.User,
+                                LastPost = lastReply,
+                                LastReplyTime = lastReplyTime
+                            };
+                            PostIDList.Add(temp);
+                        }
+                    }
+                    else
+                    {
+                        var temp = new PMIndexViewModel
+                        {
+                            Id = k.PrivateMessage.Id,
+                            UserId = k.PrivateMessage.User.FirstName,
+                            Date = k.PrivateMessage.Date,
+                            Subject = k.PrivateMessage.Subject,
+                            IsDeleted = k.PrivateMessage.IsDeleted,
+                            IsImportant = k.PrivateMessage.IsImportant,
+                            User = k.PrivateMessage.User,
+                            LastPost = lastReply,
+                            LastReplyTime = lastReplyTime,
+							Replier = lastUser
+                        };
+                        PostIDList.Add(temp);
+                    }
                 }
             }
 
@@ -165,18 +193,38 @@ namespace Orca_Gamma.Controllers
             }
  
             var list = db.PrivateMessagePosts.Where(r => r.PrivateMessage.Id == id).Include(p => p.User).Include(r => r.PrivateMessage);
-
             if (list == null)
             {
                 return HttpNotFound();
             }
 
-            PrivateMessage privateMessage = db.PrivateMessages.Find(id);
-            ViewBag.SubjectOfMessage = privateMessage.Subject;
-            ViewBag.deleted = "[Deleted]";
-            ViewBag.ID = privateMessage.Id;
-            ViewBag.UserID = System.Web.HttpContext.Current.User.Identity.GetUserId();
-            return View(list);
+            var betweenList = db.PrivateMessagesBetween.Where(k => k.PrivateMessageId == id);
+            Boolean letThemSee = false;
+            String userId = getCurrentUser().Id;
+            if(betweenList != null && userId != null)
+            {
+                foreach (var between in betweenList)
+                {
+                    if (between.UserId == userId && between.IsDeleted == false)
+                    {
+                        letThemSee = true;
+                        break;
+                    }
+                }
+            }
+
+            if(letThemSee == true)
+            {
+                PrivateMessage privateMessage = db.PrivateMessages.Find(id);
+                ViewBag.SubjectOfMessage = privateMessage.Subject;
+                ViewBag.deleted = "[Deleted]";
+                ViewBag.ID = privateMessage.Id;
+                ViewBag.UserID = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                return View(list);
+            }
+
+            return RedirectToAction("Index");
+            
         }
 
         // GET: PrivateMessagePosts/Create
@@ -295,7 +343,24 @@ namespace Orca_Gamma.Controllers
             {
                 return HttpNotFound();
             }
-            return View(privateMessage);
+
+            var betweenList = db.PrivateMessagesBetween.Where(k => k.PrivateMessageId == id);
+            Boolean letThemSee = false;
+            String userId = getCurrentUser().Id;
+            if (betweenList != null && userId != null)
+            {
+                foreach (var between in betweenList)
+                {
+                    if (between.UserId == userId && between.IsDeleted == false)
+                    {
+                        letThemSee = true;
+                        break;
+                    }
+                }
+            }
+            if(letThemSee)
+                return View(privateMessage);
+            return RedirectToAction("Index");
         }
 
         // POST: PrivateMessagePosts/Delete/5
@@ -328,8 +393,27 @@ namespace Orca_Gamma.Controllers
                 PrivateMessage temp = db.PrivateMessages.Find(id);
                 ViewBag.PostTitle = temp.Subject;
                 ViewBag.ID = temp.Id;
+
+                var betweenList = db.PrivateMessagesBetween.Where(k => k.PrivateMessageId == id);
+                Boolean letThemSee = false;
+                String userId = getCurrentUser().Id;
+                if (betweenList != null && userId != null)
+                {
+                    foreach (var between in betweenList)
+                    {
+                        if (between.UserId == userId && between.IsDeleted == false)
+                        {
+                            letThemSee = true;
+                            break;
+                        }
+                    }
+                    if(letThemSee == true)
+                        return View();
+                    return RedirectToAction("Index");
+                }
+                return RedirectToAction("Index");
             }
-            return View();
+            return RedirectToAction("Index");
         }
 
         // POST: PrivateMessagePosts/Reply
@@ -378,18 +462,22 @@ namespace Orca_Gamma.Controllers
             }
             else
             {
-                if (privateMessagePost.IsDeleted == false)
+                if(privateMessagePost.User.Id == User.Identity.GetUserId())
                 {
-                    ViewBag.BigHeading = "Reply Delete";
-                    ViewBag.Heading = "Are you sure you want to delete this message? You can restore it later.";
+                    if (privateMessagePost.IsDeleted == false)
+                    {
+                        ViewBag.BigHeading = "Reply Delete";
+                        ViewBag.Heading = "Are you sure you want to delete this message? You can restore it later.";
+                    }
+                    else if (privateMessagePost.IsDeleted == true)
+                    {
+                        ViewBag.BigHeading = "Reply Restore";
+                        ViewBag.Heading = "Are you sure you want to restore this message?";
+                    }
+                    return View(privateMessagePost);
                 }
-                else if (privateMessagePost.IsDeleted == true)
-                {
-                    ViewBag.BigHeading = "Reply Restore";
-                    ViewBag.Heading = "Are you sure you want to restore this message?";
-                }
+                return RedirectToAction("Index");
             }
-            return View(privateMessagePost);
         }
 
         // POST: PrivateMessagePosts/Delete/5

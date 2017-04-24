@@ -52,5 +52,10 @@ namespace Orca_Gamma.Models.ViewModels
         {
             get; set;
         }
+
+        public virtual ApplicationUser Replier
+        {
+            get; set;
+        }
     }
 }
