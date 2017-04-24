@@ -13,9 +13,15 @@ namespace Orca_Gamma.Models
         public string PhoneNumber { get; set; }
         public bool TwoFactor { get; set; }
         public bool BrowserRemembered { get; set; }
-		public bool IsExpert {
-			get; set;
-		}
+		public bool IsExpert { get; set; }
+
+        //Profile information -ds
+        public ApplicationUser User
+        {
+            get; set;
+        }
+
+        public string Keywords { get; set; }
     }
 
     public class ManageLoginsViewModel
