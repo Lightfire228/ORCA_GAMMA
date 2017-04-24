@@ -10,15 +10,16 @@
 <h2>Welcome to the Projects page</h2>
 
 <p>
-    @Html.ActionLink("Create New Project", "Create")
+    @Html.ActionLink("Create New Project", "Create", null, new { @class = "btn btn-primary", @style = "color:white" })
+
 
     @using (Html.BeginForm("Index", "Projects", FormMethod.Get))
-    {
+                {
     <p>
         Project Name/Description: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
         <input type="submit" value="Search" />
     </p>
-    }
+                }
 
 
 <p>
@@ -26,7 +27,7 @@
 
     <tr>
         <th>
-            @Html.ActionLink("Project Name", "Index", new { sortOrder = ViewBag.ProjectLead })
+            @Html.ActionLink("Project Lead", "Index", new { sortOrder = ViewBag.ProjectLead })
         </th>
         <th>
             @Html.ActionLink("Project Name", "Index", new { sortOrder = ViewBag.ProjectName })
@@ -51,9 +52,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
-
+        
             <td>
-                @Html.DisplayFor(modelItem => item.DateStarted)
+                @*@Html.DisplayFor(modelItem => item.DateStarted)*@
+                @Convert.ToString(string.Format("{0:M/d/yyyy}", item.DateStarted))
             </td>
 
             <td>

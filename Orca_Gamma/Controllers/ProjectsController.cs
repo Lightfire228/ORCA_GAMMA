@@ -8,8 +8,8 @@ using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
 using Microsoft.AspNet.Identity;
-using PagedList;
 using Orca_Gamma.Models.ViewModels;
+using PagedList;
 
 
 namespace Orca_Gamma.Controllers
@@ -97,7 +97,7 @@ namespace Orca_Gamma.Controllers
 			}
 
 
-            int pageSize = 15;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
 
             return View(project.ToPagedList(pageNumber, pageSize));
@@ -180,6 +180,22 @@ namespace Orca_Gamma.Controllers
                 IsDeleted = false,
             };
 
+            //don't judge! 
+            if (project.Name == null && project.Description == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (project.Description == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (project.Name == null)
+            {
+                return RedirectToAction("Index");
+            }
+
             db.Project.Add(project);
             db.SaveChanges();
 
@@ -187,9 +203,9 @@ namespace Orca_Gamma.Controllers
             {
                 db.Project.Add(project);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new { id = project.Id });
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Details", new { id = project.Id });
         }
  
 
@@ -329,6 +345,10 @@ namespace Orca_Gamma.Controllers
         {
             var tempProject = db.Project.Find(projectId);
 
+            var projects = db.Project.Find(projectId);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
             if (tempProject.IsDeleted)
             {
                 return HttpNotFound();
@@ -339,7 +359,13 @@ namespace Orca_Gamma.Controllers
             {
                 Project = tempProject
             };
-            return View(tempCollab);
+
+            if (projectLead == user)
+            {
+                return View(tempCollab);
+
+            }
+            return RedirectToAction("Index");
         }
 
         //POST: Projects/Add Collab
@@ -354,7 +380,7 @@ namespace Orca_Gamma.Controllers
                 var tempUser = db.Users.FirstOrDefault(g => g.UserName == model.UserId);
                 if (tempUser == null)
                 {
-                    ViewBag.ERR = "User \"" + model.UserId + "\" does not exist."; 
+                    ViewBag.ERR = "User \"" + model.UserId + "\" does not exist.";
                     return View();
                 }
                 //Ensure a collab can't be added twice.

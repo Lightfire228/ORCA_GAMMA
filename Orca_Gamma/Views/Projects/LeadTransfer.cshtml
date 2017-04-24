@@ -4,7 +4,7 @@
     ViewBag.Title = "Lead Transfer";
 }
 
-<h2>Lead Transfer</h2>
+<h2>Project Lead Transfer</h2>
 
 
 @using (Html.BeginForm()) 
@@ -27,13 +27,13 @@
                     @Html.ValidationMessageFor(model => model.selectedCollab, "", new { @class = "text-danger" })
                 </div>
             </div>
-            @Html.HiddenFor(model => model.project)
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
+			@Html.HiddenFor(model => model.project)
+			<div class="form-group">
+				<div class="col-md-offset-2 col-md-10">
+					<input type="submit" value="Transfer" class="btn btn-default" />
+				</div>
+			</div>
+		</div>
     }
 }
 
