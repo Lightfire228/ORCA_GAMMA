@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Orca_Gamma.Models.DatabaseModels.Expert>
+﻿@model List<Orca_Gamma.Models.ViewModels.MainIndexViewModel>
 
 @{
     ViewBag.Title = "Home Page";
@@ -13,40 +13,49 @@
     @using (Html.BeginForm())
     {
     <p>
-        Search Options: @Html.TextBox("SearchString")
-        <input type="submit" value="Filter" />
+        Find an Expert: @Html.TextBox("SearchString")
+        <input type="submit" value="Search" />
     </p>
     }
-
-</p>
-<table class="table">
-    <tr>
-        <th>
-            UserName
-        </th>
-        <th>
-            Name
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Catagory.Name)
-        </th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+    <table class="table" style="width: 100%;" cellpadding="0" cellspacing="0">
+    <colgroup width="15%" /> 
+    <colgroup width="20%" /> 
+    <colgroup width="20%" />
+    <colgroup width="35%" />
+    <colgroup width="10%" />
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.LastName), @Html.DisplayFor(modelItem => item.User.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Catagory.Name)
-            </td>
-            <td>
-                @Html.ActionLink("Profile", "UserProfile", new { id = item.User.Id })
-            </td>
+            <th>
+                @Html.ActionLink("UserName", "Index", new { sortOrder = "username_desc", previousFilter = ViewBag.CurrentFilter, lastSort = ViewBag.LastSort })
+            </th>
+            <th>
+                @Html.ActionLink("Name", "Index", new { sortOrder = "name_desc", previousFilter = ViewBag.CurrentFilter, lastSort = ViewBag.LastSort })
+            </th>
+            <th>
+                @Html.ActionLink("Category", "Index", new { sortOrder = "category_desc", previousFilter = ViewBag.CurrentFilter, lastSort = ViewBag.LastSort })
+            </th>
+            <th>
+                Specialties
+            </th>
         </tr>
-    }
-</table>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.LastName), @Html.DisplayFor(modelItem => item.User.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Catagory.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Keywords)
+                </td>
+                <td>
+                    @Html.ActionLink("Profile", "UserProfile", new { id = item.User.Id })
+                </td>
+            </tr>
+        }
+    </table>
