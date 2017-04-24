@@ -20,14 +20,16 @@
 <table class="table">
     <tr>
         <th>
-            Topics
+            @*Topics*@
+            @Html.ActionLink("Topics", "Index", new { sortOrder = ViewBag.ForumName })
             @*@Html.ActionLink("Topic", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })*@
         </th>
         @*<th>
             Replies
         </th>*@
         <th>
-            Last Post
+            @*Last Post*@
+            @Html.ActionLink("Latest Post", "Index", new { sortOrder = ViewBag.ProjectDate })
         </th>
     </tr>
 

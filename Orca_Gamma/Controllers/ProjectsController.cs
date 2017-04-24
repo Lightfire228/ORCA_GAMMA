@@ -33,6 +33,8 @@ namespace Orca_Gamma.Controllers
 
 
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.ProjectLead = sortOrder == "Lead" ? "lead_desc" : "Lead";
+            ViewBag.ProjectName = sortOrder == "Name" ? "name_desc" : "Name";
 
             var project = from p in db.Project
                           select p;
@@ -49,6 +51,18 @@ namespace Orca_Gamma.Controllers
                     break;
                 case "date_desc":
                     project = project.OrderByDescending(p => p.DateStarted);
+                    break;
+                case "Name":
+                    project = project.OrderBy(p => p.Name);
+                    break;
+                case "name_desc":
+                    project = project.OrderByDescending(p => p.Name);
+                    break;
+                case "Lead":
+                    project = project.OrderBy(p => p.ProjectLead);
+                    break;
+                case "lead_desc":
+                    project = project.OrderByDescending(p => p.ProjectLead);
                     break;
 
             }
