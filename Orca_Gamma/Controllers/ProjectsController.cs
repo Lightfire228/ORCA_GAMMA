@@ -22,6 +22,15 @@ namespace Orca_Gamma.Controllers
             return db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
         }
 
+        public DateTime GetESTime()
+        {
+            DateTime timeUTC = DateTime.UtcNow;
+            TimeZoneInfo estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime estTime = TimeZoneInfo.ConvertTimeFromUtc(timeUTC, estZone);
+            return estTime;
+        }
+
+        //GET index
         public ActionResult Index(string sortOrder, string searchString)
         {
 
@@ -31,8 +40,8 @@ namespace Orca_Gamma.Controllers
             var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.UserId == userId);
             var postList = db.PrivateMessagePosts;
 
-
-            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.Current = sortOrder;
+            
 
             var project = from p in db.Project
                           select p;
@@ -42,14 +51,21 @@ namespace Orca_Gamma.Controllers
                 project = project.Where(s => s.Name.Contains(searchString));
             }
 
+            //this is where I take sortOrder value and display
             switch (sortOrder)
             {
-                case "Date":
+                case "project_lead":
+                    project = project.OrderBy(p => p.ProjectLead);
+                    break;
+                case "project_name":
+                    project = project.OrderBy(p => p.Name);
+                    break;
+                case "description":
+                    project = project.OrderBy(p => p.Description);
+                    break;
+                case "date_created":
                     project = project.OrderBy(p => p.DateStarted);
-                    break;
-                case "date_desc":
-                    project = project.OrderByDescending(p => p.DateStarted);
-                    break;
+                    break;    
 
             }
             return View(project.ToList());
@@ -116,8 +132,12 @@ namespace Orca_Gamma.Controllers
                 Name = model.Name,
                 Description = model.Description,
 
-                DateStarted = DateTime.Now,
-                DateFinished = DateTime.Now
+                DateStarted = GetESTime(),
+
+                //this needs to be changed so they enter a finished date -Geoff
+                //**IMORTANT**
+                DateFinished = GetESTime()
+
             };
 
             db.Project.Add(project);

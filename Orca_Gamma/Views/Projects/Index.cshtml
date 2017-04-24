@@ -23,27 +23,17 @@
 
     <tr>
         <th>
-            Project Lead
+            @Html.ActionLink("Project Lead", "Index", new { sortOrder = "project_lead"})
         </th>
         <th>
-            Project Name
+            @Html.ActionLink("Project Name", "Index", new { sortOrder = "project_name"})
         </th>
         <th>
-            Description
+            @Html.ActionLink("Description", "Index", new { sortOrder = "description"})
         </th>
         <th>
-
-        @Html.ActionLink("Date Created", "Index", new { sortOrder = ViewBag.DateSortParm })
+            @Html.ActionLink("Date Created", "Index", new { sortOrder = "date_created"})
         </th>
-
-        <th>
-            Project Info
-        @*@Html.DisplayNameFor(model => model.Description)*@
-        </th>
-
-    
-        @*@Html.DisplayNameFor(model => model.DateStarted)*@
-      
     </tr>
 
     @foreach (var item in Model)

@@ -386,26 +386,50 @@ namespace Orca_Gamma.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult createKeyword(Keyword model)
         {
+            
             Keyword keyword = new Keyword
             {
                 Name = model.Name
             };
-            _dbContext.Keywords.Add(keyword);
-
-            String id = getCurrentUser().Id;
-            Expert expert = _dbContext.Experts.Find(id);
-            KeywordRelation relation = new KeywordRelation
+            //need list of keywords relations here -Geoff
+            String id = User.Identity.GetUserId();
+            IEnumerable<Keyword> keywords = from keyRelation in _dbContext.KeywordRelations.ToList()
+                                            from key in _dbContext.Keywords.ToList()
+                                            where key.Id == keyRelation.KeywordId && keyRelation.ExpertId == id
+                                            select key;
+            //check if keyword they want to add is in keywords
+            List<String> keyNames = new List<String>();
+            foreach(var i in keywords)
             {
-                Keyword = keyword,
-                Expert = expert
-            };
-            _dbContext.KeywordRelations.Add(relation);
-
-            _dbContext.SaveChanges();
-
-            if (ModelState.IsValid)
+                keyNames.Add(i.Name);
+            }
+            bool isThere = keyNames.Contains(keyword.Name);
+            if (isThere == false)
             {
-                return RedirectToAction("expertInfo");
+                _dbContext.Keywords.Add(keyword);
+
+                Expert expert = _dbContext.Experts.Find(id);
+                KeywordRelation relation = new KeywordRelation
+                {
+                    Keyword = keyword,
+                    Expert = expert
+                };
+                _dbContext.KeywordRelations.Add(relation);
+
+                _dbContext.SaveChanges();
+
+                if (ModelState.IsValid)
+                {
+                    return RedirectToAction("expertInfo");
+                }
+            }
+            else if(isThere==true)
+            {
+                ViewBag.repeatKeyword = "Keyword already on account";
+            }
+            else
+            {
+                ViewBag.repeatKeyword = "Some other error";
             }
             return View(model);
 
