@@ -85,10 +85,6 @@ namespace Orca_Gamma.Controllers
                 searchString = previousFilter;
             }
             ViewBag.CurrentFilter = searchString;
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
-            //}
 
             //Get a list of all private messages ids from the between model
             List<PMIndexViewModel> PostIDList = new List<PMIndexViewModel>();
