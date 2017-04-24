@@ -85,10 +85,10 @@ namespace Orca_Gamma.Controllers
                 searchString = previousFilter;
             }
             ViewBag.CurrentFilter = searchString;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
-            }
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    betweenList = betweenList.Where(t => t.PrivateMessage.Subject.Contains(searchString));
+            //}
 
             //Get a list of all private messages ids from the between model
             List<PMIndexViewModel> PostIDList = new List<PMIndexViewModel>();
@@ -104,21 +104,47 @@ namespace Orca_Gamma.Controllers
                     lastReply = tryThis.User.UserName;
                     ApplicationUser lastUser = tryThis.User;
                     lastReplyTime = tryThis.Date;
-
-                    var temp = new PMIndexViewModel
+                    //Search string check
+                    if(!String.IsNullOrEmpty(searchString))
                     {
-                        Id = k.PrivateMessage.Id,
-                        UserId = k.PrivateMessage.User.FirstName,
-                        Date = k.PrivateMessage.Date,
-                        Subject = k.PrivateMessage.Subject,
-                        IsDeleted = k.PrivateMessage.IsDeleted,
-                        IsImportant = k.PrivateMessage.IsImportant,
-                        User = k.PrivateMessage.User,
-                        LastPost = lastReply,
-                        LastReplyTime = lastReplyTime,
-                        Replier = lastUser
-                    };
-                    PostIDList.Add(temp);
+                        if (k.PrivateMessage.User.FirstName.Contains(searchString)
+                        || lastReply.Contains(searchString)
+                        || k.PrivateMessage.User.LastName.Contains(searchString)
+                        || k.PrivateMessage.User.UserName.Contains(searchString)
+                        || k.PrivateMessage.Subject.Contains(searchString))
+                        {
+                            var temp = new PMIndexViewModel
+                            {
+                                Id = k.PrivateMessage.Id,
+                                UserId = k.PrivateMessage.User.FirstName,
+                                Date = k.PrivateMessage.Date,
+                                Subject = k.PrivateMessage.Subject,
+                                IsDeleted = k.PrivateMessage.IsDeleted,
+                                IsImportant = k.PrivateMessage.IsImportant,
+                                User = k.PrivateMessage.User,
+                                LastPost = lastReply,
+                                LastReplyTime = lastReplyTime
+                            };
+                            PostIDList.Add(temp);
+                        }
+                    }
+                    else
+                    {
+                        var temp = new PMIndexViewModel
+                        {
+                            Id = k.PrivateMessage.Id,
+                            UserId = k.PrivateMessage.User.FirstName,
+                            Date = k.PrivateMessage.Date,
+                            Subject = k.PrivateMessage.Subject,
+                            IsDeleted = k.PrivateMessage.IsDeleted,
+                            IsImportant = k.PrivateMessage.IsImportant,
+                            User = k.PrivateMessage.User,
+                            LastPost = lastReply,
+                            LastReplyTime = lastReplyTime,
+							Replier = lastUser
+                        };
+                        PostIDList.Add(temp);
+                    }
                 }
             }
 

@@ -64,17 +64,22 @@
     }
 </table>
 <p>
-    @Html.ActionLink("Back to List", "Index")
-</p>
-@if (@ViewBag.currentID == Model.User.Id)
-{
-    <p>
-        @Html.ActionLink("Manage Collaborators", "Collab", new { id = Model.Id })
-    </p>
-    <p>
+    @Html.ActionLink("Back to Projects", "Index") |
+
+    @if (@ViewBag.currentID == Model.User.Id)
+    {
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
-    </p>
-    <p>
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
         @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
-    </p>
-}
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
+        @Html.ActionLink("Manage Collaborators", "Collab", new { id = Model.Id }) 
+    }
+   | @if (@ViewBag.currentID == Model.User.Id)
+    {
+        @Html.ActionLink("Transfer Project Lead Role", "LeadTransfer", new { projectId = Model.Id })
+    }
+</p>

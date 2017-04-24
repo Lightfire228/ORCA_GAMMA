@@ -529,7 +529,7 @@ namespace Orca_Gamma.Controllers
             // get current user
             String id = getCurrentUser().Id;
             Expert expert = _dbContext.Experts.Find(id);
-
+            
             if (expert == null)
             {
                 //MAY WANT TO CLEAN UP CREATING BOGUS CATEGORY DATA -Geoff

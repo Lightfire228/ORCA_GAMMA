@@ -4,12 +4,13 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Orca_Gamma.Models;
 using Orca_Gamma.Models.DatabaseModels;
 using Microsoft.AspNet.Identity;
-using System.Web.Security;
+using PagedList;
+using Orca_Gamma.Models.ViewModels;
+
 
 namespace Orca_Gamma.Controllers
 {
@@ -30,25 +31,32 @@ namespace Orca_Gamma.Controllers
             return estTime;
         }
 
-        //GET index
-        public ActionResult Index(string sortOrder, string searchString)
+        public ActionResult Index(string sortOrder, string searchString, string currentFilter, int? page)
         {
 
-            //new
-            var userId = User.Identity.GetUserId();
-            var projectsList = db.Project.Include(p => p.User);
-            var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.UserId == userId);
-            var postList = db.PrivateMessagePosts;
+            //Date sort & project name search with pagedList
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
 
-            ViewBag.Current = sortOrder;
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
             
-
             var project = from p in db.Project
+                          where p.IsDeleted == false
                           select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                project = project.Where(s => s.Name.Contains(searchString));
+                project = from p in db.Project
+                          where p.IsDeleted == false
+                          && (p.Description.Contains(searchString) || p.Name.Contains(searchString))
+                          select p;
+                //project = project.Where(s => s.Name.Contains(searchString));
             }
 
             //this is where I take sortOrder value and display
@@ -66,13 +74,18 @@ namespace Orca_Gamma.Controllers
                 case "date_created":
                     project = project.OrderBy(p => p.DateStarted);
                     break;    
-
             }
-            return View(project.ToList());
+
+
+            int pageSize = 15;
+            int pageNumber = (page ?? 1);
+
+            return View(project.OrderBy(p => p.DateStarted).ToPagedList(pageNumber, pageSize));
         }
 
 
-        // GET: Projects/Details/5
+        // GET: Projects/Details
+        [Authorize]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -85,6 +98,7 @@ namespace Orca_Gamma.Controllers
             {
                 return HttpNotFound();
             }
+			
             //get a list of collaborators on this project
             List<Collaborator> collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.ProjectId == id).ToList();
             //convert the list of collaborators to a list of their applicationuser objects
@@ -107,6 +121,11 @@ namespace Orca_Gamma.Controllers
                 User = project.User
             };
 
+            if (project.IsDeleted)
+            {
+                return HttpNotFound();
+            }
+			
             String tempID = getCurrentUser().Id;
             ViewBag.currentID = tempID;
             return View(projectWithCollabList);
@@ -138,6 +157,7 @@ namespace Orca_Gamma.Controllers
                 //**IMORTANT**
                 DateFinished = GetESTime()
 
+                IsDeleted = false,
             };
 
             db.Project.Add(project);
@@ -149,9 +169,7 @@ namespace Orca_Gamma.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
             return RedirectToAction("Index");
-
         }
  
 
@@ -238,8 +256,13 @@ namespace Orca_Gamma.Controllers
             }
 
             Project project = db.Project.Find(id);
-			
+
             if (project == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (project.IsDeleted)
             {
                 return HttpNotFound();
             }
@@ -255,8 +278,6 @@ namespace Orca_Gamma.Controllers
             }
             else
                 return RedirectToAction("Index");
-
-            //return View(project);
         }
 
 
@@ -272,9 +293,8 @@ namespace Orca_Gamma.Controllers
                 project.Name = model.Name;
                 project.Description = model.Description;
 
-
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new { id = project.Id });
             }
 
             return View(model);
@@ -285,6 +305,7 @@ namespace Orca_Gamma.Controllers
         [Authorize]
         public ActionResult Delete(int? id)
         {
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -293,6 +314,11 @@ namespace Orca_Gamma.Controllers
             Project project = db.Project.Find(id);
 
             if (project == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (project.IsDeleted)
             {
                 return HttpNotFound();
             }
@@ -308,20 +334,20 @@ namespace Orca_Gamma.Controllers
 
             else
                 return RedirectToAction("Index");
-
         }
+
 
         // POST: Projects/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize]
         public ActionResult DeleteConfirmed(int id)
-        { 
+        {
             Project project = db.Project.Find(id);
-            db.Project.Remove(project);
+            project.IsDeleted = true;
             db.SaveChanges();
             return RedirectToAction("Index");
-    }
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -331,6 +357,190 @@ namespace Orca_Gamma.Controllers
             }
             base.Dispose(disposing);
         }
+
+
+        //GET: Projects/Add Collab
+        [Authorize]
+        public ActionResult Collab(int? id)
+        {
+            var projects = db.Project.Find(id);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (id != null && projectLead == user && !projects.IsDeleted)
+            {
+                ViewBag.p_id = id;
+                var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.ProjectId == id);
+                return View(collabList.ToList());
+            }
+            return RedirectToAction("Index");
+        }
+
+        //GET: Collab
+        [Authorize]
+        public ActionResult CollabCreate(int? projectId)
+        {
+            var tempProject = db.Project.Find(projectId);
+
+            if (tempProject.IsDeleted)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.p_id = tempProject.Id;
+            var tempCollab = new Collaborator
+            {
+                Project = tempProject
+            };
+            return View(tempCollab);
+        }
+
+        //POST: Projects/Add Collab
+        [HttpPost]
+        [Authorize]
+        public ActionResult CollabCreate(Collaborator model)
+        {
+            var tempProject = db.Project.Find(model.ProjectId);
+
+            if (model.UserId != null)
+            {
+                var tempUser = db.Users.FirstOrDefault(g => g.UserName == model.UserId);
+                if (tempUser == null)
+                {
+                    ViewBag.ERR = "User \"" + model.UserId + "\" does not exist."; 
+                    return View();
+                }
+                //Ensure a collab can't be added twice.
+                //Get list of collabs linked to this project
+                var collabList = db.Collaborators.Include(k => k.User).Include(g => g.Project).Where(i => i.ProjectId == model.ProjectId);
+                var collabUserNameList = new List<String>();
+                //iterate through and see if you get a match
+                foreach(Collaborator collab in collabList)
+                {
+                    var temp = db.Users.Find(collab.UserId);
+                    collabUserNameList.Add(temp.UserName);
+                }
+                if (tempUser.Id.Equals(tempProject.ProjectLead))
+                {
+                    return RedirectToAction("Details", new { id = model.ProjectId });
+                }
+                foreach(String username in collabUserNameList)
+                {
+                    if (username.Equals(tempUser.UserName))
+                    {
+                        return RedirectToAction("Details", new { id = model.ProjectId });
+                    }
+                }
+                var tempCollab = new Collaborator
+                {
+                    User = tempUser,
+                    Project = tempProject
+                };
+
+                db.Collaborators.Add(tempCollab);
+                db.SaveChanges();
+
+                return RedirectToAction("Collab", new { id = tempCollab.ProjectId });
+            }
+            return View();
+        }
+
+
+        //GET: Projects/Remove Collab
+        [Authorize]
+        public ActionResult CollabDelete(String userId, int projectId)
+        {
+            var project = db.Project.Find(projectId);
+            if (project.IsDeleted)
+            {
+                return HttpNotFound();
+            }
+
+            var tempCollab = db.Collaborators.FirstOrDefault(p => p.ProjectId == projectId && p.UserId.Equals(userId));
+            if (tempCollab != null)
+            {
+                return View(tempCollab);
+            }
+            return RedirectToAction("Index");
+        }
+
+        //POST: Projects/Remove Collab
+        [HttpPost, ActionName("CollabDelete")]
+        [Authorize]
+        public ActionResult CollabDeleteConfirmed(String userId, int projectId)
+        {
+            var tempCollab = db.Collaborators.FirstOrDefault(p => p.ProjectId == projectId && p.UserId.Equals(userId));
+            db.Collaborators.Remove(tempCollab);
+            db.SaveChanges();
+            return RedirectToAction("Collab", new { id = projectId });
+        }
+        
+        //GET: Transfer Project Lead
+        [Authorize]
+        public ActionResult LeadTransfer(int? projectId)
+        {
+            var projects = db.Project.Find(projectId);
+            var projectLead = projects.User;
+            var user = db.Users.Find(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+            if (projectId != null && projectLead == user && !projects.IsDeleted)
+            {
+                var trueid = projectId;
+                Project project = db.Project.Find(projectId);
+                IEnumerable<Collaborator> collabList = db.Collaborators.Where(t => t.ProjectId == projectId);
+                var idList = new List<String>();
+                foreach (Collaborator collab in collabList)
+                {
+                    idList.Add(collab.UserId);
+                }
+                var unameList = new List<String>();
+                foreach (String id in idList)
+                {
+                    var toAdd = db.Users.Find(id);
+                    unameList.Add(toAdd.UserName);
+                }
+                ViewBag.Project = projectId;
+                return View(new LeadTransferViewModel { project = (int)trueid, collabList = unameList });
+            }
+            return RedirectToAction("Index");
+        }
+
+
+        //POST: Projects/Lead Transfer
+        [HttpPost, ActionName("LeadTransfer")]
+        [Authorize]
+        public ActionResult LeadTransfer(LeadTransferViewModel model)
+        {
+
+            if (model.selectedCollab != null)
+            {
+                //Make old leader into a collaborator
+                Project project = db.Project.Find(model.project);
+                String oldLeadId = project.ProjectLead;
+                var oldLeadUser = db.Users.SingleOrDefault(g => g.Id.Equals(oldLeadId));
+                var tempCollab = new Collaborator
+                {
+                    User = oldLeadUser,
+                    Project = project,
+                    ProjectId = project.Id,
+                    UserId = oldLeadUser.Id
+                };
+                db.Collaborators.Add(tempCollab);
+
+                //Make selected username's id the leader of that project.
+                String newLeadUserName = model.selectedCollab;
+                var newLeadUser = db.Users.SingleOrDefault(k => k.UserName.Equals(newLeadUserName));
+                project.User = newLeadUser;
+                project.ProjectLead = newLeadUser.Id;
+
+                //Delete selected leader's collaboration entry.
+                var toDelete = db.Collaborators.FirstOrDefault(p => p.UserId.Equals(newLeadUser.Id) && p.ProjectId == project.Id);
+                db.Collaborators.Remove(toDelete);
+
+                db.SaveChanges();
+                return RedirectToAction("Details", new { id = project.Id });
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
-
