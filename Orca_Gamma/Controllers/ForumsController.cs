@@ -38,7 +38,7 @@ namespace Orca_Gamma.Controllers
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
-            //ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
+            ViewBag.nameSortParm = String.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
             ViewBag.ForumName = sortOrder == "Name" ? "name_desc" : "Name";
             ViewBag.ForumDate = sortOrder == "Date" ? "date_desc" : "Date";
 
@@ -73,9 +73,9 @@ namespace Orca_Gamma.Controllers
                 case "Date":
                     threads = threads.OrderBy(s => s.Date);
                     break;
-                //default:
-                //    threads = threads.OrderByDescending(s => s.Date);
-                //    break;
+                default:
+                    threads = threads.OrderByDescending(s => s.Date);
+                    break;
             }
 
             var posts = _dbContext.ThreadMessagePosts.ToList();
