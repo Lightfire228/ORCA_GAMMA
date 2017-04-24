@@ -32,10 +32,10 @@
             @Html.ActionLink("Project Name", "Index", new { sortOrder = ViewBag.ProjectName })
         </th>
         <th>
-            @Html.ActionLink("Description", "Index", new { sortOrder = "description"})
+            @Html.ActionLink("Description", "Index", new { sortOrder = ViewBag.ProjectDescription})
         </th>
         <th>
-            @Html.ActionLink("Date Created", "Index", new { sortOrder = "date_created"})
+            @Html.ActionLink("Date Created", "Index", new { sortOrder = ViewBag.DateSortParam})
         </th>
     </tr>
 
