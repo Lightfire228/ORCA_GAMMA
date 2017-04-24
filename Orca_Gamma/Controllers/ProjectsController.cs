@@ -70,17 +70,19 @@ namespace Orca_Gamma.Controllers
                     break;
                 case "description":
                     project = project.OrderBy(p => p.Description);
+					break;
+
+				case "date_created":
+				default:
+                    project = project.OrderByDescending(p => p.DateStarted);
                     break;
-                case "date_created":
-                    project = project.OrderBy(p => p.DateStarted);
-                    break;    
             }
 
 
             int pageSize = 15;
             int pageNumber = (page ?? 1);
 
-            return View(project.OrderBy(p => p.DateStarted).ToPagedList(pageNumber, pageSize));
+            return View(project.ToPagedList(pageNumber, pageSize));
         }
 
 
