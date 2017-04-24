@@ -21,7 +21,7 @@
     <tr>
         <th>
             @*Topics*@
-            @Html.ActionLink("Topics", "Index", new { sortOrder = ViewBag.ForumName })
+            @Html.ActionLink("Topics", "Index", new { sortOrder = ViewBag.ForumName, currentFilter = ViewBag.CurrentFilter })
             @*@Html.ActionLink("Topic", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })*@
         </th>
         @*<th>
@@ -29,7 +29,7 @@
         </th>*@
         <th>
             @*Last Post*@
-            @Html.ActionLink("Latest Post", "Index", new { sortOrder = ViewBag.ProjectDate })
+            @Html.ActionLink("Latest Post", "Index", new { sortOrder = ViewBag.ProjectDate, currentFilter = ViewBag.CurrentFilter })
         </th>
     </tr>
 
@@ -39,8 +39,8 @@
         <tr>
             <td>
                 @Html.ActionLink(item.Threads.Subject, "Details", new { id = item.Threads.Id })
-           <br />
-                Tags: @Html.DisplayFor(modelItem => item.Keys.Name)
+                <br/>
+                Tags: <i>@Html.DisplayFor(modelitem => item.Threads.FirstPost)</i>
                 
                 <br/>
                 by @Html.ActionLink(item.Threads.User.UserName, "UserProfile", "Home",  new { id = item.Threads.User.Id}, null) on @Html.DisplayFor(modelItem => item.Threads.Date)

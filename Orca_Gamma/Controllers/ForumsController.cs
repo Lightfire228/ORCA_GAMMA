@@ -56,7 +56,8 @@ namespace Orca_Gamma.Controllers
             ViewBag.CurrentFilter = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
-                threads = threads.Where(t => t.Subject.Contains(searchString));
+                threads = threads.Where(t => t.Subject.Contains(searchString) ||
+                     t.FirstPost.Contains(searchString));
             }
             switch (sortOrder)
             {
@@ -78,15 +79,12 @@ namespace Orca_Gamma.Controllers
             }
 
             var posts = _dbContext.ThreadMessagePosts.ToList();
-            var keys = _dbContext.Keywords.ToList();
-            List<ThreadViewModel> models = new List<ThreadViewModel>();
-
-            //ForumThread forumThread = _dbContext.ForumThreads.Find(id);
-
-            var keywords = _dbContext.ThreadKeywords;
-
+          
+            List<ThreadViewModel> models = new List<ThreadViewModel>();               
+        
             foreach (var thread in threads)
             {
+
                 var currPosts = posts.Where(p => p.Thread == thread);
                 var lastPost = currPosts.OrderBy(p => p.Date).LastOrDefault();
                 var count = currPosts.OrderBy(p => p.Id);
@@ -94,8 +92,7 @@ namespace Orca_Gamma.Controllers
                 var model = new ThreadViewModel
                 {
                     Threads = thread,
-                    Posts = lastPost,
-                    Keys = keys
+                    Posts = lastPost
                 };
                 ViewBag.CountReplies = count.Count();
                 models.Add(model);
@@ -160,7 +157,7 @@ namespace Orca_Gamma.Controllers
             {
                 User = user, // This is how you do foreign keys - Cass
                 Subject = model.Subject,
-                FirstPost = null,
+                FirstPost = model.FirstPost,
                 IsDeleted = false,
                 Date = time
                 
@@ -174,20 +171,20 @@ namespace Orca_Gamma.Controllers
                 Thread = post
             };
 
-            var keyword = new Keyword
-            {
-                Name = model.Name
-            };
+            //var keyword = new Keyword
+            //{
+            //    Name = model.Name
+            //};
 
-            var threadKeyword = new ThreadKeyword
-            {
-                Keyword = keyword,
-                Thread = post
-            };
+            //var threadKeyword = new ThreadKeyword
+            //{
+            //    Keyword = keyword,
+            //    Thread = post
+            //};
             //while (!ModelState.IsValid)
             //{
-                _dbContext.ThreadKeywords.Add(threadKeyword);
-                _dbContext.Keywords.Add(keyword);
+                //_dbContext.ThreadKeywords.Add(threadKeyword);
+                //_dbContext.Keywords.Add(keyword);
                 _dbContext.ThreadMessagePosts.Add(thread);
                 _dbContext.ForumThreads.Add(post);
                 _dbContext.SaveChanges();

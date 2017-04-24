@@ -10,6 +10,5 @@ namespace Orca_Gamma.Models.ViewModels
     {
         public ForumThread Threads { get; set; }
         public ThreadMessagePost Posts { get; set; }
-        public Keyword Keys { get; set; } 
     }
 }

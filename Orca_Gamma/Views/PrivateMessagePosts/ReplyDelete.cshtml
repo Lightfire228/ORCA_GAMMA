@@ -28,12 +28,20 @@
         </dd>
 
     </dl>
+    <script>
+            function DisableButton(b)
+            {
+                b.disabled = true;
+                b.value = 'Submitting';
+                b.form.submit();
+             }
+    </script>
 
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value=@(Model.IsDeleted ? "Restore" : "Delete") class="btn btn-default" /> |
+            <input type="submit" value=@(Model.IsDeleted ? "Restore" : "Delete") class="btn btn-default" onclick="DisableButton(this);" /> |
             @Html.ActionLink("Back to List", "Index")
         </div>
     }
