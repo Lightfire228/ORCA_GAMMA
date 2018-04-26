@@ -1,0 +1,60 @@
+
+<html>
+
+<body>
+    <div>
+<%- include partials/head.ejs %>
+    </div>
+
+    <div class="header-blue">
+        <div class="container" style="padding:15px 15px;padding-top:30px;padding-bottom:200px;">
+          <%- include partials/breadcrumb.ejs%>
+            <div>
+                <h1 style="color:#ffffff;margin-bottom:20px;">My Projects</h1>
+            </div>
+            <div>
+                <div class="card-group">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Material Name</th>
+                                            <th>Our Cost per Cubic Centimeter</th>
+                                            <th>Selling Price per Cubic Centimeter</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                      <form action="/addMaterial" method="post" class="d-flex align-self-center mx-auto" style="width:500px;height:500px;padding:0px;margin:0px;background-color:rgb(255,255,255);">
+                                                    <tr>
+                                                        <td> <input type="text" class="form-control" name="matName" placeholder="Material Name" required></td>
+                                                        <td> <input type="number" step=0.01 class="form-control" name="matOurCost" placeholder="Our Cost" required></td>
+                                                        <td> <input type="number" step=0.01 class="form-control" name="matSellingPrice" placeholder="Selling Price" required></td>
+                                                        <td> <input type="text" class="form-control" name="matDescription" placeholder="Description of Material" required></td>
+
+                                                    </tr>
+                                                    <button class="btn btn-primary btn-block" type="submit" style="background-color:rgb(4,148,74);">Submit</button>
+                                                  </form>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <% include partials/footer.ejs %>
+    </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-animation.js"></script>
+</body>
+
+</html>
